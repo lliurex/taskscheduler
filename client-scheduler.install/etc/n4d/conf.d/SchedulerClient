@@ -1,0 +1,6 @@
+[SETUP]
+type=python
+path=SchedulerClient.py
+class=SchedulerClient
+[METHODS]
+process_tasks = admin,admins,adm,teachers

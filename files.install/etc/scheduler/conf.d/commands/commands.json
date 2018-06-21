@@ -1,0 +1,4 @@
+{
+	"Play sound":"ffplay -nodisp",
+	"Reminder":"notify-send -u critical -i taskscheduler -t 0 %s"
+}

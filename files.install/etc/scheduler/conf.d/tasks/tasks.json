@@ -1,0 +1,7 @@
+{
+	"Maintenance":
+	{
+		"Update mirror":"lliurex-mirror unattendedupdate llx16",
+		"Update Lliurex":"lliurex-upgrade -u"
+	}
+}
