@@ -11,5 +11,5 @@
 export PYBUILD_NAME=taskscheduler
 
 %:
-	dh $@ --with llxsrc,python3,llxdev --buildsystem pybuild
+	dh $@ --with llxsrc,python3 --buildsystem pybuild
 	
