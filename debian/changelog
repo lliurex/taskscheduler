@@ -1,0 +1,151 @@
+taskscheduler (1.0.6.2) bionic; urgency=medium
+
+  * Bionic release
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Tue, 02 Oct 2018 16:41:02 +0200
+
+taskscheduler (1.0.6.1) xenial; urgency=medium
+
+  * When a task is not editable don't display command name on detail page
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Thu, 21 Jun 2018 13:57:42 +0200
+
+taskscheduler (1.0.6) xenial; urgency=medium
+
+  * Changed login image
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Thu, 21 Jun 2018 10:20:26 +0200
+
+taskscheduler (1.0.5) xenial; urgency=medium
+
+  * add check_holidays helper
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Fri, 23 Mar 2018 12:13:44 +0100
+
+taskscheduler (1.0.4) xenial; urgency=medium
+
+  * Fix ppa build
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Mon, 12 Mar 2018 11:37:40 +0100
+
+taskscheduler (1.0.3) xenial; urgency=medium
+
+  * Fixed autoremove action
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Mon, 05 Mar 2018 14:05:40 +0100
+
+taskscheduler (1.0.2) xenial; urgency=high
+
+  * Temporarily fixing autoremove mon and dom keys
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Mon, 26 Feb 2018 17:43:39 +0100
+
+taskscheduler (1.0.1) xenial; urgency=high
+
+  * Fixing postinsts with n4d calls
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Mon, 26 Feb 2018 12:08:58 +0100
+
+taskscheduler (1.0) xenial; urgency=medium
+
+  * Refactorized
+  * Multiple GUI changes
+  * Some minor bugfix
+
+ -- lliurex <lliurex@localhost.localdomain>  Thu, 15 Feb 2018 13:24:39 +0100
+
+taskscheduler (0.3.4.3) xenial; urgency=medium
+
+  * Fix utf8 bug in n4d client 
+
+ -- lliurex <lliurex@localhost.localdomain>  Tue, 02 Jan 2018 10:54:38 +0100
+
+taskscheduler (0.3.4.2) xenial; urgency=medium
+
+  * Fix n4d-client when http_proxy is not set (now really)
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Tue, 28 Nov 2017 12:15:00 +0100
+
+taskscheduler (0.3.4.1) xenial; urgency=medium
+
+  * Fix n4d-client when http_proxy is not set
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Tue, 28 Nov 2017 12:10:23 +0100
+
+taskscheduler (0.3.4) xenial; urgency=medium
+
+  * Fix permission denied on remove task
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Tue, 28 Nov 2017 11:58:10 +0100
+
+taskscheduler (0.3.3) xenial; urgency=medium
+
+  * Changes due to n4dgtklogin new api
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Mon, 27 Nov 2017 17:38:18 +0100
+
+taskscheduler (0.3.2.3) xenial; urgency=medium
+
+  * add env var http_proxy when needed 
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Mon, 27 Nov 2017 09:09:39 +0100
+
+taskscheduler (0.3.2.2) xenial; urgency=medium
+
+  * Add string parameter for custom tasks
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Fri, 24 Nov 2017 08:57:19 +0100
+
+taskscheduler (0.3.2.1) xenial; urgency=medium
+
+  * Fixed control
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Thu, 23 Nov 2017 13:15:22 +0100
+
+taskscheduler (0.3.2) xenial; urgency=medium
+
+  * Localized tasks and commands
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Thu, 23 Nov 2017 12:35:09 +0100
+
+taskscheduler (0.3.1) xenial; urgency=medium
+
+  * Fix menu category
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Tue, 21 Nov 2017 17:01:22 +0100
+
+taskscheduler (0.3) xenial; urgency=medium
+
+  * Bugfix and disable debug mode
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Tue, 21 Nov 2017 13:51:36 +0100
+
+taskscheduler (0.2.3) xenial; urgency=medium
+
+  * Update control
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Mon, 20 Nov 2017 13:35:08 +0100
+
+taskscheduler (0.2.2) xenial; urgency=medium
+
+  * Add postinst
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Mon, 20 Nov 2017 13:03:07 +0100
+
+taskscheduler (0.2.1) xenial; urgency=medium
+
+  * Add handler for socket exceptions
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Mon, 20 Nov 2017 10:15:42 +0100
+
+taskscheduler (0.2) xenial; urgency=medium
+
+  * Add conf files
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Wed, 15 Nov 2017 17:45:57 +0100
+
+taskscheduler (0.1) xenial; urgency=medium
+
+  * Initial release. 
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Fri, 20 Oct 2017 09:38:27 +0200

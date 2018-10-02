@@ -1,0 +1,32 @@
+Source: taskscheduler
+Section: admin
+Priority: optional
+Maintainer: Equipo LliureX <lliurex@gva.es>
+Uploaders: M.Angel Juan <m.angel.juan@gmail.com>, Raul Rodrigo Segura <lliurex_devel3@edu.gva.es>, Hector Garcia Huerta <lliurex_devel1@edu.gva.es>, Daniel Duran Vecino <daduve@gmail.com>, Juanma Navarro <juanma1980@gmail.com>
+Build-Depends: llxsrchelper,debhelper (>= 7.0),python3-all, llxcfg-dev, python3-setuptools
+Standards-Version: 3.9.5
+
+Package: python3-taskscheduler
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends} 
+Description: Python libraries for taskscheduler
+
+Package: taskscheduler
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3-taskscheduler (= ${binary:Version}),python3-n4dgtklogin (>=0.4),n4d-taskscheduler-client (= ${binary:Version}), taskscheduler-data (= ${binary:Version})
+Description: Main taskschedular program
+
+Package: n4d-taskscheduler-server
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: Server side of taskscheduler
+
+Package: n4d-taskscheduler-client
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends},n4d-taskscheduler-server
+Description: client side of taskscheduler
+
+Package: taskscheduler-data
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: Taskschedular data files
