@@ -697,26 +697,26 @@ class TaskScheduler:
 
 		#BLUE_FONT {
 			color: #3366cc;
-			font: Roboto Bold 11;
+			font: 12px Roboto Bold;
 			
 		}	
 		
 
 		#TASKGRID_FONT {
 			color: #3366cc;
-			font: Roboto 11;
+			font: 12px Roboto;
 			
 		}
 
 		#LABEL_OPTION{
 		
 			color: #808080;
-			font: Roboto 11;
+			font: 12px Roboto;
 		}
 
 		#ERROR_FONT {
 			color: #CC0000;
-			font: Roboto Bold 11; 
+			font: 12px Roboto Bold; 
 		}
 		"""
 		self.style_provider=Gtk.CssProvider()
