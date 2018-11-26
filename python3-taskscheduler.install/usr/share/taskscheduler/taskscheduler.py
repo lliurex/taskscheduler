@@ -175,9 +175,10 @@ class TaskScheduler():
 	
 	def add_command(self,task,cmd,cmd_desc):
 		if self.n4dserver:
-			self.n4dserver.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
+			ret=self.n4dserver.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
 		else:
-			self.n4dclient.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
+			ret=self.n4dclient.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
+		return(ret['status'])
 
 	def add_command2(self,cmd_name,cmd):
 		if self.n4dserver:

@@ -236,12 +236,9 @@ class SchedulerServer():
 		self._register_cron_update()
 		self._debug("%s updated" % task_name)
 		return({'status':status,'data':msg})
-
-		return({'status':status,'data':msg})
 	#def write_tasks
 
 	def _fill_task_data(self,task):
-		print("Fill: %s"%str(task))
 		task['kind']=[]
 		if ['spread'] not in task.keys():
 			task['spread']=False
@@ -271,8 +268,13 @@ class SchedulerServer():
 			tasks[task].update({cmd_desc:cmd})
 		else:
 			tasks.update({task:{cmd_desc:cmd}})
-		with open(wrkfile,'w') as json_data:
-			json.dump(tasks,json_data,indent=4)
+		try:
+			with open(wrkfile,'w') as json_data:
+				json.dump(tasks,json_data,indent=4)
+		except Exception as e:
+			status=False
+			msg=str(e)
+		return({'status':status,'data':msg})
 	#def add_command
 
 	def _register_cron_update(self):
