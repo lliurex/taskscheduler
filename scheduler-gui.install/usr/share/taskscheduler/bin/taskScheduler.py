@@ -426,8 +426,9 @@ class TaskScheduler:
 		hour_box.add(lbl_time)
 		dow="%s"%(info['dow'])
 		days_array=[_('Mo'),_('Tu'),_('We'),_('Th'),_('Fr'),_('Sa'),_('Su')]
+		month_array=[_('Jan'),_('Feb'),_('Mar'),_('Apr'),_('May'),_('Jun'),_('Jul'),_('Aug'),_('Sep'),_('Oct'),_('Nov'),_('Dec')]
 		if (dow!='*'):
-			(month,day,repeat)=self._format_date(info['mon'],info['dom'])
+			(month,day,f_date,repeat_date)=self._format_date(info['mon'],info['dom'])
 			try:
 				dow=int(dow)-1
 				days_array[dow]='<span color="orange">%s</span>'%days_array[dow]
@@ -438,49 +439,86 @@ class TaskScheduler:
 						dow_int=int(dow_str)-1
 						if dow_int<=len(days_array):
 							days_array[dow_int]='<span color="orange">%s</span>'%days_array[dow_int]
-			f_date=' '.join(days_array)
-			lbl_date=Gtk.Label()
-			lbl_date.set_markup(f_date)
-			dow_box.add(lbl_date)
+			d_date=' '.join(days_array)
+			lbl_dow=Gtk.Label()
+			lbl_dow.set_markup(d_date)
+			dow_box.add(lbl_dow)
 			dow_box.set_name("DOW_BOX")
 			if repeat_time:
-				f_time='<span font="12px"><sup>Each </sup></span>%s'%f_time
+				f_time=_('<span font="12px"><sup>Each </sup></span>%s')%f_time
 			lbl_time.set_markup(f_time)
-			hour_box.set_halign(Gtk.Align.CENTER)
+			add_date=True
+			lbl_date=Gtk.Label()
+			if repeat_date:
+				if (month.replace(' ','')!='*' or day!='*'):
+					f_date=_('<span font="12px">Each\n</span>%s')%f_date
+#				else:
+#					date_box.set_halign(Gtk.Align.CENTER)
+#					f_date=_('<span font="12px"><sup>Each </sup></span>%s')%f_date
+#				date_box.set_halign(Gtk.Align.CENTER)
+					lbl_date.set_markup(f_date)
+					date_box.add(lbl_date)
+				else:
+					hour_box.set_halign(Gtk.Align.CENTER)
+					add_date=False
+			else:
+				lbl_mon.set_name("DATE_BOX_HEADER")
+				lbl_day=Gtk.Label(day)
+				date_box.add(lbl_mon)
+				date_box.add(lbl_day)
 			hbox_task.add(hour_box)
-			if (month.replace(' ','')!='*' or day!='*'):
+			if add_date:
+				date_box.set_name("DATE_BOX")
+				hbox_task.add(date_box)
+			vbox_task.add(hbox_task)
+			vbox_task.add(dow_box)
+		else:
+#			(month,day,repeat_date)=self._format_date(info['mon'],info['dom'])
+			(month,day,f_date,repeat_date)=self._format_date(info['mon'],info['dom'])
+			if month.isdigit():
+				print(month)
+				lbl_mon=Gtk.Label(month_array[int(month)-1])
+			else:
 				lbl_mon=Gtk.Label(month)
+			lbl_mon.set_name("DATE_BOX_HEADER")
+			lbl_day=Gtk.Label(day)
+			lbl_date=Gtk.Label()
+			date_box.set_name("DATE_BOX")
+			hour_box.set_halign(Gtk.Align.START)
+			hour_box.set_valign(Gtk.Align.CENTER)
+			if repeat_time:
+				hour_box.set_halign(Gtk.Align.CENTER)
+				if (month.replace(' ','')!='*' or day!='*'):
+					f_time=_('<span font="12px">Each\n</span>%s')%f_time
+				else:
+					hour_box.set_halign(Gtk.Align.CENTER)
+					f_time=_('<span font="12px"><sup>Each </sup></span>%s')%f_time
+			lbl_time.set_markup(f_time)
+			add_date=True
+			if repeat_date:
+				if (month.replace(' ','')!='*' or day!='*'):
+					f_date=_('<span font="12px">Each\n</span>%s')%f_date
+#				else:
+#					date_box.set_halign(Gtk.Align.CENTER)
+#					f_date=_('<span font="12px"><sup>Each </sup></span>%s')%f_date
+#				date_box.set_halign(Gtk.Align.CENTER)
+					lbl_date.set_markup(f_date)
+					date_box.add(lbl_date)
+				else:
+					hour_box.set_halign(Gtk.Align.CENTER)
+					add_date=False
+			else:
 				lbl_mon.set_name("DATE_BOX_HEADER")
 				lbl_day=Gtk.Label(day)
 				date_box.set_name("DATE_BOX")
 				date_box.add(lbl_mon)
 				date_box.add(lbl_day)
-
-			hbox_task.add(date_box)
-			vbox_task.add(hbox_task)
-			vbox_task.add(dow_box)
-		else:
-			(month,day,repeat_date)=self._format_date(info['mon'],info['dom'])
-			lbl_mon=Gtk.Label(month)
-			lbl_mon.set_name("DATE_BOX_HEADER")
-			lbl_day=Gtk.Label(day)
-			date_box.set_name("DATE_BOX")
-			date_box.add(lbl_mon)
-			date_box.add(lbl_day)
-			hour_box.set_halign(Gtk.Align.START)
-			hour_box.set_valign(Gtk.Align.CENTER)
-			if repeat_time:
-				if (month.replace(' ','')!='*' or day!='*'):
-					f_time='<span font="12px">Each\n</span>%s'%f_time
-				else:
-					hour_box.set_halign(Gtk.Align.CENTER)
-					f_time='<span font="12px"><sup>Each </sup></span>%s'%f_time
-			lbl_time.set_markup(f_time)
 			hbox_task.add(hour_box)
-			if (month.replace(' ','')!='*' or day!='*'):
+			if add_date:
 				hbox_task.add(date_box)
-			else:
-				hour_box.set_halign(Gtk.Align.CENTER)
+
+
+
 			vbox_task.add(hbox_task)
 		btn_task.add(vbox_task)
 		btn_task.connect("clicked",self._edit_task,task_type,group,index,info)
@@ -524,17 +562,39 @@ class TaskScheduler:
 	#def _format_time
 
 	def _format_date(self,mon,dom):
-		repeat=False
-		mon_array=[_('Jan'),_('Feb'),_('Mar'),_('Apr'),_('May'),_('Jun'),_('Jul'),_('Aug'),_('Sep'),_('Oct'),_('Nov'),_('Dec')]
-		if mon!='*':
-			mon=mon_array[int(mon)-1]
-		else:
-			mon=' * '
+		(repeat,repeat_mon,repeat_dom)=(False,False,False)
+		f_date=''
+		mon=self._format_time_unit(mon)
 		dom=self._format_time_unit(dom)
-		if mon=='*' or dom=='*':
+		repeat=False
+		if ('*' in dom or '*' in mon):
+			if mon=='*':
+					#				mon="1"
+				repeat_mon=True
+			else:
+					#				dom='1'
+				repeat_dom=True
+				repeat_mon=False
+		if ('/' in mon or '/' in dom):
+			if '/' in mon:
+				mon=mon.split('/')[-1]
+				repeat_mon=True
+			else:
+				dom=dom.split('/')[-1]
+				repeat_dom=True
+				repeat_mon=False
+		if repeat_mon:
 			repeat=True
-
-		return(mon,dom,repeat)
+#			if dom!='00':
+#				f_date=(_('%s<span font="10px">m. </span><span font="12px"><sup>at</sup> </span>%s<span font="10px">d.</span>'%(mon,dom)))
+#			else:
+			f_date=(_('%s<span font="10px">m.</span>'%(mon)))
+		elif repeat_dom:
+			repeat=True
+			f_date=(_('%s<span font="10px">d.</span>'%(dom)))
+		else:
+			f_date="%s/%s"%(mon,dom)
+		return(mon,dom,f_date,repeat)
 	#def _format_date
 
 	def _format_time_unit(self,unit):
