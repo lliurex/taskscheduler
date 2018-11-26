@@ -26,7 +26,7 @@ _ = gettext.gettext
 
 
 WIDGET_MARGIN=6
-DBG=0
+DBG=1
 
 class DetailBox:
 	
@@ -61,7 +61,10 @@ class DetailBox:
 		self.task['spread']=''
 		self.task.update(task)
 		if 'kind' in task.keys():
-			self.task['kind']=task['kind'].split(',')
+			if type(task['kind'])==type(''):
+				self.task['kind']=task['kind'].split(',')
+			else:
+				self.task['kind']=task['kind']
 		else:
 			self.task['kind']=''
 		if 'data' in task.keys():
@@ -168,7 +171,7 @@ class DetailBox:
 		widget.set_active(0)
 	#def _load_date_time_data
 
-	def render_form(self,gtkGrid,**kwargs):
+	def render_form(self,gtkGrid=None,**kwargs):
 		if 'expert' in kwargs.keys():
 			expert=kwargs['expert']
 		else:
@@ -181,12 +184,14 @@ class DetailBox:
 			edit=kwargs['edit']
 		else:
 			edit=False
+		if not gtkGrid:
+			gtkGrid=Gtk.Grid()
 		self.notebook=Gtk.Stack()
 		self.chk_daily=Gtk.CheckButton(_("Select days"))
 		self.chk_monday=Gtk.ToggleButton(_("Monday"))
-		self.chk_thursday=Gtk.ToggleButton(_("Tuesday"))
+		self.chk_tuesday=Gtk.ToggleButton(_("Tuesday"))
 		self.chk_wednesday=Gtk.ToggleButton(_("Wednesday"))
-		self.chk_tuesday=Gtk.ToggleButton(_("Thursday"))
+		self.chk_thursday=Gtk.ToggleButton(_("Thursday"))
 		self.chk_friday=Gtk.ToggleButton(_("Friday"))
 		self.chk_saturday=Gtk.ToggleButton(_("Saturday"))
 		self.chk_sunday=Gtk.ToggleButton(_("Sunday"))
@@ -358,9 +363,9 @@ class DetailBox:
 		self.chk_daily.connect("toggled",self._set_daily_visibility,dow_frame)
 		self.chk_interval.connect("toggled",self._set_visibility,self.interval_box)
 		self.chk_monday.connect("toggled",self._enable_fixed_dates,interval_handler)
-		self.chk_thursday.connect("toggled",self._enable_fixed_dates,interval_handler)
-		self.chk_wednesday.connect("toggled",self._enable_fixed_dates,interval_handler)
 		self.chk_tuesday.connect("toggled",self._enable_fixed_dates,interval_handler)
+		self.chk_wednesday.connect("toggled",self._enable_fixed_dates,interval_handler)
+		self.chk_thursday.connect("toggled",self._enable_fixed_dates,interval_handler)
 		self.chk_friday.connect("toggled",self._enable_fixed_dates,interval_handler)
 		self.chk_saturday.connect("toggled",self._enable_fixed_dates,interval_handler)
 		self.chk_sunday.connect("toggled",self._enable_fixed_dates,interval_handler)
@@ -388,9 +393,9 @@ class DetailBox:
 		self._set_visibility(widget_event,widget,*args)
 		if widget_event.get_active()==False:
 			widgets=[self.chk_monday,
-				self.chk_thursday,
-				self.chk_wednesday,
 				self.chk_tuesday,
+				self.chk_wednesday,
+				self.chk_thursday,
 				self.chk_friday,
 				self.chk_saturday,
 				self.chk_sunday]
@@ -447,7 +452,7 @@ class DetailBox:
 		#Load calendar
 		if self.task['dom'].isdigit() and self.task['mon'].isdigit():
 				self.notebook.set_visible_child_name(_("By date"))
-				self.calendar.select_month(int(self.task['mon']),date.today().year)
+				self.calendar.select_month(int(self.task['mon'])-1,date.today().year)
 				self.calendar.select_day(int(self.task['dom']))
 		widget_dict={'0':self.chk_sunday,'1':self.chk_monday,'2':self.chk_tuesday,\
 					'3':self.chk_wednesday,'4':self.chk_thursday,'5':self.chk_friday,\
@@ -499,7 +504,7 @@ class DetailBox:
 	#def _parse_date_details
 
 	def clear_screen(self):
-		widgets=[self.chk_monday,self.chk_thursday,self.chk_wednesday,self.chk_tuesday,\
+		widgets=[self.chk_monday,self.chk_tuesday,self.chk_wednesday,self.chk_thursday,\
 				self.chk_friday,self.chk_saturday,self.chk_sunday]
 		for widget in widgets:
 			widget.set_active(False)
@@ -563,9 +568,9 @@ class DetailBox:
 	def _get_days_active(self):
 		sw_active=False
 		widgets=[self.chk_monday,
-				self.chk_thursday,
-				self.chk_wednesday,
 				self.chk_tuesday,
+				self.chk_wednesday,
+				self.chk_thursday,
 				self.chk_friday,
 				self.chk_saturday,
 				self.chk_sunday]
@@ -595,9 +600,9 @@ class DetailBox:
 		if self.chk_special_dates.get_active():
 			state=False
 		widgets=[self.chk_monday,
-				self.chk_thursday,
-				self.chk_wednesday,
 				self.chk_tuesday,
+				self.chk_wednesday,
+				self.chk_thursday,
 				self.chk_friday,
 				self.chk_saturday,
 				self.chk_sunday]
@@ -624,7 +629,7 @@ class DetailBox:
 			details["mon"]=str(date.month+1)
 			details["dom"]=str(date.day)
 		else:
-			widgets=[self.chk_monday,self.chk_thursday,	self.chk_wednesday,	self.chk_tuesday,\
+			widgets=[self.chk_monday,self.chk_tuesday,	self.chk_wednesday,	self.chk_thursday,\
 				self.chk_friday,self.chk_saturday,self.chk_sunday]
 			cont=1
 			for widget in widgets:
