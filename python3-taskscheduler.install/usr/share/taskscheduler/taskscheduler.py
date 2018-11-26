@@ -2,10 +2,13 @@
 ###
 #
 ###
-
 import os
 import json
 import sys
+import collections
+import datetime
+from operator import itemgetter
+
 try:
 	import xmlrpc.client as n4d
 except ImportError:
@@ -64,12 +67,67 @@ class TaskScheduler():
 					if key in tasks.keys():
 						tasks[key].update(data)
 					else:
-						tasks[key]=data
+						tasks.update({key:data})
 
 			else:
 				tasks.update(result.copy())
+		tasks=self._sort_tasks(tasks)
 		return tasks
 	#def get_scheduled_tasks
+
+	def _sort_tasks(self,tasks):
+		timestamp=int(datetime.datetime.now().timestamp())
+		timenow=datetime.datetime.now()
+		sorted_tasks=collections.OrderedDict()
+		sorted_indexes={}
+		for task_type,index_task in tasks.items():
+			for index,task in index_task.items():
+				sw_allm=False
+				sw_alld=False
+				if  not task['mon'].isdigit():
+					mon=timenow.month
+					sw_allm=True
+				else:
+					mon=int(task['mon'])
+				if not task['dom'].isdigit():
+					dom=timenow.day
+					sw_alld=True
+				else:
+					dom=int(task['dom'])
+				if not task['h'].isdigit():
+					h=timenow.hour
+				else:
+					h=int(task['h'])
+				if not task['m'].isdigit():
+					m=timenow.minute
+				else:
+					m=int(task['m'])
+				time_task=int(datetime.datetime(timenow.year,mon,dom,h,m).timestamp())
+				val=time_task-timestamp
+				if val<0:
+					if sw_alld:
+						val=time_task+(24*60*60)-timestamp
+					elif sw_allm:
+						mon+=1
+						year=timenow.year
+						if mon>12:
+							mon=1
+							year=timenow.year+1
+						time_task=int(datetime.datetime(year,mon,dom,h,m).timestamp())
+						val=time_task-timestamp
+					else:
+						time_task=int(datetime.datetime(timenow.year+1,mon,dom,h,m).timestamp())
+						val=time_task-timestamp
+				sorted_indexes.update({"%s||%s"%(task_type,index):val})
+			
+		for t_index,value in sorted(sorted_indexes.items(),key=itemgetter(1)):
+			(name,index)=t_index.split('||')
+#				if t_index in sorted_tasks.keys():
+#					sorted_tasks[t_index]=tasks[name][index].copy()
+#				else:
+			tasks[name][index].update({'val':value})
+			sorted_tasks.update({t_index:tasks[name][index]})
+		return (sorted_tasks)
 
 	def get_task_description(self,i18n_desc):
 		desc=i18n_desc
@@ -114,8 +172,15 @@ class TaskScheduler():
 				wrkfiles.append(wrkdir+'/'+f)
 		return wrkfiles
 	#def _get_wrkfiles
+	
+	def add_command(self,task,cmd,cmd_desc):
+		if self.n4dserver:
+			ret=self.n4dserver.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
+		else:
+			ret=self.n4dclient.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
+		return(ret['status'])
 
-	def add_command(self,cmd_name,cmd):
+	def add_command2(self,cmd_name,cmd):
 		if self.n4dserver:
 			self.n4dserver.add_command(self.credentials,"SchedulerServer",cmd_name,cmd)
 		else:
@@ -140,15 +205,6 @@ class TaskScheduler():
 		return cmd
 	#def get_command_cmd
 
-	def write_custom_task(self,cmd_name,cmd,parms):
-		status=False
-		n4d_server=self.n4dserver
-		result=n4d_server.write_custom_task(self.credentials,"SchedulerServer",cmd_name,cmd,parms)
-		if type(result)==type({}):
-			status=result['status']
-		return status
-	#def write_custom_task
-
 	def _read_tasks_file(self,wrkfile):
 		self._debug("Opening %s" % wrkfile)
 		tasks=None
@@ -161,7 +217,16 @@ class TaskScheduler():
 		return(tasks)
 	#def _read_tasks_file
 
-	def write_tasks(self,tasks,sw_remote):
+	def write_tasks(self,tasks):
+		status=False
+		self._debug("Sending task info to server")
+		result=self.n4dserver.write_tasks(self.credentials,"SchedulerServer",tasks)
+		if type(result)==type({}):
+			(status,msg)=(result['status'],result['data'])
+		return (status,msg)
+	#def write_tasks
+
+	def write_tasks2(self,tasks,sw_remote):
 		status=False
 		self._debug("Sending task info to %s server"%sw_remote)
 		if sw_remote=='remote':

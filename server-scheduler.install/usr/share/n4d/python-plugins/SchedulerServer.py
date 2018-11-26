@@ -152,6 +152,7 @@ class SchedulerServer():
 		wrkfile=wrkfile.replace(' ','_')
 		tasks=self._read_tasks_file(wrkfile)
 		if task['name'] in tasks.keys():
+			self._debug("Serial: %s"%task['serial'])
 			if task['serial'] in tasks[task['name']].keys():
 				del tasks[task['name']][task['serial']]
 				self._debug("Task deleted")
@@ -183,66 +184,55 @@ class SchedulerServer():
 				cont+=1
 		return(serial_task)
 	#def _serialize_task
-
-	def write_tasks(self,task_type,tasks):
-		wrk_dir=self.tasks_dir
-		self._debug("Writing task info")
+	
+	def write_tasks(self,task):
 		msg=''
-		status=True
-		task_name=list(tasks.keys())[0]
-		task_serial=list(tasks[task_name].keys())[0]
-		task_data=tasks[task_name][task_serial]
-		del tasks[task_name][task_serial]
-		task_serial=task_serial.strip("r")
-		tasks[task_name]={task_serial:task_data}
-		self._debug(tasks)
-		serialized_task={}
-		sched_tasks={}
-		if not os.path.isdir(wrk_dir):
-			os.makedirs(wrk_dir)
-
-		wrkfile=wrk_dir+'/'+task_name
+		status=False
+		#Ensure that dest path exists
+		if not os.path.isdir(self.tasks_dir):
+			os.makedirs(self.tasks_dir)
+		#Retrieve task data
+		for name,serial in task.iteritems():
+			task_name=name
+			for index,data in serial.iteritems():
+				task_serial=index
+				task_data=data
+		#Open dest file
+		wrkfile=self.tasks_dir+'/'+task_name
 		wrkfile=wrkfile.replace(' ','_')
+		task_data=self._fill_task_data(task_data)
+		sched_tasks={}
 		if os.path.isfile(wrkfile):
 			sched_tasks=json.loads(open(wrkfile).read())
-			serial=len(sched_tasks[task_name])
-			data=self._fill_task_data(tasks[task_name][task_serial])
-			tasks[task_name][task_serial]=data
-			if task_type=='local':
-				tasks[task_name][task_serial].update({'spread':False})
-			elif task_type=="remote":
-				tasks[task_name][task_serial].update({'spread':True})
-
-			if task_serial in sched_tasks[task_name].keys():
-				#Modify
-				self._debug("Modify item %s" % serial)
-				sched_tasks[task_name][task_serial]=tasks[task_name][task_serial]
-			else:
-				#Add
-				self._debug("Add item %s" % serial)
-				serialized_data={}
-				data=self._fill_task_data(tasks[task_name][task_serial])
-				tasks[task_name][task_serial]=data
-				self._fill_task_data(tasks[task_name][task_serial])
-				serialized_data[serial+1]=tasks[task_name][task_serial]
-				sched_tasks[task_name].update(serialized_data)
+			if not task_serial:
+				serials=[str(i) for i in sched_tasks[task_name].keys()]
+				self._debug("Serials %s"%serials)
+				task_serial="0"
+				if task_name in sched_tasks.keys():
+					for ser in range(len(sched_tasks[task_name])+1):
+						if not str(ser) in serials:
+							task_serial=str(ser)
+							self._debug("New serial %s"%task_serial)
+							break
 		else:
-			self._debug("Add new item 1 to %s"%wrkfile)
-			data=self._fill_task_data(tasks[task_name]["0"])
-			tasks[task_name]["0"]=data
-			if task_type=='local':
-				tasks[task_name]["0"].update({'spread':False})
-			elif task_type=="remote":
-				tasks[task_name]["0"].update({'spread':True})
-			tasks[task_name]={"1":tasks[task_name]["0"]}
-			sched_tasks=tasks.copy()
-
+			self._debug("%s doen't exists"%wrkfile)
+			task_serial="0"
+		self._debug("Writing task info %s - %s"%(task_name,task_serial))
+		if task_name in sched_tasks.keys():
+			if task_serial in sched_tasks[task_name].keys():
+				sched_tasks[task_name][task_serial].update(task_data)
+			else:
+				sched_tasks[task_name].update({task_serial:task_data})
+		else:
+			sched_tasks.update({task_name:{task_serial:task_data}})
+		
 		try:
 			with open(wrkfile,'w') as json_data:
 				json.dump(sched_tasks,json_data,indent=4)
+			status=True
+			msg=task_serial
 		except Exception as e:
 			msg=e
-			status=False
 		self._register_cron_update()
 		self._debug("%s updated" % task_name)
 		return({'status':status,'data':msg})
@@ -266,45 +256,25 @@ class SchedulerServer():
 				task['kind'].append('repeat')
 		return task
 
-	def write_tasks_old(self,tasks):
-		pass
-	#def write_tasks
-
-	def write_custom_task(self,cmd_name,cmd,parms):
+	def add_command(self,task,cmd,cmd_desc):
+		self._debug("Adding command %s - %s - %s"%(task,cmd,cmd_desc))
+		tasks={}
 		status=True
 		msg=''
-		tasks={}
-		new_task={}
-		if os.path.isfile(self.custom_tasks):
-			tasks=json.loads(open(self.custom_tasks).read())
-			if not 'Personal' in tasks.keys():
-				tasks['Personal']={}
+		wrkfile="%s/%s.json"%(self.available_tasks_dir,task)
+		if os.path.isfile(wrkfile):
+			tasks=json.loads(open(wrkfile).read())
+		if task in tasks.keys():
+			tasks[task].update({cmd_desc:cmd})
 		else:
-			tasks['Personal']={}
-		if '%s' in cmd:
-			cmd=cmd.replace('%s','')
-			new_task[cmd_name]=cmd+" '"+parms+"'"
-		else:
-			new_task[cmd_name]=cmd+' '+parms
-		tasks['Personal'].update(new_task)
+			tasks.update({task:{cmd_desc:cmd}})
 		try:
-			with open(self.custom_tasks,'w') as json_data:
+			with open(wrkfile,'w') as json_data:
 				json.dump(tasks,json_data,indent=4)
 		except Exception as e:
 			status=False
-			msg=e
+			msg=str(e)
 		return({'status':status,'data':msg})
-	#def write_custom_task
-
-	def add_command(self,cmd_name,cmd):
-		self._debug("Adding command %s - %s"%(cmd_name,cmd))
-		commands={}
-		dict_cmd={cmd_name:cmd}
-		if os.path.isfile(self.commands_file):
-			commands=json.loads(open(self.commands_file,"rb").read())
-		commands.update(dict_cmd)
-		with open(self.commands_file,'w') as json_data:
-			json.dump(commands,json_data,indent=4)
 	#def add_command
 
 	def _register_cron_update(self):
