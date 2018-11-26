@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-19 13:02+0100\n"
-"PO-Revision-Date: 2018-02-19 13:04+0100\n"
+"POT-Creation-Date: 2018-11-26 13:31+0100\n"
+"PO-Revision-Date: 2018-11-26 13:36+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../scheduler-gui.install/usr/share/taskscheduler/rsrc/taskScheduler.ui:38
@@ -31,13 +31,15 @@ msgid "Select available tasks"
 msgstr "Selecciona tareas disponibles"
 
 #: ../scheduler-gui.install/usr/share/taskscheduler/rsrc/taskScheduler.ui:67
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:218
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:266
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:320
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:626
 msgid "Command"
 msgstr "Acción"
 
 #: ../scheduler-gui.install/usr/share/taskscheduler/rsrc/taskScheduler.ui:182
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:270
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:323
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:575
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:634
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -54,6 +56,7 @@ msgid "Reload tasks"
 msgstr "Refrescar las tareas"
 
 #: ../scheduler-gui.install/usr/share/taskscheduler/rsrc/taskScheduler.ui:285
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:184
 msgid "Manage custom commands"
 msgstr "Gestionar comandos personalizados"
 
@@ -88,11 +91,7 @@ msgstr "ver las tareas locales"
 msgid "Show local tasks"
 msgstr "Ver tareas locales"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:61
-msgid "There's another instance of Task Scheduler running."
-msgstr "Hay otra instancia del programador de tareas en ejecución"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:85
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:154
 msgid ""
 "Welcome to the Task Scheduler for Lliurex.\n"
 "From here you can:\n"
@@ -106,98 +105,190 @@ msgstr ""
 "*Distribuir tareas a todos los ordenadores de la red\n"
 "*Consultar las tareas programadas</sub>"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:86
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:155
 msgid "Task Scheduler"
 msgstr "Programador de Tareas"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:172
-msgid "Task"
-msgstr "Tarea"
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:182
+msgid "Add custom command"
+msgstr "Añadir comando"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:181
-msgid "Serial"
-msgstr "Serial"
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:185
+msgid "Manage task groups"
+msgstr "Gestionar grupos"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:191
-msgid "When"
-msgstr "Cuando"
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:187
+msgid "Refresh tasks list"
+msgstr "Actualizar tareas"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:201
-msgid "Edit"
-msgstr "Editar"
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:195
+msgid "Help"
+msgstr "Ayuda"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:210
-msgid "Remove"
-msgstr "Eliminar"
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:197
+msgid "About taskscheduler"
+msgstr "Acerca de..."
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:226
-msgid "Type"
-msgstr "Tipo"
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:209
+msgid "Open preferences menu"
+msgstr "Menú de preferencias"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:257
-msgid "A descriptive name for the command"
-msgstr "Un nombre descriptivo para el comando"
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:213
+msgid "Open help menu"
+msgstr "Menú de ayuda"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:258
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:259
-msgid "Task name"
-msgstr "Nombre de la tarea"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:271
-msgid "Needs a file"
-msgstr "Necesita fichero"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:272
-msgid "Mark if the command will launch a file"
-msgstr "Selecciona si el comando lanza un fichero"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:274
-msgid "Select the file that will be launched"
-msgstr "Selecciona el fichero a lanzar"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:277
-msgid "Needed arguments"
-msgstr "Argumentos requeridos"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:278
-msgid "Put here the arguments for the command (if any)"
-msgstr "Escribe aquí los argumentos para el comando (si los hay)"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:279
-msgid "Arguments"
-msgstr "Argumentos"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:317
-msgid "Action name"
-msgstr "Nombre de la tarea"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:323
-msgid "Choose a command"
-msgstr "Selecciona un comando"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:364
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:560
-msgid "Task saved"
-msgstr "Tarea guardada"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:366
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:562
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:619
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:663
-msgid "Permission denied"
-msgstr "Permiso denegado"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:457
-msgid "client task"
-msgstr "tarea para clientes"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:508
-msgid "Are you sure to delete this task?"
-msgstr "¿Desea borrar esta tarea?"
-
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:237
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:297
 #: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:616
-msgid "Task updated"
-msgstr "Tarea actualizada"
+#, fuzzy
+#| msgid "Task Group"
+msgid "Task group"
+msgstr "Tipo de tarea"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:248
+msgid "Pick color for group"
+msgstr "Seleccione un color para el grupo"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:267
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:320
+msgid "Add command"
+msgstr "Añadir comando"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:335
+msgid "Add new task"
+msgstr "Añadir tarea"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:401
+#, python-format
+msgid ""
+"%s\n"
+"%s\n"
+"Launch in: %s"
+msgstr ""
+"%s\n"
+"%s\n"
+"Ejecución en: %s"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:428
+msgid "Mo"
+msgstr "Lu"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:428
+msgid "Tu"
+msgstr "Ma"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:428
+msgid "We"
+msgstr "Mi"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:428
+msgid "Th"
+msgstr "Ju"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:428
+msgid "Fr"
+msgstr "Vi"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:428
+msgid "Sa"
+msgstr "Sa"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:428
+msgid "Su"
+msgstr "Do"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:515
+#, python-format
+msgid ""
+"%s<span font=\"10px\">h. </span><span font=\"12px\"><sup>at</sup> </span>"
+"%s<span font=\"10px\">m.</span>"
+msgstr ""
+"%s<span font=\"10px\">h. </span><span font=\"12px\"><sup>en  ek</sup> </span>"
+"%s<span font=\"10px\">m.</span>"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:517
+#, python-format
+msgid "%s<span font=\"10px\">h.</span>"
+msgstr "%s<span font=\"10px\">h.</span>"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:520
+#, python-format
+msgid "%s<span font=\"10px\">m.</span>"
+msgstr "%s<span font=\"10px\">m.</span>"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:35
+msgid "Jan"
+msgstr "Ene"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:35
+msgid "Feb"
+msgstr "Feb"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:35
+msgid "Mar"
+msgstr "Mar"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:35
+msgid "Apr"
+msgstr "Abr"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:35
+msgid "May"
+msgstr "Mayo"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:36
+msgid "Jun"
+msgstr "Jun"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:36
+msgid "Jul"
+msgstr "Jul"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:36
+msgid "Aug"
+msgstr "Ago"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:36
+msgid "Sep"
+msgstr "Sep"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:36
+msgid "Oct"
+msgstr "Oct"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:37
+msgid "Nov"
+msgstr "Nov"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:528
+#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:37
+msgid "Dec"
+msgstr "Dic"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:570
+msgid "Delete task"
+msgstr "Borrar tarea"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:572
+msgid "Save task"
+msgstr "Guardar tarea"
+
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py:631
+#, fuzzy
+#| msgid "Add a task"
+msgid "Add task"
+msgstr "Añadir una tarea"
 
 #: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:8
 msgid "of"
@@ -341,172 +432,124 @@ msgstr "Sab"
 msgid "Sun"
 msgstr "Dom"
 
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:35
-msgid "Jan"
-msgstr "Ene"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:35
-msgid "Feb"
-msgstr "Feb"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:35
-msgid "Mar"
-msgstr "Mar"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:35
-msgid "Apr"
-msgstr "Abr"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:35
-msgid "May"
-msgstr "Mayo"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:36
-msgid "Jun"
-msgstr "Jun"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:36
-msgid "Jul"
-msgstr "Jul"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:36
-msgid "Aug"
-msgstr "Ago"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:36
-msgid "Sep"
-msgstr "Sep"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:36
-msgid "Oct"
-msgstr "Oct"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:37
-msgid "Nov"
-msgstr "Nov"
-
-#: ../python3-taskscheduler.install/usr/share/taskscheduler/cronParser.py:37
-msgid "Dec"
-msgstr "Dic"
-
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:122
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:524
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:641
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:125
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:529
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:646
 msgid "minute(s)"
 msgstr "minuto(s)"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:122
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:524
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:643
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:125
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:529
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:648
 msgid "hour(s)"
 msgstr "hora(s)"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:122
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:527
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:645
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:125
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:532
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:650
 msgid "day(s)"
 msgstr "día(s)"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:122
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:527
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:647
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:125
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:532
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:652
 msgid "week(s)"
 msgstr "semana(s)"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:122
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:530
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:650
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:125
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:535
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:655
 msgid "month(s)"
 msgstr "mes(es)"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:129
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:204
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:132
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:209
 msgid "Last month day"
 msgstr "Último día de mes"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:129
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:132
 msgid "First month day"
 msgstr "Primer día de mes"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:149
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:152
 msgid "All months"
 msgstr "Todos los meses"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:155
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:158
 msgid "All days"
 msgstr "Todos los días"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:185
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:190
 msgid "Select days"
 msgstr "Selección de días:"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:186
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:191
 msgid "Monday"
 msgstr "Lunes"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:187
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:192
 msgid "Tuesday"
 msgstr "Jueves"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:188
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:193
 msgid "Wednesday"
 msgstr "Miércoles"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:189
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:194
 msgid "Thursday"
 msgstr "Martes"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:190
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:195
 msgid "Friday"
 msgstr "Viernes"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:191
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:196
 msgid "Saturday"
 msgstr "Sábado"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:192
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:197
 msgid "Sunday"
 msgstr "Domingo"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:193
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:198
 msgid "Daily"
 msgstr "Diariamente"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:194
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:199
 msgid "Hourly"
 msgstr "Cada hora"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:195
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:200
 msgid "Weekly"
 msgstr "Semanalmente"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:196
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:201
 msgid "Repeat"
 msgstr "Repetir"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:277
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:282
 msgid "By day"
 msgstr "Por dia"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:278
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:449
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:621
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:283
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:454
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:626
 msgid "By date"
 msgstr "Por fecha"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:290
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:295
 msgid "Each"
 msgstr "Cada"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:304
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:309
 msgid "Time"
 msgstr "hora"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:310
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:315
 msgid "Send task to clients"
 msgstr "Programar en los clientes"
 
-#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:341
+#: ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py:346
 msgid "Tasks will take day 1 of month 1 at 00:00 as reference date/time"
 msgstr ""
 "Las tareas toman el día 1 del mes 1 a las 00:00 como referencia para la fecha"
@@ -519,20 +562,83 @@ msgstr "Reproducir sonido"
 msgid "Reminder"
 msgstr "Recordatorio"
 
-#: ../files.install/etc/scheduler/conf.d/tasks/tasks.json:2
+#: ../files.install/etc/scheduler/conf.d/tasks/Maintenance.json:2
 msgid "Maintenance"
 msgstr "Mantenimiento"
 
-#: ../files.install/etc/scheduler/conf.d/tasks/tasks.json:4
+#: ../files.install/etc/scheduler/conf.d/tasks/Maintenance.json:4
 msgid "Update mirror"
 msgstr "Actualizar mirror"
 
-#: ../files.install/etc/scheduler/conf.d/tasks/tasks.json:5
+#: ../files.install/etc/scheduler/conf.d/tasks/Maintenance.json:5
 msgid "Update Lliurex"
 msgstr "Actualizar Lliurex"
 
-#~ msgid "Remote task"
-#~ msgstr "Tarea remota"
+#~ msgid "There's another instance of Task Scheduler running."
+#~ msgstr "Hay otra instancia del programador de tareas en ejecución"
+
+#~ msgid "Task"
+#~ msgstr "Tarea"
+
+#~ msgid "Serial"
+#~ msgstr "Serial"
+
+#~ msgid "When"
+#~ msgstr "Cuando"
+
+#~ msgid "Edit"
+#~ msgstr "Editar"
+
+#~ msgid "Remove"
+#~ msgstr "Eliminar"
+
+#~ msgid "Type"
+#~ msgstr "Tipo"
+
+#~ msgid "A descriptive name for the command"
+#~ msgstr "Un nombre descriptivo para el comando"
+
+#~ msgid "Task name"
+#~ msgstr "Nombre de la tarea"
+
+#~ msgid "Needs a file"
+#~ msgstr "Necesita fichero"
+
+#~ msgid "Mark if the command will launch a file"
+#~ msgstr "Selecciona si el comando lanza un fichero"
+
+#~ msgid "Select the file that will be launched"
+#~ msgstr "Selecciona el fichero a lanzar"
+
+#~ msgid "Needed arguments"
+#~ msgstr "Argumentos requeridos"
+
+#~ msgid "Put here the arguments for the command (if any)"
+#~ msgstr "Escribe aquí los argumentos para el comando (si los hay)"
+
+#~ msgid "Arguments"
+#~ msgstr "Argumentos"
+
+#~ msgid "Action name"
+#~ msgstr "Nombre de la tarea"
+
+#~ msgid "Choose a command"
+#~ msgstr "Selecciona un comando"
+
+#~ msgid "Task saved"
+#~ msgstr "Tarea guardada"
+
+#~ msgid "Permission denied"
+#~ msgstr "Permiso denegado"
+
+#~ msgid "client task"
+#~ msgstr "tarea para clientes"
+
+#~ msgid "Are you sure to delete this task?"
+#~ msgstr "¿Desea borrar esta tarea?"
+
+#~ msgid "Task updated"
+#~ msgstr "Tarea actualizada"
 
 #~ msgid "Schedule a task for all the clients"
 #~ msgstr "Programa una tarea en todos los clientes"
@@ -642,38 +748,11 @@ msgstr "Actualizar Lliurex"
 #~ msgid "You need administration privileges to run this application."
 #~ msgstr "Necesita privilegios de administrador para ejecutar esta aplicación"
 
-#~ msgid "Save the changes"
-#~ msgstr "Guardar cambios"
-
-#~ msgid "Remote tasks"
-#~ msgstr "Tareas Remotas"
-
 #~ msgid "Remove selected task?"
 #~ msgstr "¿Eliminar la tarea seleccionada?"
 
 #~ msgid "Confirm action"
 #~ msgstr "Confirmar acción"
-
-#~ msgid "Mo"
-#~ msgstr "Lu"
-
-#~ msgid "Tu"
-#~ msgstr "Ma"
-
-#~ msgid "We"
-#~ msgstr "Mi"
-
-#~ msgid "Th"
-#~ msgstr "Ju"
-
-#~ msgid "Fr"
-#~ msgstr "Vi"
-
-#~ msgid "Sa"
-#~ msgstr "Sa"
-
-#~ msgid "Su"
-#~ msgstr "Do"
 
 #~ msgid "At "
 #~ msgstr "A las"
