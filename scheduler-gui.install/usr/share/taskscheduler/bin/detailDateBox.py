@@ -479,15 +479,17 @@ class DetailBox:
 			self.spin_interval.set_value(int(pos[1]))
 			if date_type=='hour' or date_type=='min':
 				self.spin_hour.set_value(0)
+				if date_type=='hour':
+					self.cmb_dates.set_active(1)
 				self.hour_box.set_sensitive(False)
 				self.minute_box.set_sensitive(False)
 			elif date_type=='dom':
-				self.cmb_dates.set_active(1)
+				self.cmb_dates.set_active(2)
 				self.hour_box.set_sensitive(True)
 				self.minute_box.set_sensitive(True)
 			elif date_type=='mon':
 				self.cmb_interval.set_active(int(pos[1])-1)
-				self.cmb_dates.set_active(3)
+				self.cmb_dates.set_active(4)
 				self.month_box.set_sensitive(False)
 				self.hour_box.set_sensitive(True)
 				self.minute_box.set_sensitive(True)

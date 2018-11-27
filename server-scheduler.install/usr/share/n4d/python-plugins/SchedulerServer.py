@@ -13,18 +13,59 @@ class SchedulerServer():
 	def __init__(self):
 		self.dbg=1
 		self.tasks_dir="/etc/scheduler/tasks.d"
-		self.schedTasksDir=self.tasks_dir+"/scheduled"
 		self.available_tasks_dir="/etc/scheduler/conf.d/tasks"
-		self.custom_tasks=self.available_tasks_dir+"/personal.json"
-		self.remote_tasks_dir=self.tasks_dir+"/remote"
-		self.local_tasks_dir=self.tasks_dir+"/local"
-		self.commands_file='/etc/scheduler/conf.d/commands/commands.json'
+		self.conf_dir="/etc/scheduler/conf.d/"
+		self.conf_file="%s/scheduler.conf"%self.conf_dir
 	#def __init__
 
 	def _debug(self,msg):
 		if (self.dbg):
 			print("Scheduler: %s" %msg)
 	#def _debug
+	
+	def read_config(self):
+		status=True
+		data=''
+		if not os.path.isdir(self.conf_dir):
+			try:
+				os.makedirs(self.conf_dir)
+			except Exception as e:
+				status=False
+				data=e
+				self._debug("Couldn't create conf dir %s"%self.conf_dir)
+		if os.path.isfile(self.conf_file):
+			try:
+				data=json.loads(open(self.conf_file).read())
+			except Exception as e:
+				data=e
+				status=False
+				self._debug(("unable to open %s") % self.conf_file)
+		return ({'status':status,'data':data})
+	#def read_config
+
+	def write_config(self,task,color):
+		status=True
+		data=''
+		if os.path.isfile(self.conf_file):
+			try:
+				config=json.loads(open(self.conf_file).read())
+			except Exception as e:
+				data=e
+				status=False
+				self._debug(("unable to open %s") % self.conf_file)
+		if task in config.keys():
+			config[task].update({'background':color})
+		else:
+			config[task]={'background':color}
+		try:
+			with open(self.conf_file,'w') as f:
+				json.dump(config,f,indent=4)
+		except Exception as e:
+			data=e
+			self._debug(("unable to write %s") % self.conf_file)
+			status=False
+		return ({'status':status,'data':data})
+	#def write_config
 
 	def get_tasks(self,*args):
 		return(self._read_wrkfiles(self.tasks_dir))
@@ -38,7 +79,6 @@ class SchedulerServer():
 		for task_name,serial_data in tasks_data.items():
 			sw_continue=False
 			for serial,data in serial_data.items():
-				print("DATA: %s"%data)
 				sw_pass=False
 				if 'autoremove' in data.keys():
 					if (data['mon'].isdigit()):
