@@ -54,7 +54,7 @@ class TaskScheduler:
 		self.scheduler=scheduler()
 		self.cronparser=cronParser()
 		self.tasks_per_row=4
-		self.dbg=True
+		self.dbg=False
 		self.config={}
 		self._parse_config()
 	#def __init__		
@@ -346,19 +346,20 @@ class TaskScheduler:
 		col=0
 		row=0
 		#Local Tasks
-		tasks.update({'local':self.scheduler.get_scheduled_tasks(sw_remote=False)})
+		tasks.update({'local':self.scheduler.get_scheduled_tasks()})
 #		tasks.update({'remote':self.scheduler.get_scheduled_tasks(sw_remote=True)})
-		for task_type in tasks.keys():
-			for task_group,info in tasks[task_type].items():
-				(group,index)=task_group.split('||')
-				btn_task=Gtk.Button()
-				self._add_translation_for_desc(group)
-				self._render_task_description(btn_task,task_type,group,index,info)
-				if not col%self.tasks_per_row and col>0:
-					col=0
-					row+=1
-				grid_tasks.attach(btn_task,col,row,1,1)
-				col+=1
+		if self.stack.get_visible_child_name!='login':
+			for task_type in tasks.keys():
+				for task_group,info in tasks[task_type].items():
+					(group,index)=task_group.split('||')
+					btn_task=Gtk.Button()
+					self._add_translation_for_desc(group)
+					self._render_task_description(btn_task,task_type,group,index,info)
+					if not col%self.tasks_per_row and col>0:
+						col=0
+						row+=1
+					grid_tasks.attach(btn_task,col,row,1,1)
+					col+=1
 		return(grid_tasks)
 	#def _render_tasks_grid
 
@@ -369,9 +370,6 @@ class TaskScheduler:
 		vbox_task=Gtk.VBox()
 		vbox_task=Gtk.VBox()
 		btn_task.set_name("TASK_BOX")
-		if 'spread' in info.keys():
-			if info['spread']:
-				btn_task.set_name("SPREAD_TASK_BOX")
 		hbox_task=Gtk.HBox()
 		hour_box=Gtk.VBox(False,False)
 		hour_box.set_name("HOUR_BOX")
@@ -391,6 +389,10 @@ class TaskScheduler:
 
 		cmd=self._get_cmd_for_description(info['cmd'])
 		vbox_task.set_tooltip_text(_("%s\n%s\nLaunch in: %s")%(_(cmd),parsed_calendar,eta))
+		if 'spread' in info.keys():
+			if info['spread']:
+				btn_task.set_name("SPREAD_TASK_BOX")
+				vbox_task.set_tooltip_text(_("%s\n%s\nLaunch in: %s\nClient task")%(_(cmd),parsed_calendar,eta))
 		#Header
 		lbl_task=Gtk.Label(False,False)
 		lbl_task.set_ellipsize(Pango.EllipsizeMode.END)
@@ -928,7 +930,13 @@ class TaskScheduler:
 			border:1px solid grey;
 			margin:6px;
 			padding:3px;
-			background:silver;
+			background: linear-gradient(
+			  45deg,
+			  white,
+			  white 50%,
+			  #c9c9c9 50%,
+			  #c9c9c9
+			  );
 			box-shadow: -0.5px 3px 2px #aaaaaa;
 			font: 12px roboto;
 

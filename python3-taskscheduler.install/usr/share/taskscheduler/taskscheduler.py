@@ -17,7 +17,7 @@ import ssl
 
 class TaskScheduler():
 	def __init__(self):
-		self.dbg=0
+		self.dbg=1
 		self.credentials=["",""]
 		self.n4dserver=None
 		self.n4dclient=self._n4d_connect('localhost')
@@ -35,7 +35,8 @@ class TaskScheduler():
 	
 	def set_credentials(self,user,pwd,server):
 		self.credentials=[user,pwd]
-		self.n4dserver=self._n4d_connect(server)
+		if server!='localhost':
+			self.n4dserver=self._n4d_connect(server)
 	#def set_credentials
 
 	def read_config(self):
@@ -60,14 +61,14 @@ class TaskScheduler():
 		return tasks
 	#def get_available_tasks
 
-	def get_scheduled_tasks(self,sw_remote):
+	def get_scheduled_tasks(self):
 		tasks={}
-		self._debug("Retrieving task list remote=%s"%sw_remote)
 		if self.n4dserver:
+			self._debug("Retrieving server task list")
 			result=self.n4dserver.get_remote_tasks("","SchedulerServer")['data']
 			if type(result)==type({}):
 				tasks=result.copy()
-#		result=self.n4dclient.get_tasks("","SchedulerServer")['data']
+		self._debug("Retrieving local task list")
 		result=self.n4dclient.get_local_tasks("","SchedulerServer")['data']
 		if type(result)==type({}):
 			if tasks:
@@ -77,7 +78,6 @@ class TaskScheduler():
 						tasks[key].update(data)
 					else:
 						tasks.update({key:data})
-
 			else:
 				tasks.update(result.copy())
 		tasks=self._sort_tasks(tasks)
@@ -91,77 +91,73 @@ class TaskScheduler():
 		sorted_indexes={}
 		for task_type,index_task in tasks.items():
 			for index,task in index_task.items():
-				sw_allm=False
-				sw_alld=False
-				sw_incyear=False
-				sw_incmon=False
-				if  not task['mon'].isdigit():
-					if '/' in task['mon']:
-						e_mon=int(task['mon'].split('/')[-1])
-						months_left=timenow.month%e_mon
-						if months_left and timenow.month>1:
-							if timenow.month+months_left<=12:
-								mon=timenow.month+months_left
-							else:
-								#All cycles start at month 1
-								mon=1
-								sw_incyear=True
-						else:
-							mon=timenow.month
-					else:
-						mon=timenow.month
-						sw_allm=True
-				else:
-					mon=int(task['mon'])
-				if not task['dom'].isdigit():
-					if '/' in task['dom']:
-						e_dom=int(task['dom'].split('/')[-1])
-						days_left=timenow.day%e_dom
-						if timenow.day%e_dom and timenow.day>1:
-							if timenow.day+days_left<=30:
-								dom=timenow.day+days_left
-							else:
-								#All cycles start at day 1
-								dom=1
-								sw_incmon=True
-						else:
-							dom=timenow.day
-					else:
-						dom=timenow.day
-						sw_alld=True
-				else:
-					dom=int(task['dom'])
-				if not task['h'].isdigit():
-					h=timenow.hour
-				else:
-					h=int(task['h'])
-				if not task['m'].isdigit():
-					m=timenow.minute
-				else:
-					m=int(task['m'])
+				(mon,sw_allm,date_incyear)=self._calculate_date(task['mon'],timenow,'month')
+				(dom,sw_alld,date_incmon)=self._calculate_date(task['dom'],timenow,'day')
+				(h,sw_allh,date_incday)=self._calculate_date(task['h'],timenow,'hour')
+				(m,sw_allmin,date_inch)=self._calculate_date(task['m'],timenow,'minute')
 				#DOW
+				sw_dowday=False
 				if task['dow'].isdigit():
+					sw_dowday=True
 					d_week=timenow.weekday()+1
 					if int(task['dow'])==d_week:
 						dom=timenow.day
 					else:
-						dif_days=int(task['dom'])-d_week
-						if dif_days:
+						diff_days=int(task['dom'])-d_week
+						if diff_days>=0:
 							dom=timenow.day+diff_days
 						else:
 							dom=timenow.day+(7+diff_days)
+						if dom>30:
+							dom=1
+							sw_incmon=True
+				elif ',' in task['dow']:
+					sw_dowday=True
+					d_week=timenow.weekday()+1
+					dow_array=task['dow'].split(',')
+					if d_week in dow_array:
+						dom=timenow.day
+					else:
+						#Get days diff to most recent day
+						diff_days=8
+						for d in dow_array:
+							d=int(d)
+							if abs(d-d_week)<abs(diff_days):
+								if d-d_week==0:
+									diff_days=0
+									break
+								diff_days=d-d_week
+						if diff_days>=0:
+							dom=timenow.day+diff_days
+						else:
+							dom=timenow.day+(7+diff_days)
+						if dom>31:
+							dom=1
+							sw_incmon=True
 				year=timenow.year
-				if sw_incmon:
-					mon=mon+1
+				if date_inch:
+					h=h+date_inch
+					if h>23:
+						h=1
+						date_incday=date_inch%23
+				if date_incday:
+					dom=dom+date_incday
+					if dom>31:
+						dom=1
+						date_incmon=date_incday%31
+				if date_incmon:
+					mon=mon+date_incmon
 					if mon>12:
 						mon=1
-						sw_incyear=True
-				if sw_incyear:
-					year+=1
-				time_task=int(datetime.datetime(year,mon,dom,h,m).timestamp())
+						date_incyear=date_incmon%12
+				if date_incyear:
+					year+=date_incyear
+				time_task=self._calculate_timestamp(year,mon,dom,h,m)
 				val=time_task-timestamp
 				if val<0:
-					if sw_alld:
+					if sw_dowday:
+						val=time_task+(7*24*60*60)-timestamp
+					elif sw_alld:
 						val=time_task+(24*60*60)-timestamp
 					elif sw_allm:
 						mon+=1
@@ -169,10 +165,10 @@ class TaskScheduler():
 						if mon>12:
 							mon=1
 							year=timenow.year+1
-						time_task=int(datetime.datetime(year,mon,dom,h,m).timestamp())
+						time_task=self._calculate_timestamp(year,mon,dom,h,m)
 						val=time_task-timestamp
 					else:
-						time_task=int(datetime.datetime(timenow.year+1,mon,dom,h,m).timestamp())
+						time_task=self._calculate_timestamp(year+1,mon,dom,h,m)
 						val=time_task-timestamp
 				sorted_indexes.update({"%s||%s"%(task_type,index):val})
 			
@@ -181,6 +177,71 @@ class TaskScheduler():
 			tasks[name][index].update({'val':value})
 			sorted_tasks.update({t_index:tasks[name][index]})
 		return (sorted_tasks)
+
+	def _calculate_date(self,date_unit,timenow,date_type):
+		date_inc,sw_allu=(0,False)
+		if date_type=='month':
+			time_date=timenow.month
+			max_units=12
+			start=1
+		if date_type=='day':
+			time_date=timenow.day
+			max_units=31
+			start=1
+		if date_type=='hour':
+			time_date=timenow.hour
+			max_units=23
+			start=0
+		if date_type=='minute':
+			time_date=timenow.minute
+			max_units=59
+			start=0
+		if  not date_unit.isdigit():
+			if '/' in date_unit:
+				e_units=int(date_unit.split('/')[-1])
+				if date_type=='minute':
+					time_date+=(60*timenow.hour)
+					max_units=59*24
+				units_left=time_date%e_units
+				if units_left and time_date>1:
+					if time_date+units_left<=max_units:
+						unit=time_date+units_left
+						if unit>max_units:
+							date_inc=unit//max_units
+							unit=unit-max_units
+					else:
+						#All cycles start at month/day 1 or hour/minute 0
+						unit=start
+						date_inc=(time_date+units_left)//max_units
+				else:
+					unit=time_date
+			else:
+				unit=time_date
+				sw_allu=True
+		else:
+			unit=int(date_unit)
+		return (unit,sw_allu,date_inc)
+
+	def _calculate_timestamp(self,year,mon,dom,h,m):
+		time_task=0
+		try:
+			time_task=int(datetime.datetime(year,mon,dom,h,m).timestamp())
+		except:
+			if dom==31:
+				if mon==2:
+					dom=29
+				else:
+					dom=30
+				try:
+					time_task=int(datetime.datetime(year,mon,dom,h,m).timestamp())
+				except:
+					try:
+						if mon==2:
+							dom=28
+						time_task=int(datetime.datetime(year,mon,dom,h,m).timestamp())
+					except Exception as e:
+						print(e)
+		return time_task
 
 	def get_task_description(self,i18n_desc):
 		desc=i18n_desc
