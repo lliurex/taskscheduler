@@ -69,31 +69,13 @@ class TaskScheduler:
 	#def _quit
 
 	def _parse_config(self):
-		if not os.path.isdir(self.conf_dir):
-			try:
-				os.makedirs(self.conf_dir)
-			except:
-				self._debug("Couldn't create conf dir %s"%self.conf_dir)
-		if os.path.isfile(self.conf_file):
-			try:
-				self.config=json.loads(open(self.conf_file).read())
-			except Exception as e:
-				print(e)
-				self._debug(("unable to open %s") % self.conf_file)
+		self.config=self.scheduler.read_config()
+	#def _parse_config
 
 	def _write_config(self,task,color):
-		if os.path.isfile(self.conf_file):
-			try:
-				self.config=json.loads(open(self.conf_file).read())
-			except Exception as e:
-				print(e)
-				self._debug(("unable to open %s") % self.conf_file)
-		if task in self.config.keys():
-			self.config[task].update({'background':color})
-		else:
-			self.config[task]={'background':color}
-		with open(self.conf_file,'w') as f:
-			json.dump(self.config,f,indent=4)
+		self.scheduler.write_config(task,color)
+		self._parse_config()
+	#def _write_config
 
 	def start_gui(self):
 		mw=Gtk.Window()
