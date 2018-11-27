@@ -97,21 +97,21 @@ class SchedulerServer():
 						task['serial']=serial
 						self.remove_task(task)
 						continue
-				if 'spread' in data.keys():
-					if data['spread']==False:
-						if task_name in local_tasks.keys():
-							local_tasks[task_name][serial]=tasks_data[task_name][serial]
-							status=True
-						else:
-							local_tasks[task_name]={serial:tasks_data[task_name][serial]}
-							status=True
+#				if 'spread' in data.keys():
+#					if data['spread']==False:
+#						if task_name in local_tasks.keys():
+#							local_tasks[task_name][serial]=tasks_data[task_name][serial]
+#							status=True
+#						else:
+#							local_tasks[task_name]={serial:tasks_data[task_name][serial]}
+#							status=True
+#				else:
+				if task_name in local_tasks.keys():
+					local_tasks[task_name][serial]=tasks_data[task_name][serial]
+					status=True
 				else:
-					if task_name in local_tasks.keys():
-						local_tasks[task_name][serial]=tasks_data[task_name][serial]
-						status=True
-					else:
-						local_tasks[task_name]={serial:tasks_data[task_name][serial]}
-						status=True
+					local_tasks[task_name]={serial:tasks_data[task_name][serial]}
+					status=True
 		return ({'status':status,'data':local_tasks})
 
 	def get_remote_tasks(self,*args):
@@ -280,7 +280,7 @@ class SchedulerServer():
 
 	def _fill_task_data(self,task):
 		task['kind']=[]
-		if ['spread'] not in task.keys():
+		if 'spread' not in task.keys():
 			task['spread']=False
 		#set task kind
 		if task['dow']!='*':
