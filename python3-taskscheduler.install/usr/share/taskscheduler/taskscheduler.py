@@ -108,7 +108,6 @@ class TaskScheduler():
 								sw_incyear=True
 						else:
 							mon=timenow.month
-						print("LAUNCH IN %s (incyear: %s)"%(mon,sw_incyear))
 					else:
 						mon=timenow.month
 						sw_allm=True
@@ -140,6 +139,17 @@ class TaskScheduler():
 					m=timenow.minute
 				else:
 					m=int(task['m'])
+				#DOW
+				if task['dow'].isdigit():
+					d_week=timenow.weekday()+1
+					if int(task['dow'])==d_week:
+						dom=timenow.day
+					else:
+						dif_days=int(task['dom'])-d_week
+						if dif_days:
+							dom=timenow.day+diff_days
+						else:
+							dom=timenow.day+(7+diff_days)
 				year=timenow.year
 				if sw_incmon:
 					mon=mon+1

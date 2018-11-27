@@ -144,6 +144,7 @@ class TaskScheduler:
 
 	def _signin(self,user=None,pwd=None,server=None,data=None):
 		self.scheduler.set_credentials(user,pwd,server)
+		self._refresh_grid_tasks()
 		self.stack.set_visible_child_name("tasks")
 	#def _signin
 
@@ -334,6 +335,12 @@ class TaskScheduler:
 		grid_tasks.set_name("TASK_GRID")
 		grid_tasks.set_vexpand(False)
 		grid_tasks.set_valign(Gtk.Align.START)
+		grid_tasks.set_halign(Gtk.Align.START)
+		grid_tasks.set_row_spacing(MARGIN)
+		grid_tasks.set_column_spacing(MARGIN)
+		grid_tasks.set_margin_left(MARGIN)
+		grid_tasks.set_margin_right(MARGIN)
+		grid_tasks.set_margin_top(MARGIN)
 		grid_tasks.set_column_homogeneous(True)
 		tasks={}
 		col=0
@@ -362,6 +369,9 @@ class TaskScheduler:
 		vbox_task=Gtk.VBox()
 		vbox_task=Gtk.VBox()
 		btn_task.set_name("TASK_BOX")
+		if 'spread' in info.keys():
+			if info['spread']:
+				btn_task.set_name("SPREAD_TASK_BOX")
 		hbox_task=Gtk.HBox()
 		hour_box=Gtk.VBox(False,False)
 		hour_box.set_name("HOUR_BOX")
@@ -912,6 +922,18 @@ class TaskScheduler:
 			font: 12px roboto;
 
 		}
+		
+		#SPREAD_TASK_BOX
+		{
+			border:1px solid grey;
+			margin:6px;
+			padding:3px;
+			background:silver;
+			box-shadow: -0.5px 3px 2px #aaaaaa;
+			font: 12px roboto;
+
+		}
+
 
 		#TASK_BOX_HEADER
 		{

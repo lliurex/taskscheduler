@@ -25,7 +25,7 @@ class SchedulerServer():
 	
 	def read_config(self):
 		status=True
-		data=''
+		data={}
 		if not os.path.isdir(self.conf_dir):
 			try:
 				os.makedirs(self.conf_dir)
@@ -45,7 +45,7 @@ class SchedulerServer():
 
 	def write_config(self,task,color):
 		status=True
-		data=''
+		data={}
 		if os.path.isfile(self.conf_file):
 			try:
 				config=json.loads(open(self.conf_file).read())
