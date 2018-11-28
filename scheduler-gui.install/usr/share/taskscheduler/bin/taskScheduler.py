@@ -336,8 +336,8 @@ class TaskScheduler:
 		grid_tasks.set_vexpand(False)
 		grid_tasks.set_valign(Gtk.Align.START)
 		grid_tasks.set_halign(Gtk.Align.START)
-		grid_tasks.set_row_spacing(MARGIN)
-		grid_tasks.set_column_spacing(MARGIN)
+		grid_tasks.set_row_spacing(MARGIN/3)
+		grid_tasks.set_column_spacing(MARGIN/3)
 		grid_tasks.set_margin_left(MARGIN)
 		grid_tasks.set_margin_right(MARGIN)
 		grid_tasks.set_margin_top(MARGIN)
@@ -582,7 +582,7 @@ class TaskScheduler:
 #			if dom!='00':
 #				f_date=(_('%s<span font="10px">m. </span><span font="12px"><sup>at</sup> </span>%s<span font="10px">d.</span>'%(mon,dom)))
 #			else:
-			f_date=(_('%s<span font="10px">m.</span>'%(mon)))
+			f_date=(_('%s<span font="10px">M.</span>'%(mon)))
 		elif repeat_dom:
 			repeat=True
 			f_date=(_('%s<span font="10px">d.</span>'%(dom)))

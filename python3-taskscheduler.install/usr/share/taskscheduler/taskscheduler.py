@@ -37,6 +37,8 @@ class TaskScheduler():
 		self.credentials=[user,pwd]
 		if server!='localhost':
 			self.n4dserver=self._n4d_connect(server)
+		else:
+			self.n4dserver=self.n4dclient
 	#def set_credentials
 
 	def read_config(self):
@@ -51,7 +53,7 @@ class TaskScheduler():
 
 	def get_available_tasks(self):
 		tasks={}
-		if self.n4dserver:
+		if self.n4dserver and self.n4dserver!=self.n4dclient:
 			result=self.n4dserver.get_available_tasks("","SchedulerServer")
 			if type(result)==type({}):
 				tasks=result['data'].copy()
@@ -63,7 +65,7 @@ class TaskScheduler():
 
 	def get_scheduled_tasks(self):
 		tasks={}
-		if self.n4dserver:
+		if self.n4dserver and self.n4dserver!=self.n4dclient:
 			self._debug("Retrieving server task list")
 			result=self.n4dserver.get_remote_tasks("","SchedulerServer")['data']
 			if type(result)==type({}):
@@ -85,142 +87,174 @@ class TaskScheduler():
 	#def get_scheduled_tasks
 
 	def _sort_tasks(self,tasks):
-		timestamp=int(datetime.datetime.now().timestamp())
-		timenow=datetime.datetime.now()
 		sorted_tasks=collections.OrderedDict()
 		sorted_indexes={}
+		date_now=datetime.datetime.now()
+		timestamp=int(date_now.timestamp())
 		for task_type,index_task in tasks.items():
 			for index,task in index_task.items():
-				(mon,sw_allm,date_incyear)=self._calculate_date(task['mon'],timenow,'month')
-				(dom,sw_alld,date_incmon)=self._calculate_date(task['dom'],timenow,'day')
-				(h,sw_allh,date_incday)=self._calculate_date(task['h'],timenow,'hour')
-				(m,sw_allmin,date_inch)=self._calculate_date(task['m'],timenow,'minute')
-				#DOW
-				sw_dowday=False
-				if task['dow'].isdigit():
-					sw_dowday=True
-					d_week=timenow.weekday()+1
-					if int(task['dow'])==d_week:
-						dom=timenow.day
-					else:
-						diff_days=int(task['dom'])-d_week
-						if diff_days>=0:
-							dom=timenow.day+diff_days
+				#Get months left
+				inc_mon=0
+				inc_dom=0
+				inc_h=0
+				inc_m=0
+				if task['mon'].isdigit() and task['dom'].isdigit() and task['h'].isdigit() and task['m'].isdigit():
+					time_task=self._calculate_timestamp(date_now.year,int(task['mon']),int(task['dom']),int(task['h']),int(task['m']))
+				else:
+					if task['mon'].isdigit():
+						l_mon=int(task['mon'])
+						if l_mon<date_now.month:
+							#year left
+							inc_mon=((12-date_now.month)+l_mon)*30*24*60*60
 						else:
-							dom=timenow.day+(7+diff_days)
-						if dom>30:
-							dom=1
-							sw_incmon=True
-				elif ',' in task['dow']:
-					sw_dowday=True
-					d_week=timenow.weekday()+1
-					dow_array=task['dow'].split(',')
-					if d_week in dow_array:
-						dom=timenow.day
-					else:
-						#Get days diff to most recent day
-						diff_days=8
-						for d in dow_array:
-							d=int(d)
-							if abs(d-d_week)<abs(diff_days):
-								if d-d_week==0:
-									diff_days=0
-									break
-								diff_days=d-d_week
-						if diff_days>=0:
-							dom=timenow.day+diff_days
+							inc_mon=(l_mon-date_now.month)*30*24*60*60
+					elif '*' in task['mon']:
+					#Repeat
+						l_mon=date_now.month
+					elif '/' in task['mon']:
+					#Cyclic
+						c_mon=int(task['mon'].split('/')[-1])
+						l_mon=date_now.month
+						if c_mon<date_now.month:
+							l_mon=date_now.month
+							if date_now.month%c_mon:
+								months_left=(((date_now.month//c_mon)+1)*c_mon)-date_now.month
+								if date_now.month+months_left>12:
+									months_left=12-date_now.month
+								inc_mon=months_left*30*24*60*60
+						elif c_mon>12:
+							cycles=c_mom//12
+							inc_mon=inc_mon+(cycles*12*30*24*60*60)
+					#Get days left
+					inc_dom=0
+					if task['dom'].isdigit():
+						l_dom=int(task['dom'])
+						if l_dom<date_now.day:
+							#month left
+							inc_dom=((30-date_now.day)+l_dom)*24*60*60
 						else:
-							dom=timenow.day+(7+diff_days)
-						if dom>31:
-							dom=1
-							sw_incmon=True
-				year=timenow.year
-				if date_inch:
-					h=h+date_inch
-					if h>23:
-						h=1
-						date_incday=date_inch%23
-				if date_incday:
-					dom=dom+date_incday
-					if dom>31:
-						dom=1
-						date_incmon=date_incday%31
-				if date_incmon:
-					mon=mon+date_incmon
-					if mon>12:
-						mon=1
-						date_incyear=date_incmon%12
-				if date_incyear:
-					year+=date_incyear
-				time_task=self._calculate_timestamp(year,mon,dom,h,m)
+							inc_dom=(l_dom-date_now.day)*24*60*60
+					elif '*' in task['dom']:
+					#Repeat
+						l_dom=date_now.day
+					elif '/' in task['dom']:
+					#Cyclic
+						c_dom=int(task['dom'].split('/')[-1])
+						l_dom=date_now.day
+						if c_dom<date_now.day:
+							l_dom=date_now.day
+							if date_now.day%c_dom:
+								days_left=(((date_now.day//c_dom)+1)*c_dom)-date_now.day
+	#							if date_now.days+days_left>31:
+	#								days_left=31-date_now.days
+								inc_dom=days_left*24*60*60
+						elif c_dom>31:
+							cycles=c_dom//31
+							inc_dom=inc_dom+(cycles*30*24*60*60)
+					if inc_mon:
+						inc_mon=inc_mon-inc_dom
+
+					#get hours left
+					inc_h=0
+					if task['h'].isdigit():
+						l_h=int(task['h'])
+						if l_h<date_now.hour:
+							#day left
+							inc_h=((24-date_now.hour)+l_h)*60*60
+						else:
+							inc_h=(l_h-date_now.hour)*60*60
+					elif '*' in task['h']:
+					#Repeat
+						l_h=date_now.hour
+					elif '/' in task['h']:
+					#Cyclic
+						c_h=int(task['h'].split('/')[-1])
+						l_h=date_now.hour
+						if c_h<date_now.hour:
+							l_h=date_now.hour
+							if date_now.hour%c_h:
+								hours_left=(((date_now.hour//c_h)+1)*c_h)-date_now.hour
+	#							if date_now.hour+hours_left>23:
+	#								hours_left=23-date_now.hour
+								inc_h=hours_left*60*60
+						elif c_h>23:
+							cycles=c_h//23
+							inc_h=inc_h+(cycles*24**60*60)
+					if inc_dom:
+						inc_dom=inc_dom-inc_h
+
+					#get minutes left
+					inc_m=0
+					if task['m'].isdigit():
+						l_m=int(task['m'])
+						if l_m<date_now.minute:
+							#hour left
+							inc_m=((60-date_now.minute)+l_m)*60
+						else:
+							inc_m=(l_m-date_now.minute)*60
+					elif '*' in task['m']:
+					#Repeat
+						l_m=date_now.minute
+					elif '/' in task['m']:
+					#Cyclic
+						c_m=int(task['m'].split('/')[-1])
+						l_m=date_now.minute
+						if c_m<date_now.minute:
+							l_m=date_now.minute
+							if date_now.minute%c_m:
+								mins_left=(((date_now.minute//c_m)+1)*c_m)-date_now.minute
+	#							if date_now.minute+mins_left>59:
+	#								mins_left=59-date_now.minute
+								inc_m=mins_left*60
+						elif c_m>59:
+							cycles=c_m//59
+							inc_m=inc_m+(cycles*60*60)
+					if inc_h:
+						inc_h=inc_h-inc_m
+
+					inc_dow=0
+					if task['dow']!='*' and task['mon']=='*':
+					#Get days left to dow
+						next_dow=0
+						weekday=date_now.weekday()+1
+						if (l_h<date_now.hour or (l_h==date_now.hour and l_m<date_now.minute)):
+							weekday+=1
+							if weekday>7:
+								weekday=1
+						if str(weekday) not in task['dow']:
+							if task['dow'].isdigit():
+								dow=int(task['dow'])
+								if dow<weekday:
+									next_dow=7-(weekday-dow)
+								elif dow>weekday:
+									next_dow=dow-weekday
+							else:
+								next_dow=7
+								next_week=0
+								for str_dow in task['dow'].split(','):
+									dow=int(str_dow)
+									day_diff=abs(weekday-dow)
+									if day_diff<next_dow:
+										if dow<weekday:
+											next_week=7
+										else:
+											next_week=0
+										next_dow=day_diff
+								next_dow+=next_week
+						inc_dow=next_dow*24*60*60	
+					time_task=timestamp+inc_mon+inc_dom+inc_h+inc_m+inc_dow
+
 				val=time_task-timestamp
 				if val<0:
-					if sw_dowday:
-						val=time_task+(7*24*60*60)-timestamp
-					elif sw_alld:
-						val=time_task+(24*60*60)-timestamp
-					elif sw_allm:
-						mon+=1
-						year=timenow.year
-						if mon>12:
-							mon=1
-							year=timenow.year+1
-						time_task=self._calculate_timestamp(year,mon,dom,h,m)
-						val=time_task-timestamp
-					else:
-						time_task=self._calculate_timestamp(year+1,mon,dom,h,m)
-						val=time_task-timestamp
+					time_task+=(365*24*60*60)
+					val=time_task-timestamp
 				sorted_indexes.update({"%s||%s"%(task_type,index):val})
-			
 		for t_index,value in sorted(sorted_indexes.items(),key=itemgetter(1)):
 			(name,index)=t_index.split('||')
 			tasks[name][index].update({'val':value})
 			sorted_tasks.update({t_index:tasks[name][index]})
 		return (sorted_tasks)
 
-	def _calculate_date(self,date_unit,timenow,date_type):
-		date_inc,sw_allu=(0,False)
-		if date_type=='month':
-			time_date=timenow.month
-			max_units=12
-			start=1
-		if date_type=='day':
-			time_date=timenow.day
-			max_units=31
-			start=1
-		if date_type=='hour':
-			time_date=timenow.hour
-			max_units=23
-			start=0
-		if date_type=='minute':
-			time_date=timenow.minute
-			max_units=59
-			start=0
-		if  not date_unit.isdigit():
-			if '/' in date_unit:
-				e_units=int(date_unit.split('/')[-1])
-				if date_type=='minute':
-					time_date+=(60*timenow.hour)
-					max_units=59*24
-				units_left=time_date%e_units
-				if units_left and time_date>1:
-					if time_date+units_left<=max_units:
-						unit=time_date+units_left
-						if unit>max_units:
-							date_inc=unit//max_units
-							unit=unit-max_units
-					else:
-						#All cycles start at month/day 1 or hour/minute 0
-						unit=start
-						date_inc=(time_date+units_left)//max_units
-				else:
-					unit=time_date
-			else:
-				unit=time_date
-				sw_allu=True
-		else:
-			unit=int(date_unit)
-		return (unit,sw_allu,date_inc)
 
 	def _calculate_timestamp(self,year,mon,dom,h,m):
 		time_task=0
@@ -275,7 +309,7 @@ class TaskScheduler():
 	#def get_task_command
 
 	def add_command(self,task,cmd,cmd_desc):
-		if self.n4dserver:
+		if self.n4dserver and self.n4dserver!=self.n4dclient:
 			ret=self.n4dserver.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
 		else:
 			ret=self.n4dclient.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
