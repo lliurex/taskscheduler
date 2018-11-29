@@ -13,6 +13,7 @@ import platform
 import subprocess
 import sys
 import time
+from math import sqrt
 import webbrowser
 #import commands
 from gi.repository import Gtk, Gdk, GdkPixbuf, GObject, GLib, PangoCairo, Pango
@@ -72,8 +73,8 @@ class TaskScheduler:
 		self.config=self.scheduler.read_config()
 	#def _parse_config
 
-	def _write_config(self,task,color):
-		self.scheduler.write_config(task,color)
+	def _write_config(self,task,key,value):
+		self.scheduler.write_config(task,key,value)
 		self._parse_config()
 	#def _write_config
 
@@ -205,7 +206,22 @@ class TaskScheduler:
 			task=cmb_tasks.get_active_text()
 			task=self._get_translation_for_desc(task)
 			clr=clr_color.get_rgba().to_string()
-			self._write_config(task,clr)
+			self._write_config(task,'background',clr)
+			#Get clr brightness (if is too dark the text will be white)
+			#Extract red green and blue from clr
+			clr_array=clr.split(',')
+			red=int(clr_array[0].replace('rgb(',''))
+			green=int(clr_array[2].replace(')',''))
+			blue=int(clr_array[1])
+			#Values extracted from different web sources and try-catch...
+			red=red*red* 0.241
+			green=green*green* 0.491
+			blue=blue*blue* 0.384
+			bright=sqrt(red+green+blue)
+			if bright<134: #134 is a good value to distingish between dark and bright
+				self._write_config(task,'color','white')
+			else:
+				self._write_config(task,'color','black')
 			th=threading.Thread(target=self._refresh_grid_tasks,args=[])
 			th.start()
 			self._set_visible_stack(None,"tasks",Gtk.StackTransitionType.CROSSFADE,1)
@@ -286,8 +302,8 @@ class TaskScheduler:
 		for task in names:
 			cmb_tasks.append_text(_(task))
 
-		(boxcmd,inp_cmd)=self._entry_field("Insert command")
-		(boxdesc,inp_desc)=self._entry_field("Insert description (optional)")
+		(boxcmd,inp_cmd)=self._entry_field(_("Insert command"))
+		(boxdesc,inp_desc)=self._entry_field(_("Insert description (optional)"))
 
 		grid_cmd.add(lbl_tasks)
 		grid_cmd.add(cmb_tasks)
@@ -403,14 +419,18 @@ class TaskScheduler:
 		lbl_group.set_markup('<span>%s</span>'%(_(group)))
 		lbl_group.set_name("TASK_BOX_HEADER")
 		if group in self.config.keys():
+			style_context=lbl_group.get_style_context()
+			style_provider=Gtk.CssProvider()
 			if 'background' in self.config[group].keys():
-				color=self.config[group]['background']
-				style_context=lbl_group.get_style_context()
-				style_provider=Gtk.CssProvider()
-				css = "*{background:%s;}"%color
-				css_style=eval('b"""'+css+'"""')
-				style_provider.load_from_data(css_style)
-				style_context.add_provider(style_provider,Gtk.STYLE_PROVIDER_PRIORITY_USER)
+				background=self.config[group]['background']
+				css_val = "background:%s;"%background
+			if 'color' in self.config[group].keys():
+				color=self.config[group]['color']
+				css_val += "color:%s;"%color
+			css="*{%s}"%css_val
+			css_style=eval('b"""'+css+'"""')
+			style_provider.load_from_data(css_style)
+			style_context.add_provider(style_provider,Gtk.STYLE_PROVIDER_PRIORITY_USER)
 		lbl_group.set_valign(Gtk.Align.START)
 		vbox_task.add(lbl_group)
 		vbox_task.add(lbl_task)
@@ -470,7 +490,6 @@ class TaskScheduler:
 #			(month,day,repeat_date)=self._format_date(info['mon'],info['dom'])
 			(month,day,f_date,repeat_date)=self._format_date(info['mon'],info['dom'])
 			if month.isdigit():
-				print(month)
 				lbl_mon=Gtk.Label(month_array[int(month)-1])
 			else:
 				lbl_mon=Gtk.Label(month)

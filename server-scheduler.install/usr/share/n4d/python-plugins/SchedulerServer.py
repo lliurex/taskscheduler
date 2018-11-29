@@ -11,7 +11,7 @@ from  datetime import date
 
 class SchedulerServer():
 	def __init__(self):
-		self.dbg=1
+		self.dbg=False
 		self.tasks_dir="/etc/scheduler/tasks.d"
 		self.available_tasks_dir="/etc/scheduler/conf.d/tasks"
 		self.conf_dir="/etc/scheduler/conf.d/"
@@ -43,7 +43,7 @@ class SchedulerServer():
 		return ({'status':status,'data':data})
 	#def read_config
 
-	def write_config(self,task,color):
+	def write_config(self,task,key,value):
 		status=True
 		data={}
 		if os.path.isfile(self.conf_file):
@@ -54,9 +54,9 @@ class SchedulerServer():
 				status=False
 				self._debug(("unable to open %s") % self.conf_file)
 		if task in config.keys():
-			config[task].update({'background':color})
+			config[task].update({key:value})
 		else:
-			config[task]={'background':color}
+				config[task]={key:value}
 		try:
 			with open(self.conf_file,'w') as f:
 				json.dump(config,f,indent=4)
