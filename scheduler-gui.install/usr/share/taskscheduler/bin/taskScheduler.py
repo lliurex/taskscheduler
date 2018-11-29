@@ -54,7 +54,7 @@ class TaskScheduler:
 		self.description_command={}
 		self.scheduler=scheduler()
 		self.cronparser=cronParser()
-		self.tasks_per_row=4
+		self.tasks_per_row=3
 		self.dbg=False
 		self.config={}
 		self._parse_config()
@@ -167,8 +167,11 @@ class TaskScheduler:
 		def _refresh_tasks(*args):
 			th=threading.Thread(target=self._refresh_grid_tasks,args=[])
 			th.start()
+		toolbar=Gtk.Toolbar()
 		#Menu prefs
 		men_prefs=Gtk.Menu()
+		mei_ant=Gtk.MenuItem(_("Add new task"))
+		mei_ant.connect("activate",self._add_task,toolbar)
 		mei_acc=Gtk.MenuItem(_("Add custom command"))
 		mei_acc.connect("activate",self._set_visible_stack,"ccmds",Gtk.StackTransitionType.CROSSFADE,1)
 		mei_mcc=Gtk.MenuItem(_("Manage custom commands"))
@@ -176,6 +179,7 @@ class TaskScheduler:
 		mei_mtg.connect("activate",self._set_visible_stack,"config",Gtk.StackTransitionType.CROSSFADE,1)
 		mei_rtl=Gtk.MenuItem(_("Refresh tasks list"))
 		mei_rtl.connect("activate",_refresh_tasks)
+		men_prefs.append(mei_ant)
 		men_prefs.append(mei_acc)
 		men_prefs.append(mei_mtg)
 		men_prefs.append(mei_rtl)
@@ -189,7 +193,6 @@ class TaskScheduler:
 		men_help.append(mei_hlp)
 		men_help.append(mei_abo)
 
-		toolbar=Gtk.Toolbar()
 		toolbar.set_vexpand(False)
 #		toolbar.set_valign(Gtk.Align.START)
 		btn_config=Gtk.Button()
@@ -357,8 +360,9 @@ class TaskScheduler:
 		grid_tasks=Gtk.Grid()
 		grid_tasks.set_name("TASK_GRID")
 		grid_tasks.set_vexpand(False)
+		grid_tasks.set_hexpand(True)
 		grid_tasks.set_valign(Gtk.Align.START)
-		grid_tasks.set_halign(Gtk.Align.START)
+#		grid_tasks.set_halign(Gtk.Align.START)
 		grid_tasks.set_row_spacing(MARGIN/3)
 		grid_tasks.set_column_spacing(MARGIN/3)
 		grid_tasks.set_margin_left(MARGIN)
@@ -390,14 +394,16 @@ class TaskScheduler:
 		for children in btn_task.get_children():
 			children.destroy()
 		parsed_calendar=self.cronparser.parse_taskData(info)
-		vbox_task=Gtk.VBox()
-		vbox_task=Gtk.VBox()
+		vbox_task=Gtk.VBox(spacing=MARGIN)
+		vbox_task.set_margin_left(0)
 		btn_task.set_name("TASK_BOX")
 		hbox_task=Gtk.HBox()
 		hour_box=Gtk.VBox(False,False)
 		hour_box.set_name("HOUR_BOX")
+#		hour_box.set_halign(Gtk.Align.END)
 		date_box=Gtk.VBox(False,False)
-		date_box.set_valign(Gtk.Align.CENTER)
+		date_box.set_valign(Gtk.Align.END)
+		date_box.set_halign(Gtk.Align.END)
 		dow_box=Gtk.VBox(False,False)
 		dow_box.set_valign(Gtk.Align.CENTER)
 		self._debug("Search for %s"%info['cmd'])
@@ -439,6 +445,10 @@ class TaskScheduler:
 			style_provider.load_from_data(css_style)
 			style_context.add_provider(style_provider,Gtk.STYLE_PROVIDER_PRIORITY_USER)
 		lbl_group.set_valign(Gtk.Align.START)
+		lbl_group.set_hexpand(True)
+		lbl_group.set_margin_left(0)
+		lbl_group.set_margin_top(0)
+		lbl_group.set_margin_right(0)
 		vbox_task.add(lbl_group)
 		vbox_task.add(lbl_task)
 		#Date Time
@@ -536,9 +546,6 @@ class TaskScheduler:
 			hbox_task.add(hour_box)
 			if add_date:
 				hbox_task.add(date_box)
-
-
-
 			vbox_task.add(hbox_task)
 		btn_task.add(vbox_task)
 		btn_task.connect("clicked",self._edit_task,task_type,group,index,info)
@@ -685,8 +692,10 @@ class TaskScheduler:
 			tasks=cmb_tasks.get_active_text()
 			commands=cmb_commands.get_active_text()
 			self._save_task(None,pop,None,add_task_grid,tasks,commands)
-
-		pop=Gtk.Popover.new(args[0])
+		attach=args[0]
+		if len(args)>1:
+			attach=args[1]
+		pop=Gtk.Popover.new(attach)
 		pop.set_modal(True)
 		pop.set_position(Gtk.PositionType.RIGHT)
 		vbox=Gtk.Grid()
@@ -937,7 +946,7 @@ class TaskScheduler:
 
 		#TASK_GRID
 		{
-			border:1px dotted silver;
+			margin:6px;
 		}
 
 		#TASK_BOX
