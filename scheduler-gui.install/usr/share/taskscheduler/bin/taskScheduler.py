@@ -79,8 +79,14 @@ class TaskScheduler:
 	#def _write_config
 
 	def start_gui(self):
+		def keypress(widget,event):
+			blacklist=['login','tasks']
+			if event.keyval==65307 and self.stack.get_visible_child_name() not in blacklist:
+				self._set_visible_stack(None,"tasks",Gtk.StackTransitionType.CROSSFADE,1)
+
 		mw=Gtk.Window()
 		mw.connect("destroy",self._quit)
+		mw.connect("key_press_event",keypress)
 		mw.set_resizable(False)
 		mw.set_size_request(WIDTH,HEIGHT)
 		self._load_tasks()
@@ -267,6 +273,7 @@ class TaskScheduler:
 		btn_cancel=Gtk.Button.new_from_icon_name("gtk-close",Gtk.IconSize.BUTTON)
 		btn_cancel.connect("clicked",self._set_visible_stack,"tasks",Gtk.StackTransitionType.CROSSFADE,1)
 		btn_cancel.set_tooltip_text(_("Cancel"))
+
 		box_btn.add(btn_cancel)
 		box_btn.add(btn_ok)
 		grid_cnf.add(box_btn)
