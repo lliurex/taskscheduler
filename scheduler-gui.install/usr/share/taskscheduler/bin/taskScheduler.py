@@ -36,7 +36,7 @@ REMOVE_ICON=BASE_DIR+"rsrc/trash.svg"
 EDIT_ICON=BASE_DIR+"rsrc/edit.svg"
 LOGIN_IMG=BASE_DIR+"rsrc/scheduler.svg"
 BANNER_IMG=BASE_DIR+"rsrc/taskScheduler-banner.png"
-NO_EDIT_ICON=BASE_DIR+"rsrc/no_edit.svg"
+NO_EDIT_ICON=BASE_DIR+"rsrc/no_edit.png"
 LOCK_PATH="/var/run/taskScheduler.lock"
 MARGIN=6
 
@@ -99,7 +99,7 @@ class TaskScheduler:
 		pb=GdkPixbuf.Pixbuf.new_from_file("%s"%BANNER_IMG)
 		img_banner=Gtk.Image.new_from_pixbuf(pb)
 		img_banner.props.halign=Gtk.Align.CENTER
-		img_banner.set_margin_left(MARGIN*2)
+		img_banner.set_margin_top(MARGIN)
 		vbox_tasks.attach(img_banner,0,0,1,1)
 		vbox_tasks.attach(self._render_toolbar(),0,1,1,1)
 		vbox_tasks.attach(self._render_tasks(),0,2,1,1)
@@ -194,19 +194,31 @@ class TaskScheduler:
 		men_help.append(mei_abo)
 
 		toolbar.set_vexpand(False)
-#		toolbar.set_valign(Gtk.Align.START)
+		btn_add=Gtk.Button()
+		tlb_add=Gtk.ToolButton(btn_add)
+		tlb_add.connect("clicked",self._add_task)
+		tlb_add.set_icon_name("gtk-add")
+		tlb_add.set_tooltip_text(_("Add new task"))
+		toolbar.insert(tlb_add,0)
+		btn_refresh=Gtk.Button()
+		tlb_refresh=Gtk.ToolButton(btn_refresh)
+		tlb_refresh.connect("clicked",_refresh_tasks)
+		tlb_refresh.set_icon_name("gtk-refresh")
+		tlb_refresh.set_tooltip_text(_("Reload tasks"))
+		toolbar.insert(tlb_refresh,1)
 		btn_config=Gtk.Button()
 		tlb_config=Gtk.ToolButton(btn_config)
 		tlb_config.connect("clicked",_show_prefs)
 		tlb_config.set_icon_name("preferences-system")
 		tlb_config.set_tooltip_text(_("Open preferences menu"))
-		toolbar.insert(tlb_config,0)
+		toolbar.insert(tlb_config,2)
 		btn_help=Gtk.Button()
 		tlb_help=Gtk.ToolButton(btn_help)
 		tlb_help.set_tooltip_text(_("Open help menu"))
 		tlb_help.connect("clicked",_show_help)
 		tlb_help.set_icon_name("help-browser")
 		toolbar.insert(tlb_help,-1)
+		toolbar.set_margin_bottom(0)
 		return(toolbar)
 	#def _render_toolbar
 
@@ -338,16 +350,6 @@ class TaskScheduler:
 
 	def _render_tasks(self):
 		hbox=Gtk.Box()
-#		vbox_task=Gtk.VBox()
-#		vbox_task.set_name("TASK_BOX")
-#		btn_add=Gtk.Button("+")
-#		btn_add.set_tooltip_text(_("Add new task"))
-#		btn_add.set_name("ADD_BUTTON")
-#		btn_add.connect("clicked",self._add_task)
-#		btn_add.set_halign(Gtk.Align.CENTER)
-#		vbox_task.set_valign(Gtk.Align.START)
-#		vbox_task.add(btn_add)
-#		hbox.add(vbox_task)
 		scrollbox=Gtk.ScrolledWindow()
 		scrollbox.set_min_content_height(500)
 		scrollbox.set_min_content_width(800)
@@ -362,19 +364,18 @@ class TaskScheduler:
 		grid_tasks.set_vexpand(False)
 		grid_tasks.set_hexpand(True)
 		grid_tasks.set_valign(Gtk.Align.START)
-#		grid_tasks.set_halign(Gtk.Align.START)
+		grid_tasks.set_halign(Gtk.Align.START)
 		grid_tasks.set_row_spacing(MARGIN/3)
 		grid_tasks.set_column_spacing(MARGIN/3)
-		grid_tasks.set_margin_left(MARGIN)
-		grid_tasks.set_margin_right(MARGIN)
-		grid_tasks.set_margin_top(MARGIN)
+#		grid_tasks.set_margin_left(MARGIN/2)
+#		grid_tasks.set_margin_right(MARGIN/2)
+#		grid_tasks.set_margin_top(MARGIN)
 		grid_tasks.set_column_homogeneous(True)
 		tasks={}
 		col=0
 		row=0
 		#Local Tasks
 		tasks.update({'local':self.scheduler.get_scheduled_tasks()})
-#		tasks.update({'remote':self.scheduler.get_scheduled_tasks(sw_remote=True)})
 		if self.stack.get_visible_child_name!='login':
 			for task_type in tasks.keys():
 				for task_group,info in tasks[task_type].items():
@@ -397,18 +398,19 @@ class TaskScheduler:
 		vbox_task=Gtk.VBox(spacing=MARGIN)
 		vbox_task.set_margin_bottom(MARGIN)
 		btn_task.set_name("TASK_BOX")
+		btn_task.set_size_request(260,100)
 		hbox_task=Gtk.HBox()
+		txt_client=''
 		if 'spread' in info.keys():
 			if info['spread']:
-				pb=GdkPixbuf.Pixbuf.new_from_file("%s"%"/home/lliurex/git/taskscheduler/scheduler-gui.install/usr/share/taskscheduler/rsrc/dist_task.png")
+				pb=GdkPixbuf.Pixbuf.new_from_file("%s/rsrc/dist_task.png"%BASE_DIR)
 				img_banner=Gtk.Image.new_from_pixbuf(pb)
 				img_banner.props.halign=Gtk.Align.START
 				img_banner.set_margin_left(MARGIN)
 				hbox_task.add(img_banner)
-#				vbox_task.set_tooltip_text(_("%s\n%s\nLaunch in: %s\nClient task")%(_(cmd),parsed_calendar,eta))
+				txt_client="\nClient task"
 		hour_box=Gtk.VBox(False,False)
 		hour_box.set_name("HOUR_BOX")
-#		hour_box.set_halign(Gtk.Align.END)
 		date_box=Gtk.VBox(False,False,spacing=MARGIN)
 		date_box.set_margin_bottom(MARGIN)
 		date_box.set_valign(Gtk.Align.END)
@@ -426,7 +428,7 @@ class TaskScheduler:
 				eta="%s d."%int(info['val']/86400)
 
 		cmd=self._get_cmd_for_description(info['cmd'])
-		vbox_task.set_tooltip_text(_("%s\n%s\nLaunch in: %s")%(_(cmd),parsed_calendar,eta))
+		vbox_task.set_tooltip_text(_("%s\n%s\nLaunch in: %s%s")%(_(cmd),parsed_calendar,eta,txt_client))
 		#Header
 		lbl_task=Gtk.Label(False,False)
 		lbl_task.set_ellipsize(Pango.EllipsizeMode.END)
@@ -478,14 +480,14 @@ class TaskScheduler:
 			(month,day,f_date,repeat_date)=self._format_date(info['mon'],info['dom'])
 			try:
 				dow=int(dow)-1
-				days_array[dow]='<span color="orange">%s</span>'%days_array[dow]
+				days_array[dow]='<b>%s</b>'%days_array[dow]
 			except:
 				if ',' in dow:
 					dow_array=dow.split(',')
 					for dow_str in dow_array:
 						dow_int=int(dow_str)-1
 						if dow_int<=len(days_array):
-							days_array[dow_int]='<span color="orange">%s</span>'%days_array[dow_int]
+							days_array[dow_int]='<b>%s</b>'%days_array[dow_int]
 			d_date=' '.join(days_array)
 			lbl_dow=Gtk.Label()
 			lbl_dow.set_markup(d_date)
@@ -499,10 +501,6 @@ class TaskScheduler:
 			if repeat_date:
 				if (month.replace(' ','')!='*' or day!='*'):
 					f_date=_('<span font="12px">Each\n</span>%s')%f_date
-#				else:
-#					date_box.set_halign(Gtk.Align.CENTER)
-#					f_date=_('<span font="12px"><sup>Each </sup></span>%s')%f_date
-#				date_box.set_halign(Gtk.Align.CENTER)
 					lbl_date.set_markup(f_date)
 					date_box.add(lbl_date)
 				else:
@@ -520,7 +518,6 @@ class TaskScheduler:
 			vbox_task.add(hbox_task)
 			vbox_task.add(dow_box)
 		else:
-#			(month,day,repeat_date)=self._format_date(info['mon'],info['dom'])
 			(month,day,f_date,repeat_date)=self._format_date(info['mon'],info['dom'])
 			if month.isdigit():
 				lbl_mon=Gtk.Label(month_array[int(month)-1])
@@ -544,10 +541,6 @@ class TaskScheduler:
 			if repeat_date:
 				if (month.replace(' ','')!='*' or day!='*'):
 					f_date=_('<span font="12px">Each\n</span>%s')%f_date
-#				else:
-#					date_box.set_halign(Gtk.Align.CENTER)
-#					f_date=_('<span font="12px"><sup>Each </sup></span>%s')%f_date
-#				date_box.set_halign(Gtk.Align.CENTER)
 					lbl_date.set_markup(f_date)
 					date_box.add(lbl_date)
 				else:
@@ -566,7 +559,16 @@ class TaskScheduler:
 			vbox_task.add(hbox_task)
 		hbox_btn=Gtk.Box()
 		btn_task.add(vbox_task)
-		btn_task.connect("clicked",self._edit_task,task_type,group,index,info)
+		if 'protected' in info.keys() and info['protected']==True:
+				style_context=btn_task.get_style_context()
+				style_provider=Gtk.CssProvider()
+				css_cell = 'background-image:url("%s");background-repeat:no-repeat;background-position:50% 50% 90% 10%;background-size: 45% 50%'%NO_EDIT_ICON
+				css="*{%s}"%css_cell
+				css_style=eval('b"""'+css+'"""')
+				style_provider.load_from_data(css_style)
+				style_context.add_provider(style_provider,Gtk.STYLE_PROVIDER_PRIORITY_USER)
+		else:
+			btn_task.connect("clicked",self._edit_task,task_type,group,index,info)
 		return(vbox_task)
 	#def _render_task_description
 
@@ -614,10 +616,8 @@ class TaskScheduler:
 		repeat=False
 		if ('*' in dom or '*' in mon):
 			if mon=='*':
-					#				mon="1"
 				repeat_mon=True
 			else:
-					#				dom='1'
 				repeat_dom=True
 				repeat_mon=False
 		if ('/' in mon or '/' in dom):
@@ -630,9 +630,6 @@ class TaskScheduler:
 				repeat_mon=False
 		if repeat_mon:
 			repeat=True
-#			if dom!='00':
-#				f_date=(_('%s<span font="10px">m. </span><span font="12px"><sup>at</sup> </span>%s<span font="10px">d.</span>'%(mon,dom)))
-#			else:
 			f_date=(_('%s<span font="10px">M.</span>'%(mon)))
 		elif repeat_dom:
 			repeat=True
@@ -683,7 +680,7 @@ class TaskScheduler:
 			box_btn.add(btn_cancel)
 			box_btn.add(btn_ok)
 			box_btn.set_halign(Gtk.Align.END)
-			task_grid.attach_next_to(box_btn,add_task_grid.chk_spread,Gtk.PositionType.RIGHT,5,1)
+			task_grid.attach_next_to(box_btn,add_task_grid.chk_spread,Gtk.PositionType.RIGHT,4,1)
 			vbox.show_all()
 			pop.add(vbox)
 			pop.popup()
@@ -717,6 +714,7 @@ class TaskScheduler:
 		pop.set_modal(True)
 		pop.set_position(Gtk.PositionType.RIGHT)
 		vbox=Gtk.Grid()
+		vbox.set_column_homogeneous(False)
 		vbox.set_margin_top(MARGIN)
 		vbox.set_margin_right(MARGIN)
 		add_task_grid=detailDateBox(self.scheduler)
@@ -743,8 +741,8 @@ class TaskScheduler:
 		box_btn.add(btn_cancel)
 		box_btn.add(btn_ok)
 		box_btn.set_halign(Gtk.Align.END)
-		task_grid.attach_next_to(box_btn,add_task_grid.chk_spread,Gtk.PositionType.RIGHT,7,1)
-		vbox.attach(task_grid,0,1,4,1)
+		task_grid.attach_next_to(box_btn,add_task_grid.chk_spread,Gtk.PositionType.RIGHT,4,1)
+		vbox.attach(task_grid,0,1,5,1)
 		vbox.show_all()
 		pop.add(vbox)
 		pop.popup()
@@ -967,7 +965,7 @@ class TaskScheduler:
 			margin:6px;
 		}
 
-		#TASK_BOX
+		#TASK_BOX, #TASK_BOX:focus
 		{
 			border:0px;
 			margin:6px;
@@ -975,6 +973,7 @@ class TaskScheduler:
 			background:white;
 			box-shadow: -0.5px 3px 2px #aaaaaa;
 			font: 12px roboto;
+			background-image:none;
 
 		}
 	
@@ -1030,6 +1029,7 @@ class TaskScheduler:
 			font: 16px roboto;
 			border:1px solid silver;
 			margin:6px;
+			background-color:white;
 		}
 
 		#DATE_BOX_HEADER
@@ -1042,6 +1042,7 @@ class TaskScheduler:
 		#DOW_BOX
 		{
 			font: 14px Roboto;
+			font-stretch: expanded;
 		}
 
 		#MAIN_COMMANDS_GRID
