@@ -18,6 +18,7 @@ class SchedulerClient():
 		self.count=0
 		self.dbg=0
 		self.holidays_shell="/usr/bin/check_holidays.py"
+		self.pidfile="/tmp/taskscheduler.pid"
 
 	def startup(self,options):
 		t=threading.Thread(target=self._main_thread)
@@ -84,6 +85,14 @@ class SchedulerClient():
 					fname=name.replace(' ','_')
 					task_names[fname]=tasks[name][serial].copy()
 					self._write_crontab_for_task(task_names,prefix)
+		#Launch refresh signal to gui
+		if os.path.isfile(self.pidfile):
+			with open(self.pidfile,'r') as p_file:
+				pid=p_file.read()
+				try:
+					os.kill(int(pid),signal.SIGUSR1)
+				except:
+					pass
 
 	#def process_tasks
 
@@ -92,12 +101,22 @@ class SchedulerClient():
 		for task_name,task_data in ftask.iteritems():
 			self._debug("Writing data %s: %s"%(task_name,task_data))
 			fname=self.cron_dir+'/'+prefix+task_name.replace(' ','_')
-			cron_task=("%s %s %s %s %s root %s"%(task_data['m'],task_data['h'],task_data['dom'],\
-				task_data['mon'],task_data['dow'],u""+task_data['cmd']))
+			m=task_data['m']
+			h=task_data['h']
+			dom=task_data['dom']
+			mon=task_data['mon']
+			if '/' in m:
+				m=m.replace('0/','*/')
+			if '/' in h:
+				h=h.replace('0/','*/')
+			if '/' in dom:
+				dom=dom.replace('1/','*/')
+			if '/' in mon:
+				mon=mon.replace('1/','*/')
+			cron_task=("%s %s %s %s %s root %s"%(m,h,dom,mon,task_data['dow'],u""+task_data['cmd']))
 			if 'holidays' in task_data.keys():
 				if task_data['holidays']:
-					cron_task=("%s %s %s %s %s root %s && %s"%(task_data['m'],task_data['h'],task_data['dom'],\
-						task_data['mon'],task_data['dow'],self.holidays_shell,u""+task_data['cmd']))
+					cron_task=("%s %s %s %s %s root %s && %s"%(m,h,dom,mon,task_data['dow'],self.holidays_shell,u""+task_data['cmd']))
 			cron_array.append(cron_task)
 			if task_data:
 				if os.path.isfile(fname):

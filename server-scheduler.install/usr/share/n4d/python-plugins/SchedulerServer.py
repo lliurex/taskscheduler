@@ -11,7 +11,7 @@ from  datetime import date
 
 class SchedulerServer():
 	def __init__(self):
-		self.dbg=1
+		self.dbg=False
 		self.tasks_dir="/etc/scheduler/tasks.d"
 		self.available_tasks_dir="/etc/scheduler/conf.d/tasks"
 		self.conf_dir="/etc/scheduler/conf.d/"
@@ -25,7 +25,7 @@ class SchedulerServer():
 	
 	def read_config(self):
 		status=True
-		data=''
+		data={}
 		if not os.path.isdir(self.conf_dir):
 			try:
 				os.makedirs(self.conf_dir)
@@ -43,9 +43,9 @@ class SchedulerServer():
 		return ({'status':status,'data':data})
 	#def read_config
 
-	def write_config(self,task,color):
+	def write_config(self,task,key,value):
 		status=True
-		data=''
+		data={}
 		if os.path.isfile(self.conf_file):
 			try:
 				config=json.loads(open(self.conf_file).read())
@@ -54,9 +54,9 @@ class SchedulerServer():
 				status=False
 				self._debug(("unable to open %s") % self.conf_file)
 		if task in config.keys():
-			config[task].update({'background':color})
+			config[task].update({key:value})
 		else:
-			config[task]={'background':color}
+				config[task]={key:value}
 		try:
 			with open(self.conf_file,'w') as f:
 				json.dump(config,f,indent=4)
@@ -97,21 +97,21 @@ class SchedulerServer():
 						task['serial']=serial
 						self.remove_task(task)
 						continue
-				if 'spread' in data.keys():
-					if data['spread']==False:
-						if task_name in local_tasks.keys():
-							local_tasks[task_name][serial]=tasks_data[task_name][serial]
-							status=True
-						else:
-							local_tasks[task_name]={serial:tasks_data[task_name][serial]}
-							status=True
+#				if 'spread' in data.keys():
+#					if data['spread']==False:
+#						if task_name in local_tasks.keys():
+#							local_tasks[task_name][serial]=tasks_data[task_name][serial]
+#							status=True
+#						else:
+#							local_tasks[task_name]={serial:tasks_data[task_name][serial]}
+#							status=True
+#				else:
+				if task_name in local_tasks.keys():
+					local_tasks[task_name][serial]=tasks_data[task_name][serial]
+					status=True
 				else:
-					if task_name in local_tasks.keys():
-						local_tasks[task_name][serial]=tasks_data[task_name][serial]
-						status=True
-					else:
-						local_tasks[task_name]={serial:tasks_data[task_name][serial]}
-						status=True
+					local_tasks[task_name]={serial:tasks_data[task_name][serial]}
+					status=True
 		return ({'status':status,'data':local_tasks})
 
 	def get_remote_tasks(self,*args):
@@ -280,7 +280,7 @@ class SchedulerServer():
 
 	def _fill_task_data(self,task):
 		task['kind']=[]
-		if ['spread'] not in task.keys():
+		if 'spread' not in task.keys():
 			task['spread']=False
 		#set task kind
 		if task['dow']!='*':
