@@ -58,7 +58,13 @@ class TaskScheduler:
 		self.dbg=False
 		self.config={}
 		self._parse_config()
+		#Install signal handler
+		GLib.idle_add(self.install_handler,signal.SIGUSR1,priority=GLib.PRIORITY_HIGH)
 	#def __init__		
+		
+	def install_handler(self,sig):
+		GLib.unix_signal_add(GLib.PRIORITY_HIGH,sig,self.sig_refresh_grid_tasks,None)
+	#def install_handler
 
 	def _debug(self,msg):
 		if self.dbg:
@@ -1072,8 +1078,27 @@ class TaskScheduler:
 		self.style_provider.load_from_data(css)
 		Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),self.style_provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 	#def set_css_info	
-#class TaskScheduler
+	
+	def sig_refresh_grid_tasks(self,*args):
+		(gtkgrid,hbox)=self._get_tasks_grid()
+		for i in range(10,0,-1):
+			gtkgrid.set_opacity(i/10)
+			time.sleep(0.1)
+		GLib.timeout_add(1,self._refresh_grid_task_data,gtkgrid,hbox)
+		for i in range(11):
+			gtkgrid.set_opacity(i/10)
+			time.sleep(0.1)
+		GLib.idle_add(self.install_handler,signal.SIGUSR1,priority=GLib.PRIORITY_HIGH)
+	#def sig_refresh_grid_tasks
 
+#class TaskScheduler
+pid=str(os.getpid())
+pidfile="/tmp/taskscheduler.pid"
+if os.path.isfile(pidfile):
+	os.unlink(pidfile)
+f_pid=open(pidfile,'w')
+f_pid.write(pid)
+f_pid.close()
 GObject.threads_init()
 t=TaskScheduler()
 t.start_gui()		

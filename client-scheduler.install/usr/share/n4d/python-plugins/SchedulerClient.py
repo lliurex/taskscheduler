@@ -18,6 +18,7 @@ class SchedulerClient():
 		self.count=0
 		self.dbg=0
 		self.holidays_shell="/usr/bin/check_holidays.py"
+		self.pidfile="/tmp/taskscheduler.pid"
 
 	def startup(self,options):
 		t=threading.Thread(target=self._main_thread)
@@ -84,6 +85,14 @@ class SchedulerClient():
 					fname=name.replace(' ','_')
 					task_names[fname]=tasks[name][serial].copy()
 					self._write_crontab_for_task(task_names,prefix)
+		#Launch refresh signal to gui
+		if os.path.isfile(self.pidfile):
+			with open(self.pidfile,'r') as p_file:
+				pid=p_file.read()
+				try:
+					os.kill(int(pid),signal.SIGUSR1)
+				except:
+					pass
 
 	#def process_tasks
 
