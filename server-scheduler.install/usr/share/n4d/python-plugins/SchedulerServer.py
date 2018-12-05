@@ -225,7 +225,13 @@ class SchedulerServer():
 		return(serial_task)
 	#def _serialize_task
 	
-	def write_tasks(self,task):
+	def write_tasks(self,*args):
+		print("%s - %s"%(args,len(args)))
+		if len(args)==2:
+			task_type=args[0]
+			task=args[1]
+		elif len(args)==1:
+			task=args[0]
 		msg=''
 		status=False
 		#Ensure that dest path exists
