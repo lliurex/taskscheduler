@@ -43,7 +43,10 @@ class TaskScheduler():
 
 	def read_config(self):
 		result=self.n4dclient.read_config("","SchedulerServer")
-		return (result['data'])
+		if 'data' in result.keys():
+			return (result['data'])
+		else:
+			return({})
 	#def read_config
 
 	def write_config(self,task,key,value):
@@ -58,7 +61,7 @@ class TaskScheduler():
 			if type(result)==type({}):
 				tasks=result['data'].copy()
 		result=self.n4dclient.get_available_tasks("","SchedulerServer")
-		if type(result)==type({}):
+		if type(result)==type({}) and 'data' in result.keys():
 			tasks.update(result['data'].copy())
 		return tasks
 	#def get_available_tasks
