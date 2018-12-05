@@ -37,7 +37,15 @@ class SchedulerClient():
 			if self.scheduler_var!=self.count:
 				self.count=self.scheduler_var
 				self.process_tasks()
-				break
+				#Launch refresh signal to gui
+				if os.path.isfile(self.pidfile):
+					with open(self.pidfile,'r') as p_file:
+						pid=p_file.read()
+						try:
+							os.kill(int(pid),signal.SIGUSR1)
+						except:
+							pass
+						break
 			else:
 				time.sleep(1)
 
@@ -85,14 +93,6 @@ class SchedulerClient():
 					fname=name.replace(' ','_')
 					task_names[fname]=tasks[name][serial].copy()
 					self._write_crontab_for_task(task_names,prefix)
-		#Launch refresh signal to gui
-		if os.path.isfile(self.pidfile):
-			with open(self.pidfile,'r') as p_file:
-				pid=p_file.read()
-				try:
-					os.kill(int(pid),signal.SIGUSR1)
-				except:
-					pass
 
 	#def process_tasks
 
