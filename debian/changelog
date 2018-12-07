@@ -1,3 +1,22 @@
+taskscheduler (1.9999) bionic; urgency=medium
+
+  * N4d client only sends update signal to gui when in client machines
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Wed, 05 Dec 2018 17:28:54 +0100
+
+taskscheduler (1.999) bionic; urgency=medium
+
+  * Compatibility with older api
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Wed, 05 Dec 2018 17:09:06 +0100
+
+taskscheduler (1.99) bionic; urgency=medium
+
+  * Reworked gui
+  * Refresh task grid when server updates tasks
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Tue, 04 Dec 2018 12:00:31 +0100
+
 taskscheduler (1.0.6.2) bionic; urgency=medium
 
   * Bionic release
