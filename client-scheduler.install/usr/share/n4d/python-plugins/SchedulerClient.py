@@ -16,7 +16,7 @@ class SchedulerClient():
 		self.task_prefix='remote-' #Temp workaround->Must be declared on a n4d var
 		self.cron_dir='/etc/cron.d'
 		self.count=0
-		self.dbg=0
+		self.dbg=False
 		self.holidays_shell="/usr/bin/check_holidays.py"
 		self.pidfile="/tmp/taskscheduler.pid"
 
@@ -37,15 +37,6 @@ class SchedulerClient():
 			if self.scheduler_var!=self.count:
 				self.count=self.scheduler_var
 				self.process_tasks()
-				#Launch refresh signal to gui
-				if os.path.isfile(self.pidfile):
-					with open(self.pidfile,'r') as p_file:
-						pid=p_file.read()
-						try:
-							os.kill(int(pid),signal.SIGUSR1)
-						except:
-							pass
-						break
 			else:
 				time.sleep(1)
 
@@ -93,6 +84,16 @@ class SchedulerClient():
 					fname=name.replace(' ','_')
 					task_names[fname]=tasks[name][serial].copy()
 					self._write_crontab_for_task(task_names,prefix)
+		#Launch refresh signal to gui
+		if os.path.isfile(self.pidfile):
+			with open(self.pidfile,'r') as p_file:
+				pid=p_file.read()
+				self._debug("Sending signal to %s"%pid)
+				try:
+					os.kill(int(pid),signal.SIGUSR1)
+				except Exception as e:
+					print("%s"%e)
+					pass
 
 	#def process_tasks
 

@@ -226,7 +226,7 @@ class SchedulerServer():
 	#def _serialize_task
 	
 	def write_tasks(self,*args):
-		print("%s - %s"%(args,len(args)))
+	#For compatibility with old api
 		if len(args)==2:
 			task_type=args[0]
 			task=args[1]
@@ -250,7 +250,7 @@ class SchedulerServer():
 		sched_tasks={}
 		if os.path.isfile(wrkfile):
 			sched_tasks=json.loads(open(wrkfile).read())
-			if not task_serial:
+			if not task_serial or str(task_serial)=="0":
 				serials=[str(i) for i in sched_tasks[task_name].keys()]
 				self._debug("Serials %s"%serials)
 				task_serial="0"
