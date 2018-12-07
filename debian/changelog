@@ -1,3 +1,9 @@
+taskscheduler (1.99991) bionic; urgency=medium
+
+  * Get name of bell scheduler alarms from bell scheduler itself
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Fri, 07 Dec 2018 12:13:56 +0100
+
 taskscheduler (1.9999) bionic; urgency=medium
 
   * N4d client only sends update signal to gui when in client machines
