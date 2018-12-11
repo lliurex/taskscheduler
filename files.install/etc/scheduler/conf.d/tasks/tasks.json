@@ -1,0 +1,14 @@
+{
+	"Maintenance":
+	{
+		"Update mirror":"lliurex-mirror unattendedupdate llx16",
+		"Update Lliurex":"lliurex-upgrade -u",
+		"Shutdown":"shutdown -h"
+	},
+	"Utilities":
+	{
+		"Notification":"notify-all %s",
+		"Play sound":"ffplay -nodisp %s",
+		"Update Lliurex Store cache":"lliurex-store --update"
+	}
+}
