@@ -58,6 +58,7 @@ class TaskScheduler:
 		self.dbg=False
 		self.config={}
 		self._parse_config()
+		self.autorefresh=False
 		#Install signal handler
 		GLib.idle_add(self.install_handler,signal.SIGUSR1,priority=GLib.PRIORITY_HIGH)
 	#def __init__		
@@ -423,7 +424,6 @@ class TaskScheduler:
 		date_box.set_halign(Gtk.Align.END)
 		dow_box=Gtk.VBox(False,False,spacing=MARGIN)
 		dow_box.set_valign(Gtk.Align.CENTER)
-		self._debug("Search for %s"%info['cmd'])
 		eta='--'
 		if 'val' in info.keys():
 			if int(info['val'])<3600:
@@ -433,8 +433,9 @@ class TaskScheduler:
 			else:
 				eta="%s d."%int(info['val']/86400)
 
-		cmd=self._get_cmd_for_description(info['cmd'])
 		#Header
+		self._debug("Search for %s"%info['cmd'])
+		cmd=self._get_cmd_for_description(info['cmd'])
 		lbl_task=Gtk.Label(False,False)
 		lbl_task.set_ellipsize(Pango.EllipsizeMode.END)
 		lbl_task.set_max_width_chars(25)
@@ -800,6 +801,7 @@ class TaskScheduler:
 			for i_task in task[g_name].keys():
 				task[g_name][i_task]['cmd']=self._get_description_for_cmd(task[g_name][i_task]['cmd'])
 		self._debug("Writing task info...%s"%task)
+		self.autorefresh=False
 		(status,msg)=self.scheduler.write_tasks(task)
 		if status:
 			self._debug("OK - %s - %s"%(msg,tasks))
@@ -930,7 +932,9 @@ class TaskScheduler:
 
 	def _get_cmd_for_description(self,desc):
 		cmd=desc
-		if desc in self.description_command.keys():
+		if "bellscheduler-token-management" in cmd:
+			cmd=self._get_bell_name(cmd)
+		elif desc in self.description_command.keys():
 			cmd=self.description_command[desc]
 		self._debug("Cmd get %s -> %s"%(desc,cmd))
 		return cmd
@@ -950,7 +954,30 @@ class TaskScheduler:
 		self.i18n.update({_(desc):desc})
 		return sw_ok
 	#def _add_translation_for_desc
-	
+
+	def _get_bell_name(self,cmd):
+		desc="Bell"
+		f_bell='/etc/bellScheduler/bell_list'
+		if os.path.isfile(f_bell):
+			index=''
+			list_cmd=cmd.split(' ')
+			list_cmd.reverse()
+			for word in list_cmd:
+				print("ANALYZE WORD %s"%word)
+				if word.isdigit():
+				#First number must be bell index
+					print("INDEX: %s"%word)
+					index=word
+					break
+			if index:
+				try:
+					data=json.loads(open(f_bell).read())
+					if index in data.keys():
+						desc+=": %s"%data[index]['name']
+				except:
+					pass
+		return desc
+
 	def set_css_info(self):
 		css = b"""
 
@@ -1085,14 +1112,17 @@ class TaskScheduler:
 	#def set_css_info	
 	
 	def sig_refresh_grid_tasks(self,*args):
-		(gtkgrid,hbox)=self._get_tasks_grid()
-		for i in range(10,0,-1):
-			gtkgrid.set_opacity(i/10)
-			time.sleep(0.1)
-		GLib.timeout_add(1,self._refresh_grid_task_data,gtkgrid,hbox)
-		for i in range(11):
-			gtkgrid.set_opacity(i/10)
-			time.sleep(0.1)
+		if self.autorefresh==False:
+			self.autorefresh=True
+		else:
+			(gtkgrid,hbox)=self._get_tasks_grid()
+			for i in range(10,0,-1):
+				gtkgrid.set_opacity(i/10)
+				time.sleep(0.1)
+			GLib.timeout_add(1,self._refresh_grid_task_data,gtkgrid,hbox)
+			for i in range(11):
+				gtkgrid.set_opacity(i/10)
+				time.sleep(0.1)
 		GLib.idle_add(self.install_handler,signal.SIGUSR1,priority=GLib.PRIORITY_HIGH)
 	#def sig_refresh_grid_tasks
 
