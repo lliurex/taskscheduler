@@ -46,6 +46,7 @@ class SchedulerServer():
 	def write_config(self,task,key,value):
 		status=True
 		data={}
+                config={}
 		if os.path.isfile(self.conf_file):
 			try:
 				config=json.loads(open(self.conf_file).read())
@@ -56,7 +57,7 @@ class SchedulerServer():
 		if task in config.keys():
 			config[task].update({key:value})
 		else:
-				config[task]={key:value}
+			config[task]={key:value}
 		try:
 			with open(self.conf_file,'w') as f:
 				json.dump(config,f,indent=4)
