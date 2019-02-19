@@ -7,8 +7,8 @@
 	},
 	"Utilities":
 	{
-		"Notification":"notify-all %s",
+		"Notification":"notify-send -u critical -i taskscheduler -t 0 %s",
 		"Play sound":"ffplay -nodisp %s",
-		"Update Lliurex Store cache":"lliurex-store --update"
+		"Update Lliurex Store cache":"lliurex-store-cli --update"
 	}
 }
