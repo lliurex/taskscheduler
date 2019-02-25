@@ -1,13 +1,12 @@
 #!/bin/bash
 
 PYTHON_FILES="../scheduler-gui.install/usr/share/taskscheduler/bin/taskScheduler.py ../python3-taskscheduler.install/usr/share/taskscheduler/*.py ../scheduler-gui.install/usr/share/taskscheduler/bin/detailDateBox.py"
-UI_FILES="../scheduler-gui.install/usr/share/taskscheduler/rsrc/taskScheduler.ui"
 CMD_DIR="../files.install/etc/scheduler/conf.d/commands"
 TASKS_DIR="../files.install/etc/scheduler/conf.d/tasks"
 
 mkdir -p taskscheduler/
 
-xgettext $UI_FILES $PYTHON_FILES -o taskscheduler/taskscheduler.pot
+xgettext $PYTHON_FILES -o taskscheduler/taskscheduler.pot
 
 DIR=$PWD
 cd $CMD_DIR
