@@ -235,7 +235,7 @@ class TaskScheduler:
 		btn_refresh=Gtk.Button()
 		tlb_refresh=Gtk.ToolButton(btn_refresh)
 		tlb_refresh.connect("clicked",_refresh_tasks)
-		tlb_refresh.set_icon_name("gtk-refresh")
+		tlb_refresh.set_icon_name("view-refresh")
 		tlb_refresh.set_tooltip_text(_("Reload tasks"))
 		toolbar.insert(tlb_refresh,1)
 		btn_config=Gtk.Button()
@@ -352,7 +352,7 @@ class TaskScheduler:
 			if command in commands.keys():
 				if 'parms' in commands[command].keys():
 					parm=commands[command]['parms']
-					inp_parm.set_placeholder_text(parm)
+					inp_parm.set_placeholder_text(_(parm))
 					rvl_parm.set_reveal_child(True)
 
 		grid=Gtk.VBox()
@@ -372,6 +372,7 @@ class TaskScheduler:
 		(boxcmd,inp_cmd)=self._entry_field(_("Insert command"),cmb=True)
 		commands=self.scheduler.get_commands()
 		for command in commands.keys(): 
+			self._add_translation_for_desc(command)
 			inp_cmd.append_text(_(command))
 		inp_cmd.connect("changed",_display_needed_parms)
 		(boxdesc,inp_desc)=self._entry_field(_("Insert description (optional)"))
@@ -951,7 +952,7 @@ class TaskScheduler:
 		pb=GdkPixbuf.Pixbuf.new_from_file("%s"%BANNER_IMG)
 		dlg_about.set_logo(pb)
 		dlg_about.set_program_name("TaskScheduler")
-		dlg_about.set_version("1.0")
+		dlg_about.set_version("2.0")
 		dlg_about.set_website("http://lliurex.net")
 		dlg_about.set_website_label("LliureX")
 		dlg_about.set_copyright("LliureX Team")
