@@ -2,12 +2,12 @@
 	"Sound":
 	{
 		"cmd":"aplay",
-		"parms":"file"
+		"parms":"Path to sound file"
 	},
 	"Reminder":
 	{
 		"cmd":"notify-send -u critical -i taskscheduler -t 0",
-		"parms":"text"
+		"parms":"Reminder text"
 	}
 
 }
