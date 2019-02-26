@@ -42,6 +42,7 @@ MARGIN=6
 
 class TaskScheduler:
 	def __init__(self):
+		self.dbg=True
 		self.last_task_type='remote'
 		self.ldm_helper='/usr/sbin/sched-ldm.sh'
 		self.conf_dir="/etc/scheduler/conf.d"
@@ -55,7 +56,6 @@ class TaskScheduler:
 		self.scheduler=scheduler()
 		self.cronparser=cronParser()
 		self.tasks_per_row=3
-		self.dbg=False
 		self.config={}
 		self._parse_config()
 		self.autorefresh=False
@@ -92,6 +92,7 @@ class TaskScheduler:
 				self._set_visible_stack(None,"tasks",Gtk.StackTransitionType.CROSSFADE,1)
 
 		mw=Gtk.Window()
+		mw.set_title("TaskScheduler")
 		mw.connect("destroy",self._quit)
 		mw.connect("key_press_event",keypress)
 		mw.set_resizable(False)
@@ -125,12 +126,33 @@ class TaskScheduler:
 			self.stack.set_transition_type(transition)
 		if duration:
 			self.stack.set_transition_duration(duration)
+		#clear stack 
+		if stack!='tasks':
+			for stack_child in self.stack.get_child_by_name(stack).get_children():
+				if type(stack_child)==type(Gtk.Grid()):
+					for grid_child in stack_child.get_children():
+						if type(grid_child)==type(Gtk.ComboBoxText()):
+							for cmb_child in grid_child.get_children():
+								cmb_child.set_text("")
+								cmb_child.set_placeholder_text(_("Insert text or choose one"))
+						elif type(grid_child)==type(Gtk.Box()) or type(grid_child)==type(Gtk.VBox()):
+								for box_child in grid_child.get_children():
+									if type(box_child)==type(Gtk.Entry()):
+										box_child.set_text("")
+										box_child.set_placeholder_text(_("Insert text"))
+									if type(box_child)==type(Gtk.ComboBoxText()):
+										for cmb_child in box_child.get_children():
+											cmb_child.set_text("")
+											cmb_child.set_placeholder_text(_("Insert text or choose one"))
+
 		self.stack.set_visible_child_name(stack)
+
+		#default values
 		self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
 		self.stack.set_transition_duration(1000)
 	#def _set_visible_stack
 
-	def _entry_field(self,label):
+	def _entry_field(self,label,cmb=False):
 		box=Gtk.VBox(True,True)
 		box.set_name("WHITE_BACKGROUND")
 		lbl=Gtk.Label()
@@ -138,7 +160,10 @@ class TaskScheduler:
 		lbl.set_halign(Gtk.Align.START)
 		lbl.set_markup("%s"%_(label))
 		box.add(lbl)
-		inp=Gtk.Entry()
+		if cmb:
+			inp=Gtk.ComboBoxText.new_with_entry()
+		else:
+			inp=Gtk.Entry()
 		inp.set_name("GtkEntry")
 		box.add(inp)
 		return (box,inp)
@@ -307,37 +332,57 @@ class TaskScheduler:
 		def _begin_add_new_command(*args):
 			task=cmb_tasks.get_active_text()
 			task=self._get_translation_for_desc(task)
-			cmd=inp_cmd.get_text()
+			if task not in names:
+				cmb_tasks.append_text(task)
+			cmd=inp_cmd.get_active_text()
 			desc=inp_desc.get_text()
 			if desc=='':
 				desc=cmd
-			if self.scheduler.add_command(task,cmd,desc):
-				self._set_visible_stack(None,"tasks",Gtk.StackTransitionType.CROSSFADE,100)
+			if cmd and task:
+				if rvl_parm.get_reveal_child():
+					parm=inp_parm.get_text()
+					cmd="%s %s"%(cmd,parm)
+				if self.scheduler.add_command(task,cmd,desc):
+					self._set_visible_stack(None,"tasks",Gtk.StackTransitionType.CROSSFADE,100)
 
-		grid=Gtk.Box(True,True)
+		def _display_needed_parms(*args):
+			command=inp_cmd.get_active_text()
+			command=self._get_translation_for_desc(command)
+			rvl_parm.set_reveal_child(False)
+			if command in commands.keys():
+				if 'parms' in commands[command].keys():
+					parm=commands[command]['parms']
+					inp_parm.set_placeholder_text(parm)
+					rvl_parm.set_reveal_child(True)
+
+		grid=Gtk.VBox()
 		grid.set_name("MAIN_COMMANDS_GRID")
 		grid_cmd=Gtk.Grid(orientation=Gtk.Orientation.VERTICAL)
-		grid_cmd.set_hexpand(False)
+		grid_cmd.set_row_homogeneous(True)
+		grid_cmd.set_hexpand(True)
 		grid_cmd.set_vexpand(False)
 		grid_cmd.set_halign(Gtk.Align.CENTER)
 		grid_cmd.set_valign(Gtk.Align.CENTER)
 		grid_cmd.set_name("COMMANDS_GRID")
-		lbl_tasks=Gtk.Label(_("Task group"))
-		lbl_tasks.set_name("ENTRY_LABEL")
-		lbl_tasks.set_halign(Gtk.Align.START)
-		cmb_tasks=Gtk.ComboBoxText.new_with_entry()
-		cmb_tasks.set_name("GtkCombo")
+		(boxtask,cmb_tasks)=self._entry_field(_("Task Group"),cmb=True)
 		(tasks,names)=self._load_tasks()
 		for task in names:
 			cmb_tasks.append_text(_(task))
 
-		(boxcmd,inp_cmd)=self._entry_field(_("Insert command"))
+		(boxcmd,inp_cmd)=self._entry_field(_("Insert command"),cmb=True)
+		commands=self.scheduler.get_commands()
+		for command in commands.keys(): 
+			inp_cmd.append_text(_(command))
+		inp_cmd.connect("changed",_display_needed_parms)
 		(boxdesc,inp_desc)=self._entry_field(_("Insert description (optional)"))
 
-		grid_cmd.add(lbl_tasks)
-		grid_cmd.add(cmb_tasks)
-		grid_cmd.add(boxcmd)
-		grid_cmd.add(boxdesc)
+		rvl_parm=Gtk.Revealer()
+		(boxparm,inp_parm)=self._entry_field(_("Parameters"))
+		rvl_parm.add(boxparm)
+		grid_cmd.attach(boxtask,0,0,1,1)
+		grid_cmd.attach(boxcmd,0,1,1,1)
+		grid_cmd.attach(rvl_parm,0,2,1,1)
+		grid_cmd.attach(boxdesc,0,3,1,1)
 		grid.add(grid_cmd)
 
 		box_btn=Gtk.Box()
@@ -351,6 +396,10 @@ class TaskScheduler:
 		btn_cancel.set_tooltip_text(_("Cancel"))
 		box_btn.add(btn_cancel)
 		box_btn.add(btn_ok)
+		box_btn.set_hexpand(False)
+		box_btn.set_vexpand(False)
+		box_btn.set_valign(Gtk.Align.CENTER)
+		box_btn.set_halign(Gtk.Align.END)
 		grid_cmd.add(box_btn)
 		return(grid)
 	#def _render_new_command
@@ -963,10 +1012,8 @@ class TaskScheduler:
 			list_cmd=cmd.split(' ')
 			list_cmd.reverse()
 			for word in list_cmd:
-				print("ANALYZE WORD %s"%word)
 				if word.isdigit():
 				#First number must be bell index
-					print("INDEX: %s"%word)
 					index=word
 					break
 			if index:
