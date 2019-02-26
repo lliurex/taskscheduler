@@ -228,12 +228,14 @@ class SchedulerServer():
 	
 	def write_tasks(self,*args):
 	#For compatibility with old api
+		task_serial="0"
 		if len(args)==2:
 			task_type=args[0]
 			task=args[1]
 		elif len(args)==1:
 			task=args[0]
 		msg=''
+		self._debug("Received task: %s"%task)
 		status=False
 		#Ensure that dest path exists
 		if not os.path.isdir(self.tasks_dir):
@@ -244,6 +246,10 @@ class SchedulerServer():
 			for index,data in serial.iteritems():
 				task_serial=index
 				task_data=data
+				#If bell scheduler wants to schedule something use bellid as task_serial
+				if 'BellId' in task_data.keys():
+					task_serial=task_data['BellId']
+		self._debug("Task serial %s"%task_serial)
 		#Open dest file
 		wrkfile=self.tasks_dir+'/'+task_name
 		wrkfile=wrkfile.replace(' ','_')
@@ -263,7 +269,7 @@ class SchedulerServer():
 							break
 		else:
 			self._debug("%s doen't exists"%wrkfile)
-			task_serial="0"
+#			task_serial="0"
 		self._debug("Writing task info %s - %s"%(task_name,task_serial))
 		if task_name in sched_tasks.keys():
 			if task_serial in sched_tasks[task_name].keys():

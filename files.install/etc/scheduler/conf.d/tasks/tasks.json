@@ -2,13 +2,11 @@
 	"Maintenance":
 	{
 		"Update mirror":"lliurex-mirror unattendedupdate llx16",
-		"Update Lliurex":"lliurex-upgrade -u",
-		"Shutdown":"shutdown -h"
+		"Update Lliurex":"lliurex-upgrade -u"
 	},
 	"Utilities":
 	{
-		"Notification":"notify-send -u critical -i taskscheduler -t 0 %s",
-		"Play sound":"ffplay -nodisp %s",
-		"Update Lliurex Store cache":"lliurex-store-cli --update"
+		"Update Lliurex Store cache":"lliurex-store-cli --update",
+		"Shutdown":"shutdown -h"
 	}
 }
