@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-26 17:37+0100\n"
+"POT-Creation-Date: 2019-02-26 17:40+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -556,7 +556,7 @@ msgstr ""
 
 #: files.install/etc/scheduler/conf.d/commands/commands.json:4
 #: files.install/etc/scheduler/conf.d/commands/commands.json:5
-msgid "file"
+msgid "Path to sound file"
 msgstr ""
 
 #: files.install/etc/scheduler/conf.d/commands/commands.json:7
@@ -565,7 +565,7 @@ msgstr ""
 
 #: files.install/etc/scheduler/conf.d/commands/commands.json:9
 #: files.install/etc/scheduler/conf.d/commands/commands.json:10
-msgid "text"
+msgid "Reminder text"
 msgstr ""
 
 #: files.install/etc/scheduler/conf.d/tasks/tasks.json:2
