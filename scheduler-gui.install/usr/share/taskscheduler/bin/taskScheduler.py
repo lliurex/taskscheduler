@@ -42,7 +42,7 @@ MARGIN=6
 
 class TaskScheduler:
 	def __init__(self):
-		self.dbg=True
+		self.dbg=False
 		self.last_task_type='remote'
 		self.ldm_helper='/usr/sbin/sched-ldm.sh'
 		self.conf_dir="/etc/scheduler/conf.d"
@@ -335,13 +335,17 @@ class TaskScheduler:
 			if task not in names:
 				cmb_tasks.append_text(task)
 			cmd=inp_cmd.get_active_text()
+			cmd=self._get_translation_for_desc(cmd)
+			cmd=self._get_description_for_cmd(cmd)
 			desc=inp_desc.get_text()
 			if desc=='':
-				desc=cmd
+				desc=inp_cmd.get_active_text()
 			if cmd and task:
 				if rvl_parm.get_reveal_child():
 					parm=inp_parm.get_text()
 					cmd="%s %s"%(cmd,parm)
+					if desc==inp_cmd.get_active_text():
+						desc="%s %s"%(desc,parm)
 				if self.scheduler.add_command(task,cmd,desc):
 					self._set_visible_stack(None,"tasks",Gtk.StackTransitionType.CROSSFADE,100)
 
@@ -371,8 +375,9 @@ class TaskScheduler:
 
 		(boxcmd,inp_cmd)=self._entry_field(_("Insert command"),cmb=True)
 		commands=self.scheduler.get_commands()
-		for command in commands.keys(): 
+		for command,data in commands.items(): 
 			self._add_translation_for_desc(command)
+			self._add_description_for_cmd(command,data['cmd'])
 			inp_cmd.append_text(_(command))
 		inp_cmd.connect("changed",_display_needed_parms)
 		(boxdesc,inp_desc)=self._entry_field(_("Insert description (optional)"))
@@ -855,6 +860,7 @@ class TaskScheduler:
 		(status,msg)=self.scheduler.write_tasks(task)
 		if status:
 			self._debug("OK - %s - %s"%(msg,tasks))
+			self._debug("%s"%(task))
 			if tasks in task.keys():
 				if '' in task[tasks].keys():
 					task[tasks][msg]=task[tasks]['']
@@ -891,6 +897,8 @@ class TaskScheduler:
 	#def _refresh_box_task
 
 	def _refresh_box_task_data(self,widget,task):
+		self._debug("Refresh %s"%task)
+		info={}
 		for g_group, g_index in task.items():
 			group=g_group
 			for i_index,i_info in g_index.items():
@@ -915,11 +923,11 @@ class TaskScheduler:
 		cmds=[]
 		tasks=self.scheduler.get_available_tasks()
 		for name,command in tasks.items():
-			if name not in names:
+			if name not in names and name:
 				names.append(name)
 				self._add_translation_for_desc(name)
 			for cmd in command.keys():
-				if cmd not in cmds:
+				if cmd not in cmds and cmd:
 					cmds.append(cmd)
 					self._add_description_for_cmd(cmd,command[cmd])
 		return(tasks,names)
@@ -967,9 +975,10 @@ class TaskScheduler:
 
 	def _add_description_for_cmd(self,cmd,desc):
 		sw_ok=True
-		self._debug("Desc add %s -> %s"%(cmd,desc))
-		self.command_description.update({cmd:desc})
-		self.description_command.update({desc:cmd})
+		if cmd not in self.command_description:
+			self._debug("Desc add %s -> %s"%(cmd,desc))
+			self.command_description.update({cmd:desc})
+			self.description_command.update({desc:cmd})
 	#def _add_description_for_cmd(self,cmd,desc):
 
 	def _get_description_for_cmd(self,cmd):

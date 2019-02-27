@@ -143,7 +143,11 @@ class SchedulerServer():
 		for wrkfile in wrkfiles:
 			task=self._read_tasks_file(wrkfile)
 			if task:
-				tasks.update(task)
+				for task_key in task.keys():
+					if task_key in tasks.keys():
+						tasks[task_key].update(task[task_key])
+					else:
+						tasks.update(task)
 		self._debug("Tasks loaded")
 		self._debug(str(tasks))
 		return({'status':True,'data':tasks})
