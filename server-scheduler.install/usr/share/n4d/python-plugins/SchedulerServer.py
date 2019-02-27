@@ -46,7 +46,7 @@ class SchedulerServer():
 	def write_config(self,task,key,value):
 		status=True
 		data={}
-                config={}
+		config={}
 		if os.path.isfile(self.conf_file):
 			try:
 				config=json.loads(open(self.conf_file).read())
@@ -192,12 +192,15 @@ class SchedulerServer():
 		wrk_dir=self.tasks_dir
 		self._debug("Removing task from system")
 		sw_del=False
+		sw_bell=False
 		msg=''
 		wrkfile=wrk_dir+'/'+task['name']
 		wrkfile=wrkfile.replace(' ','_')
 		tasks=self._read_tasks_file(wrkfile)
 		if task['name'] in tasks.keys():
 			self._debug("Serial: %s"%task['serial'])
+			if 'BellId' in tasks[task['name']][task['serial']].keys():
+				sw_bell=True
 			if task['serial'] in tasks[task['name']].keys():
 				del tasks[task['name']][task['serial']]
 				self._debug("Task deleted")
@@ -212,7 +215,8 @@ class SchedulerServer():
 
 
 		if sw_del:
-			tasks=self._serialize_task(tasks)
+			if sw_bell==False:
+				tasks=self._serialize_task(tasks)
 			with open(wrkfile,'w') as json_data:
 				json.dump(tasks,json_data,indent=4)
 			self._register_cron_update()
