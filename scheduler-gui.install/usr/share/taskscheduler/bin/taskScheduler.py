@@ -229,7 +229,7 @@ class TaskScheduler:
 		btn_add=Gtk.Button()
 		tlb_add=Gtk.ToolButton(btn_add)
 		tlb_add.connect("clicked",self._add_task)
-		tlb_add.set_icon_name("gtk-add")
+		tlb_add.set_icon_name("list-add")
 		tlb_add.set_tooltip_text(_("Add new task"))
 		toolbar.insert(tlb_add,0)
 		btn_refresh=Gtk.Button()
@@ -241,14 +241,14 @@ class TaskScheduler:
 		btn_config=Gtk.Button()
 		tlb_config=Gtk.ToolButton(btn_config)
 		tlb_config.connect("clicked",_show_prefs)
-		tlb_config.set_icon_name("preferences-system")
+		tlb_config.set_icon_name("document-properties")
 		tlb_config.set_tooltip_text(_("Open preferences menu"))
 		toolbar.insert(tlb_config,2)
 		btn_help=Gtk.Button()
 		tlb_help=Gtk.ToolButton(btn_help)
 		tlb_help.set_tooltip_text(_("Open help menu"))
 		tlb_help.connect("clicked",_show_help)
-		tlb_help.set_icon_name("help-browser")
+		tlb_help.set_icon_name("dialog-information")
 		toolbar.insert(tlb_help,-1)
 		toolbar.set_margin_bottom(0)
 		return(toolbar)
@@ -346,6 +346,8 @@ class TaskScheduler:
 					cmd="%s %s"%(cmd,parm)
 					if desc==inp_cmd.get_active_text():
 						desc="%s %s"%(desc,parm)
+				if "kdialog" in cmd:
+					cmd="%s 5000"%cmd
 				if self.scheduler.add_command(task,cmd,desc):
 					self._set_visible_stack(None,"tasks",Gtk.StackTransitionType.CROSSFADE,100)
 
@@ -733,7 +735,7 @@ class TaskScheduler:
 			add_task_grid.set_task_data(task)
 			add_task_grid.load_task_details()
 			box_btn=Gtk.Grid()
-			btn_del=Gtk.Button.new_from_icon_name("gtk-delete",Gtk.IconSize.BUTTON)
+			btn_del=Gtk.Button.new_from_icon_name("edit-delete",Gtk.IconSize.BUTTON)
 			btn_del.connect("clicked",self._delete_task,pop,widget,add_task_grid,task)
 			btn_del.set_margin_right(MARGIN*2)
 			btn_del.set_tooltip_text(_("Delete task"))

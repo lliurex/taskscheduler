@@ -268,12 +268,14 @@ class SchedulerServer():
 			if not task_serial or str(task_serial)=="0":
 				serials=[str(i) for i in sched_tasks[task_name].keys()]
 				self._debug("Serials %s"%serials)
-				task_serial="0"
 				if task_name in sched_tasks.keys():
 					for ser in range(len(sched_tasks[task_name])+1):
+						self._debug("read serial %s"%str(ser))
 						if not str(ser) in serials:
 							task_serial=str(ser)
 							self._debug("New serial %s"%task_serial)
+							break
+						elif task_serial=="0":
 							break
 		else:
 			self._debug("%s doen't exists"%wrkfile)

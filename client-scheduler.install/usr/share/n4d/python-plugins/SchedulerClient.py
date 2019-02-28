@@ -130,7 +130,12 @@ class SchedulerClient():
 						data.write('SHELL=/bin/bash\n')
 						data.write('PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n')
 						data.write('DISPLAY=:0\n')
-						data.write('XAUTHORITY=/var/run/lightdm/root/:0\n')
+						#Get authority file
+						xauth=""
+						for f in os.listdir("/var/run/sddm"):
+							if f.startswith("{"):
+								xauth="/var/run/sddm/%s"%f
+						data.write('XAUTHORITY=%s\n'%xauth)
 						if 'https_proxy' in os.environ.keys():
 							https_proxy=os.environ['https_proxy']
 							data.write('https_proxy=%s\n'%https_proxy)

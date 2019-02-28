@@ -6,7 +6,7 @@
 	},
 	"Reminder":
 	{
-		"cmd":"notify-send -u critical -i taskscheduler -t 0",
+		"cmd":"kdialog --icon taskscheduler --title taskscheduler --passivepopup",
 		"parms":"Reminder text"
 	}
 
