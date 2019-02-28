@@ -129,8 +129,9 @@ class TaskScheduler():
 			if inc_h:
 				inc_h=inc_h-inc_m
 			#Get days left to dow. As is a special inc must be calculated aside
-			if task['dow']!='*' and task['mon']=='*':
+			if (task['dow']!='*' and task['mon']=='*') or (task['mon']=='*' and task['dom']=='*'):
 				next_dow=0
+				days_dow=task['dow']
 				weekday=timenow.weekday()+1
 				sw_inc=False
 				if (l_h<timenow.hour or (l_h==timenow.hour and l_m<timenow.minute)):
@@ -138,8 +139,10 @@ class TaskScheduler():
 					sw_inc=True
 					if weekday>7:
 						weekday=1
-				if str(weekday) not in task['dow']:
-					if task['dow'].isdigit():
+				if days_dow=='*':
+					days_dow="1,2,3,4,5,6,7"
+				if str(weekday) not in days_dow:
+					if days_dow.isdigit():
 						dow=int(task['dow'])
 						if sw_inc and dow==weekday:
 							weekday-=1
@@ -152,7 +155,7 @@ class TaskScheduler():
 					else:
 						next_dow=7
 						next_week=0
-						for str_dow in task['dow'].split(','):
+						for str_dow in days_dow.split(','):
 							dow=int(str_dow)
 							day_diff=abs(weekday-dow)
 							if day_diff<next_dow:
@@ -160,8 +163,15 @@ class TaskScheduler():
 								if dow<weekday:
 									next_week=7
 								next_dow=day_diff
+							elif dow>weekday:
+								next_week=0
 						next_dow+=next_week
-				inc_dow=next_dow*24*60*60	
+				if sw_inc:
+					inc_dow=next_dow*24*60*60-(((timenow.hour-l_h)*60*60)+((timenow.minute-l_m)*60))
+					if timenow.hour==l_h:
+						inc_dow=inc_dow+(24*60*60)
+				else:
+					inc_dow=next_dow*24*60*60
 			time_task=timestamp+inc_mon+inc_dom+inc_h+inc_m+inc_dow
 		return time_task
 	#def get_task_timestamp
