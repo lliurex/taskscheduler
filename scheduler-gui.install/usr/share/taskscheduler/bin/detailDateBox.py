@@ -26,7 +26,7 @@ _ = gettext.gettext
 
 
 WIDGET_MARGIN=6
-DBG=1
+DBG=0
 
 class DetailBox:
 	
@@ -60,6 +60,8 @@ class DetailBox:
 		self.task['type']=''
 		self.task['spread']=''
 		self.task.update(task)
+		if self.task['serial']=='':
+			self.task['serial']="0"
 		if 'kind' in task.keys():
 			if type(task['kind'])==type(''):
 				self.task['kind']=task['kind'].split(',')

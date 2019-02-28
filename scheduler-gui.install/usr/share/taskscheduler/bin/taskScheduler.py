@@ -42,7 +42,7 @@ MARGIN=6
 
 class TaskScheduler:
 	def __init__(self):
-		self.dbg=True
+		self.dbg=False
 		self.last_task_type='remote'
 		self.ldm_helper='/usr/sbin/sched-ldm.sh'
 		self.conf_dir="/etc/scheduler/conf.d"
@@ -229,26 +229,26 @@ class TaskScheduler:
 		btn_add=Gtk.Button()
 		tlb_add=Gtk.ToolButton(btn_add)
 		tlb_add.connect("clicked",self._add_task)
-		tlb_add.set_icon_name("gtk-add")
+		tlb_add.set_icon_name("list-add")
 		tlb_add.set_tooltip_text(_("Add new task"))
 		toolbar.insert(tlb_add,0)
 		btn_refresh=Gtk.Button()
 		tlb_refresh=Gtk.ToolButton(btn_refresh)
 		tlb_refresh.connect("clicked",_refresh_tasks)
-		tlb_refresh.set_icon_name("gtk-refresh")
+		tlb_refresh.set_icon_name("view-refresh")
 		tlb_refresh.set_tooltip_text(_("Reload tasks"))
 		toolbar.insert(tlb_refresh,1)
 		btn_config=Gtk.Button()
 		tlb_config=Gtk.ToolButton(btn_config)
 		tlb_config.connect("clicked",_show_prefs)
-		tlb_config.set_icon_name("preferences-system")
+		tlb_config.set_icon_name("document-properties")
 		tlb_config.set_tooltip_text(_("Open preferences menu"))
 		toolbar.insert(tlb_config,2)
 		btn_help=Gtk.Button()
 		tlb_help=Gtk.ToolButton(btn_help)
 		tlb_help.set_tooltip_text(_("Open help menu"))
 		tlb_help.connect("clicked",_show_help)
-		tlb_help.set_icon_name("help-browser")
+		tlb_help.set_icon_name("dialog-information")
 		toolbar.insert(tlb_help,-1)
 		toolbar.set_margin_bottom(0)
 		return(toolbar)
@@ -335,13 +335,19 @@ class TaskScheduler:
 			if task not in names:
 				cmb_tasks.append_text(task)
 			cmd=inp_cmd.get_active_text()
+			cmd=self._get_translation_for_desc(cmd)
+			cmd=self._get_description_for_cmd(cmd)
 			desc=inp_desc.get_text()
 			if desc=='':
-				desc=cmd
+				desc=inp_cmd.get_active_text()
 			if cmd and task:
 				if rvl_parm.get_reveal_child():
 					parm=inp_parm.get_text()
 					cmd="%s %s"%(cmd,parm)
+					if desc==inp_cmd.get_active_text():
+						desc="%s %s"%(desc,parm)
+				if "kdialog" in cmd:
+					cmd="%s 5000"%cmd
 				if self.scheduler.add_command(task,cmd,desc):
 					self._set_visible_stack(None,"tasks",Gtk.StackTransitionType.CROSSFADE,100)
 
@@ -352,7 +358,7 @@ class TaskScheduler:
 			if command in commands.keys():
 				if 'parms' in commands[command].keys():
 					parm=commands[command]['parms']
-					inp_parm.set_placeholder_text(parm)
+					inp_parm.set_placeholder_text(_(parm))
 					rvl_parm.set_reveal_child(True)
 
 		grid=Gtk.VBox()
@@ -371,7 +377,9 @@ class TaskScheduler:
 
 		(boxcmd,inp_cmd)=self._entry_field(_("Insert command"),cmb=True)
 		commands=self.scheduler.get_commands()
-		for command in commands.keys(): 
+		for command,data in commands.items(): 
+			self._add_translation_for_desc(command)
+			self._add_description_for_cmd(command,data['cmd'])
 			inp_cmd.append_text(_(command))
 		inp_cmd.connect("changed",_display_needed_parms)
 		(boxdesc,inp_desc)=self._entry_field(_("Insert description (optional)"))
@@ -727,7 +735,7 @@ class TaskScheduler:
 			add_task_grid.set_task_data(task)
 			add_task_grid.load_task_details()
 			box_btn=Gtk.Grid()
-			btn_del=Gtk.Button.new_from_icon_name("gtk-delete",Gtk.IconSize.BUTTON)
+			btn_del=Gtk.Button.new_from_icon_name("edit-delete",Gtk.IconSize.BUTTON)
 			btn_del.connect("clicked",self._delete_task,pop,widget,add_task_grid,task)
 			btn_del.set_margin_right(MARGIN*2)
 			btn_del.set_tooltip_text(_("Delete task"))
@@ -854,6 +862,7 @@ class TaskScheduler:
 		(status,msg)=self.scheduler.write_tasks(task)
 		if status:
 			self._debug("OK - %s - %s"%(msg,tasks))
+			self._debug("%s"%(task))
 			if tasks in task.keys():
 				if '' in task[tasks].keys():
 					task[tasks][msg]=task[tasks]['']
@@ -890,6 +899,8 @@ class TaskScheduler:
 	#def _refresh_box_task
 
 	def _refresh_box_task_data(self,widget,task):
+		self._debug("Refresh %s"%task)
+		info={}
 		for g_group, g_index in task.items():
 			group=g_group
 			for i_index,i_info in g_index.items():
@@ -914,11 +925,11 @@ class TaskScheduler:
 		cmds=[]
 		tasks=self.scheduler.get_available_tasks()
 		for name,command in tasks.items():
-			if name not in names:
+			if name not in names and name:
 				names.append(name)
 				self._add_translation_for_desc(name)
 			for cmd in command.keys():
-				if cmd not in cmds:
+				if cmd not in cmds and cmd:
 					cmds.append(cmd)
 					self._add_description_for_cmd(cmd,command[cmd])
 		return(tasks,names)
@@ -951,7 +962,7 @@ class TaskScheduler:
 		pb=GdkPixbuf.Pixbuf.new_from_file("%s"%BANNER_IMG)
 		dlg_about.set_logo(pb)
 		dlg_about.set_program_name("TaskScheduler")
-		dlg_about.set_version("1.0")
+		dlg_about.set_version("2.0")
 		dlg_about.set_website("http://lliurex.net")
 		dlg_about.set_website_label("LliureX")
 		dlg_about.set_copyright("LliureX Team")
@@ -966,9 +977,10 @@ class TaskScheduler:
 
 	def _add_description_for_cmd(self,cmd,desc):
 		sw_ok=True
-		self._debug("Desc add %s -> %s"%(cmd,desc))
-		self.command_description.update({cmd:desc})
-		self.description_command.update({desc:cmd})
+		if cmd not in self.command_description:
+			self._debug("Desc add %s -> %s"%(cmd,desc))
+			self.command_description.update({cmd:desc})
+			self.description_command.update({desc:cmd})
 	#def _add_description_for_cmd(self,cmd,desc):
 
 	def _get_description_for_cmd(self,cmd):

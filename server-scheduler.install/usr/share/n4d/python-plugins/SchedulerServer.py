@@ -46,7 +46,7 @@ class SchedulerServer():
 	def write_config(self,task,key,value):
 		status=True
 		data={}
-                config={}
+		config={}
 		if os.path.isfile(self.conf_file):
 			try:
 				config=json.loads(open(self.conf_file).read())
@@ -143,7 +143,11 @@ class SchedulerServer():
 		for wrkfile in wrkfiles:
 			task=self._read_tasks_file(wrkfile)
 			if task:
-				tasks.update(task)
+				for task_key in task.keys():
+					if task_key in tasks.keys():
+						tasks[task_key].update(task[task_key])
+					else:
+						tasks.update(task)
 		self._debug("Tasks loaded")
 		self._debug(str(tasks))
 		return({'status':True,'data':tasks})
@@ -188,12 +192,15 @@ class SchedulerServer():
 		wrk_dir=self.tasks_dir
 		self._debug("Removing task from system")
 		sw_del=False
+		sw_bell=False
 		msg=''
 		wrkfile=wrk_dir+'/'+task['name']
 		wrkfile=wrkfile.replace(' ','_')
 		tasks=self._read_tasks_file(wrkfile)
 		if task['name'] in tasks.keys():
 			self._debug("Serial: %s"%task['serial'])
+			if 'BellId' in tasks[task['name']][task['serial']].keys():
+				sw_bell=True
 			if task['serial'] in tasks[task['name']].keys():
 				del tasks[task['name']][task['serial']]
 				self._debug("Task deleted")
@@ -208,7 +215,8 @@ class SchedulerServer():
 
 
 		if sw_del:
-			tasks=self._serialize_task(tasks)
+			if sw_bell==False:
+				tasks=self._serialize_task(tasks)
 			with open(wrkfile,'w') as json_data:
 				json.dump(tasks,json_data,indent=4)
 			self._register_cron_update()
@@ -260,12 +268,14 @@ class SchedulerServer():
 			if not task_serial or str(task_serial)=="0":
 				serials=[str(i) for i in sched_tasks[task_name].keys()]
 				self._debug("Serials %s"%serials)
-				task_serial="0"
 				if task_name in sched_tasks.keys():
 					for ser in range(len(sched_tasks[task_name])+1):
+						self._debug("read serial %s"%str(ser))
 						if not str(ser) in serials:
 							task_serial=str(ser)
 							self._debug("New serial %s"%task_serial)
+							break
+						elif task_serial=="0":
 							break
 		else:
 			self._debug("%s doen't exists"%wrkfile)
