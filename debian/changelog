@@ -1,3 +1,9 @@
+taskscheduler (1.99997) bionic; urgency=medium
+
+  * Fix remaining time
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Thu, 28 Feb 2019 16:51:22 +0100
+
 taskscheduler (1.99996) bionic; urgency=medium
 
   * Fixed serial number 0
