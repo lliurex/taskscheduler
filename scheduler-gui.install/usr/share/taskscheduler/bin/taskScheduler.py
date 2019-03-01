@@ -107,7 +107,7 @@ class TaskScheduler:
 		pb=GdkPixbuf.Pixbuf.new_from_file("%s"%BANNER_IMG)
 		img_banner=Gtk.Image.new_from_pixbuf(pb)
 		img_banner.props.halign=Gtk.Align.CENTER
-		img_banner.set_margin_top(MARGIN)
+		img_banner.set_margin_top(MARGIN*2)
 		vbox_tasks.attach(img_banner,0,0,1,1)
 		vbox_tasks.attach(self._render_toolbar(),0,1,1,1)
 		vbox_tasks.attach(self._render_tasks(),0,2,1,1)
@@ -241,14 +241,14 @@ class TaskScheduler:
 		btn_config=Gtk.Button()
 		tlb_config=Gtk.ToolButton(btn_config)
 		tlb_config.connect("clicked",_show_prefs)
-		tlb_config.set_icon_name("document-properties")
+		tlb_config.set_icon_name("preferences-other")
 		tlb_config.set_tooltip_text(_("Open preferences menu"))
 		toolbar.insert(tlb_config,2)
 		btn_help=Gtk.Button()
 		tlb_help=Gtk.ToolButton(btn_help)
 		tlb_help.set_tooltip_text(_("Open help menu"))
 		tlb_help.connect("clicked",_show_help)
-		tlb_help.set_icon_name("dialog-information")
+		tlb_help.set_icon_name("help-contents")
 		toolbar.insert(tlb_help,-1)
 		toolbar.set_margin_bottom(0)
 		return(toolbar)
@@ -278,6 +278,12 @@ class TaskScheduler:
 			th=threading.Thread(target=self._refresh_grid_tasks,args=[])
 			th.start()
 			self._set_visible_stack(None,"tasks",Gtk.StackTransitionType.CROSSFADE,1)
+		def _load_cmb(*args):
+			(tasks,names)=self._load_tasks()
+			cmb_tasks.remove_all()
+			for task in names:
+				cmb_tasks.append_text(_(task))
+			cmb_tasks.set_active(0)
 		grid=Gtk.Box(True,True)
 		grid.set_name("MAIN_COMMANDS_GRID")
 		grid_cnf=Gtk.Grid(orientation=Gtk.Orientation.VERTICAL)
@@ -291,10 +297,6 @@ class TaskScheduler:
 		lbl_tasks.set_halign(Gtk.Align.START)
 		cmb_tasks=Gtk.ComboBoxText.new()
 		cmb_tasks.set_name("GtkCombo")
-		(tasks,names)=self._load_tasks()
-		for task in names:
-			cmb_tasks.append_text(_(task))
-		cmb_tasks.set_active(0)
 		grid_cnf.add(lbl_tasks)
 		grid_cnf.add(cmb_tasks)
 		lbl_color=Gtk.Label(_("Pick color for group"))
@@ -325,6 +327,7 @@ class TaskScheduler:
 		box_btn.add(btn_ok)
 		grid_cnf.add(box_btn)
 		grid.add(grid_cnf)
+		grid.connect("map",_load_cmb)
 		return(grid)
 	#def _render_config
 
