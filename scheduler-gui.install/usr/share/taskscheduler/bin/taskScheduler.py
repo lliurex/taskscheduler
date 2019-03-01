@@ -97,7 +97,6 @@ class TaskScheduler:
 		mw.connect("key_press_event",keypress)
 		mw.set_resizable(False)
 		mw.set_size_request(WIDTH,HEIGHT)
-		self._load_tasks()
 		self.stack=Gtk.Stack()
 		self.stack.set_transition_duration(1000)
 		self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
@@ -183,6 +182,7 @@ class TaskScheduler:
 
 	def _signin(self,user=None,pwd=None,server=None,data=None):
 		self.scheduler.set_credentials(user,pwd,server)
+		self._load_tasks()
 		self._refresh_grid_tasks()
 		self.stack.set_visible_child_name("tasks")
 	#def _signin

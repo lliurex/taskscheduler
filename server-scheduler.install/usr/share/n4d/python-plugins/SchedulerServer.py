@@ -199,10 +199,13 @@ class SchedulerServer():
 		tasks=self._read_tasks_file(wrkfile)
 		if task['name'] in tasks.keys():
 			self._debug("Serial: %s"%task['serial'])
-			if 'BellId' in tasks[task['name']][task['serial']].keys():
+			task_serial=task['serial']
+			if task_serial.startswith('r'):
+				task_serial=task_serial.replace('r','')
+			if 'BellId' in tasks[task['name']][task_serial].keys():
 				sw_bell=True
 			if task['serial'] in tasks[task['name']].keys():
-				del tasks[task['name']][task['serial']]
+				del tasks[task['name']][task_serial]
 				self._debug("Task deleted")
 				sw_del=True
 			elif task['serial'][0]=='r':
@@ -257,6 +260,8 @@ class SchedulerServer():
 				#If bell scheduler wants to schedule something use bellid as task_serial
 				if 'BellId' in task_data.keys():
 					task_serial=task_data['BellId']
+		if task_serial.startswith('r'):
+			task_serial=task_serial.replace('r','')
 		self._debug("Task serial %s"%task_serial)
 		#Open dest file
 		wrkfile=self.tasks_dir+'/'+task_name

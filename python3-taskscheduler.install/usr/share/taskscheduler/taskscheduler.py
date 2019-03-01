@@ -36,6 +36,7 @@ class TaskScheduler():
 	def set_credentials(self,user,pwd,server):
 		self.credentials=[user,pwd]
 		if server!='localhost':
+			self._debug("Connecting to server %s"%server)						
 			self.n4dserver=self._n4d_connect(server)
 		else:
 			self.n4dserver=self.n4dclient
@@ -62,7 +63,15 @@ class TaskScheduler():
 				tasks=result['data'].copy()
 		result=self.n4dclient.get_available_tasks("","SchedulerServer")
 		if type(result)==type({}) and 'data' in result.keys():
-			tasks.update(result['data'].copy())
+			if tasks:
+				#Merge values
+				for key,data in result['data'].items():
+					if key in tasks.keys():
+						tasks[key].update(data)
+					else:
+						tasks.update({key:data})
+			else:
+				tasks.update(result['data'].copy())
 		return tasks
 	#def get_available_tasks
 
