@@ -1,3 +1,9 @@
+taskscheduler (1.999991) bionic; urgency=medium
+
+  * Fix autorefresh task list on clients
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Mon, 04 Mar 2019 12:46:07 +0100
+
 taskscheduler (1.99999) bionic; urgency=medium
 
   * Fix remote tasks from client
