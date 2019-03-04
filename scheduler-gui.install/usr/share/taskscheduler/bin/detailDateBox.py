@@ -61,7 +61,7 @@ class DetailBox:
 		self.task['spread']=''
 		self.task.update(task)
 		if self.task['serial']=='':
-			self.task['serial']="0"
+			self.task['serial']=""
 		if 'kind' in task.keys():
 			if type(task['kind'])==type(''):
 				self.task['kind']=task['kind'].split(',')
