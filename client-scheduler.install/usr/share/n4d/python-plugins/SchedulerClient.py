@@ -9,14 +9,15 @@ import threading
 import time
 from  datetime import date
 import xmlrpclib as xmlrpc
+import signal
 
 class SchedulerClient():
 	def __init__(self):
+		self.dbg=False
 		self.cron_dir='/etc/cron.d'
 		self.task_prefix='remote-' #Temp workaround->Must be declared on a n4d var
 		self.cron_dir='/etc/cron.d'
 		self.count=0
-		self.dbg=False
 		self.holidays_shell="/usr/bin/check_holidays.py"
 		self.pidfile="/tmp/taskscheduler.pid"
 

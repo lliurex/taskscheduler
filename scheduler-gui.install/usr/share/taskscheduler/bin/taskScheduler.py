@@ -58,7 +58,7 @@ class TaskScheduler:
 		self.tasks_per_row=3
 		self.config={}
 		self._parse_config()
-		self.autorefresh=False
+		self.autorefresh=True
 		#Install signal handler
 		GLib.idle_add(self.install_handler,signal.SIGUSR1,priority=GLib.PRIORITY_HIGH)
 	#def __init__		
