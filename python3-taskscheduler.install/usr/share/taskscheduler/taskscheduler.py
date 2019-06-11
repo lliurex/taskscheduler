@@ -17,7 +17,7 @@ import ssl
 
 class TaskScheduler():
 	def __init__(self):
-		self.dbg=False
+		self.dbg=True
 		self.credentials=["",""]
 		self.n4dserver=None
 		self.n4dclient=self._n4d_connect('localhost')
@@ -107,9 +107,11 @@ class TaskScheduler():
 			for index,task in index_task.items():
 				time_task=self.get_task_timestamp(task,timenow,timestamp)
 				val=time_task-timestamp
+				self._debug("Total: %s"%val)
 				if val<0:
 					time_task+=(365*24*60*60)
 					val=time_task-timestamp
+				self._debug("Left: %s"%val)
 				sorted_indexes.update({"%s||%s"%(task_type,index):val})
 		for t_index,value in sorted(sorted_indexes.items(),key=itemgetter(1)):
 			(name,index)=t_index.split('||')
@@ -145,6 +147,7 @@ class TaskScheduler():
 				sw_inc=False
 				if (l_h<timenow.hour or (l_h==timenow.hour and l_m<timenow.minute)):
 					weekday+=1
+					self._debug("Inc for dow. Weekday: %s"%weekday)
 					sw_inc=True
 					if weekday>7:
 						weekday=1
@@ -177,8 +180,8 @@ class TaskScheduler():
 						next_dow+=next_week
 				if sw_inc:
 					inc_dow=next_dow*24*60*60-(((timenow.hour-l_h)*60*60)+((timenow.minute-l_m)*60))
-					if timenow.hour==l_h:
-						inc_dow=inc_dow+(24*60*60)
+					if timenow.hour>=l_h:
+						inc_dow=inc_dow+((24-timenow.hour)*60*60)
 				else:
 					inc_dow=next_dow*24*60*60
 			time_task=timestamp+inc_mon+inc_dom+inc_h+inc_m+inc_dow
@@ -209,6 +212,10 @@ class TaskScheduler():
 				inc_data=((timelimit[data_type]-timestamp[data_type])+l_data)*timeconv
 			else:
 				inc_data=(l_data-timestamp[data_type])*timeconv
+			self._debug("Calc: %s"%data_type)
+			self._debug("Inc: %s"%inc_data)
+			self._debug("Now: %s"%timestamp[data_type])
+			self._debug("Pro: %s"%l_data)
 		elif '*' in data:
 		#Repeat. As is an "all-times" time unit is set to actual date/time unit
 			l_data=timestamp[data_type]
