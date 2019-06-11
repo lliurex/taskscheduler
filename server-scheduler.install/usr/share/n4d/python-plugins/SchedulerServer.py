@@ -11,7 +11,7 @@ from  datetime import date
 
 class SchedulerServer():
 	def __init__(self):
-		self.dbg=True
+		self.dbg=False
 		self.tasks_dir="/etc/scheduler/tasks.d"
 		self.available_tasks_dir="/etc/scheduler/conf.d/tasks"
 		self.conf_dir="/etc/scheduler/conf.d/"

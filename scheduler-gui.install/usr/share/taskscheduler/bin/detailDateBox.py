@@ -26,7 +26,7 @@ _ = gettext.gettext
 
 
 WIDGET_MARGIN=6
-DBG=1
+DBG=0
 
 class DetailBox:
 	
