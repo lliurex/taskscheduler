@@ -17,7 +17,7 @@ import ssl
 
 class TaskScheduler():
 	def __init__(self):
-		self.dbg=True
+		self.dbg=False
 		self.credentials=["",""]
 		self.n4dserver=None
 		self.n4dclient=self._n4d_connect('localhost')
