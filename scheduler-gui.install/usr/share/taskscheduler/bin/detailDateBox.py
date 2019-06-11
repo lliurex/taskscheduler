@@ -26,7 +26,7 @@ _ = gettext.gettext
 
 
 WIDGET_MARGIN=6
-DBG=0
+DBG=1
 
 class DetailBox:
 	
@@ -60,8 +60,8 @@ class DetailBox:
 		self.task['type']=''
 		self.task['spread']=''
 		self.task.update(task)
-		if self.task['serial']=='':
-			self.task['serial']=""
+#		if self.task['serial']=='':
+#			self.task['serial']=""
 		if 'kind' in task.keys():
 			if type(task['kind'])==type(''):
 				self.task['kind']=task['kind'].split(',')
@@ -679,6 +679,7 @@ class DetailBox:
 
 	def update_task_details(self,widget=None):
 		if self.task['name'] and self.task['serial']:
+			self._debug("Writing task %s %s"%(self.task['name'],self.task['serial']))
 			task_data=self.get_task_details()
 			return self.scheduler_client.write_tasks(task_data,self.task['type'])
 	#def update_task_details

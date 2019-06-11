@@ -11,7 +11,7 @@ from  datetime import date
 
 class SchedulerServer():
 	def __init__(self):
-		self.dbg=False
+		self.dbg=True
 		self.tasks_dir="/etc/scheduler/tasks.d"
 		self.available_tasks_dir="/etc/scheduler/conf.d/tasks"
 		self.conf_dir="/etc/scheduler/conf.d/"
@@ -239,7 +239,7 @@ class SchedulerServer():
 	
 	def write_tasks(self,*args):
 	#For compatibility with old api
-		task_serial="0"
+		task_serial=""
 		if len(args)==2:
 			task_type=args[0]
 			task=args[1]
@@ -271,11 +271,16 @@ class SchedulerServer():
 		if os.path.isfile(wrkfile):
 			sched_tasks=json.loads(open(wrkfile).read())
 			if not task_serial:# or str(task_serial)=="0":
-				serials=[str(i) for i in sched_tasks[task_name].keys()]
+				try:
+					serials=[str(i) for i in sched_tasks[task_name].keys()]
+				except:
+					serials=[]
 				self._debug("Serials %s"%serials)
 				if task_name in sched_tasks.keys():
 					for ser in range(len(sched_tasks[task_name])+1):
 						self._debug("read serial %s"%str(ser))
+						self._debug("Units: %s"%(len(sched_tasks[task_name])))
+						self._debug("Ser: %s"%ser)
 						if not str(ser) in serials:
 							task_serial=str(ser)
 							self._debug("New serial %s"%task_serial)
@@ -284,7 +289,7 @@ class SchedulerServer():
 							break
 		else:
 			self._debug("%s doen't exists"%wrkfile)
-#			task_serial="0"
+			task_serial="0"
 		self._debug("Writing task info %s - %s"%(task_name,task_serial))
 		if task_name in sched_tasks.keys():
 			if task_serial in sched_tasks[task_name].keys():
