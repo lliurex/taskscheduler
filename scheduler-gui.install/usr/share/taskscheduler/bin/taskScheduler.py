@@ -1167,6 +1167,10 @@ class TaskScheduler:
 			margin-bottom:0px;
 			border:0px;
 		}
+		#Toggle:checked
+		{
+			background: grey;
+		}
 		"""
 		self.style_provider=Gtk.CssProvider()
 		self.style_provider.load_from_data(css)

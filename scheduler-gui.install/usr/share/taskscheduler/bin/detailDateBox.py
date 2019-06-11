@@ -31,6 +31,7 @@ DBG=1
 class DetailBox:
 	
 	def __init__(self,scheduler,scheduled_task_type=False):
+		self.set_css_info()
 		self.scheduled_task_type=scheduled_task_type
 		self.scheduler_client=scheduler
 		self.parser=cronParser()
@@ -60,8 +61,6 @@ class DetailBox:
 		self.task['type']=''
 		self.task['spread']=''
 		self.task.update(task)
-#		if self.task['serial']=='':
-#			self.task['serial']=""
 		if 'kind' in task.keys():
 			if type(task['kind'])==type(''):
 				self.task['kind']=task['kind'].split(',')
@@ -91,35 +90,12 @@ class DetailBox:
 	#def _format_widget_for_grid
 
 	def _load_interval_data(self,widget=None,handler=None):
-#		if handler:
-#			self.cmb_interval.handler_block(handler)
 		total=999
-#		position=self.cmb_interval.get_active()
-#		self.cmb_interval.remove_all()
-#		date=self.cmb_dates.get_active_text()
-#		total=24
-#		if date==_("minute(s)"):
-#			total=120
-#		elif date==_("day(s)"):
-#			total=7
-#		elif date==_("hour(s)"):
-#			total=24
-#		elif date==_("week(s)"):
-#			total=4
-#		elif date==_("month(s)"):
-#			total=12
 		self.spin_interval.set_range(1,total)
 
 		#Set sensitive status
 		self._changed_interval()
-		#If user changes selection try to activate same value on new interval data or max
-#		if position>=total:
-#			position=total-1
-#		elif position<0:
-#			position=0
-#		self.cmb_interval.set_active(position)
 		if handler:
-#			self.cmb_interval.handler_unblock(handler)
 			self._parse_scheduled(True)
 	#def _load_interval_data
 	
@@ -191,12 +167,19 @@ class DetailBox:
 		self.notebook=Gtk.Stack()
 		self.chk_daily=Gtk.CheckButton(_("Select days"))
 		self.chk_monday=Gtk.ToggleButton(_("Monday"))
+		self.chk_monday.set_name("Toggle")
 		self.chk_tuesday=Gtk.ToggleButton(_("Tuesday"))
+		self.chk_tuesday.set_name("Toggle")
 		self.chk_wednesday=Gtk.ToggleButton(_("Wednesday"))
+		self.chk_wednesday.set_name("Toggle")
 		self.chk_thursday=Gtk.ToggleButton(_("Thursday"))
+		self.chk_thursday.set_name("Toggle")
 		self.chk_friday=Gtk.ToggleButton(_("Friday"))
+		self.chk_friday.set_name("Toggle")
 		self.chk_saturday=Gtk.ToggleButton(_("Saturday"))
+		self.chk_saturday.set_name("Toggle")
 		self.chk_sunday=Gtk.ToggleButton(_("Sunday"))
+		self.chk_sunday.set_name("Toggle")
 		self.chk_daily=Gtk.CheckButton(_("Daily"))
 		self.chk_hourly=Gtk.CheckButton(_("Hourly"))
 		self.chk_weekly=Gtk.CheckButton(_("Weekly"))
@@ -695,3 +678,16 @@ class DetailBox:
 		self._debug("Saving %s"%task)
 		return task
 	#def get_task_details
+	
+	def set_css_info(self):
+		css = b"""
+		#Toggle:checked
+		{
+			background: grey;
+		}
+		"""
+		self.style_provider=Gtk.CssProvider()
+		self.style_provider.load_from_data(css)
+		self._debug("CSS LOADED")
+		Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),self.style_provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+	
