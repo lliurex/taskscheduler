@@ -179,7 +179,7 @@ class TaskScheduler():
 								next_week=0
 						next_dow+=next_week
 				if sw_inc:
-					inc_dow=next_dow*24*60*60-(((timenow.hour-l_h)*60*60)+((timenow.minute-l_m)*60))
+					inc_dow=next_dow*24*60*60+(((l_h)*60*60)+((timenow.minute-l_m)*60))
 					if timenow.hour>=l_h:
 						inc_dow=inc_dow+((24-timenow.hour)*60*60)
 				else:
