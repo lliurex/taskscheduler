@@ -7,6 +7,7 @@ import json
 import sys
 import collections
 import datetime
+import os,sys,socket
 from operator import itemgetter
 
 try:
@@ -39,7 +40,11 @@ class TaskScheduler():
 			self._debug("Connecting to server %s"%server)						
 			self.n4dserver=self._n4d_connect(server)
 		else:
-			self.n4dserver=self.n4dclient
+			try:
+				server_ip=socket.gethostbyname("server")
+				self.n4dserver=self._n4d_connect("server")
+			except:
+				self.n4dserver=self.n4dclient
 	#def set_credentials
 
 	def read_config(self):
@@ -329,7 +334,13 @@ class TaskScheduler():
 	def write_tasks(self,tasks):
 		status=False
 		self._debug("Sending task info to server")
-		result=self.n4dserver.write_tasks(self.credentials,"SchedulerServer",tasks)
+		print(tasks)
+		for group,g_data in tasks.items():
+			for index,i_data in g_data.items():
+				if i_data['spread']:
+					result=self.n4dserver.write_tasks(self.credentials,"SchedulerServer",tasks)
+				else:
+					result=self.n4dclient.write_tasks(self.credentials,"SchedulerServer",tasks)
 		if type(result)==type({}):
 			(status,msg)=(result['status'],result['data'])
 		return (status,msg)
