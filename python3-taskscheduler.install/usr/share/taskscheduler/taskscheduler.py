@@ -334,7 +334,6 @@ class TaskScheduler():
 	def write_tasks(self,tasks):
 		status=False
 		self._debug("Sending task info to server")
-		print(tasks)
 		for group,g_data in tasks.items():
 			for index,i_data in g_data.items():
 				if i_data['spread']:
