@@ -1,3 +1,10 @@
+taskscheduler (2.0) bionic; urgency=medium
+
+  * Task list now begins from 1
+  * Fix task_id not assigned on new task
+
+ -- Juanma Navarro Mañez <juanma1980@gmail.com>  Tue, 02 Jul 2019 12:14:19 +0200
+
 taskscheduler (1.999994) bionic; urgency=medium
 
   * Check if scheduled task is for localhost
