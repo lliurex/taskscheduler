@@ -434,9 +434,6 @@ class TaskScheduler:
 		grid_tasks.set_halign(Gtk.Align.START)
 		grid_tasks.set_row_spacing(MARGIN/3)
 		grid_tasks.set_column_spacing(MARGIN/3)
-#		grid_tasks.set_margin_left(MARGIN/2)
-#		grid_tasks.set_margin_right(MARGIN/2)
-#		grid_tasks.set_margin_top(MARGIN)
 		grid_tasks.set_column_homogeneous(True)
 		tasks={}
 		col=0
@@ -446,6 +443,7 @@ class TaskScheduler:
 		if self.stack.get_visible_child_name!='login':
 			for task_type in tasks.keys():
 				for task_group,info in tasks[task_type].items():
+					self._debug("render: %s"%task_group)
 					(group,index)=task_group.split('||')
 					btn_task=Gtk.Button()
 					self._add_translation_for_desc(group)
@@ -726,6 +724,7 @@ class TaskScheduler:
 		task['type']=task_type
 		task['name']=group
 		task['serial']=index
+		self._debug("Editing %s"%task)
 		task.update({'data':info})
 		if task_type:
 			pop=Gtk.Popover.new(widget)
@@ -848,9 +847,11 @@ class TaskScheduler:
 	#def _refresh_grid_task_data
 
 	def _save_task(self,widget,pop,button,add_task_grid,tasks=None,commands=None):
+		name=tasks
 		if tasks and commands:
 			task={}
 			task['name']=self._get_translation_for_desc(tasks)
+			name=task['name']
 			task['serial']=""
 			task['cmd']=self._get_translation_for_desc(commands)
 			task.update({'data':add_task_grid._parse_screen()})
@@ -865,11 +866,10 @@ class TaskScheduler:
 		(status,msg)=self.scheduler.write_tasks(task)
 		if status:
 			self._debug("OK - %s - %s"%(msg,tasks))
-			self._debug("%s"%(task))
-			if tasks in task.keys():
-				if '' in task[tasks].keys():
-					task[tasks][msg]=task[tasks]['']
-					del (task[tasks][''])
+			if name in task.keys():
+				if '' in task[name].keys():
+					task[name][msg]=task[name]['']
+					del (task[name][''])
 		else:
 			self._debug("ERR: %s"%status)
 		pop.popdown()
@@ -898,7 +898,6 @@ class TaskScheduler:
 		for i in range(11):
 			widget.set_opacity(i/10)
 			time.sleep(0.1)
-		self._append_task(widget)
 	#def _refresh_box_task
 
 	def _refresh_box_task_data(self,widget,task):
@@ -918,9 +917,6 @@ class TaskScheduler:
 		widget.show_all()
 		return(False)
 	#def _refresh_box_task_data
-
-	def _append_task(self,button):
-		pass
 
 	def _load_tasks(self):
 		tasks=[]
