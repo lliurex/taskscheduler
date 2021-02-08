@@ -1,3 +1,9 @@
+taskscheduler (2.0.1) focal; urgency=medium
+
+  * focal release
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 08 Feb 2021 22:52:10 +0100
+
 taskscheduler (2.0) bionic; urgency=medium
 
   * Task list now begins from 1
