@@ -1,0 +1,17 @@
+{
+	"SETUP": {
+		"type":"python",
+		"path":"SchedulerClient.py",
+		"class":"SchedulerClient"
+	},
+	"METHODS": {
+		"process_tasks":
+		{
+			"allowed_groups":[
+				"sudo",
+				"admin",
+				"teachers"
+			]
+		}
+	}
+}

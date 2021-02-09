@@ -8,6 +8,9 @@
 import os
 import json
 from  datetime import date
+import n4d.responses
+import n4d.server.core as n4dCore
+from n4d.utils import n4d_mv
 
 class SchedulerServer():
 	def __init__(self):
@@ -40,7 +43,8 @@ class SchedulerServer():
 				data=e
 				status=False
 				self._debug(("unable to open %s") % self.conf_file)
-		return ({'status':status,'data':data})
+		return n4d.responses.build_successful_call_response(data)
+		#return ({'status':status,'data':data})
 	#def read_config
 
 	def write_config(self,task,key,value):
@@ -65,11 +69,14 @@ class SchedulerServer():
 			data=e
 			self._debug(("unable to write %s") % self.conf_file)
 			status=False
-		return ({'status':status,'data':data})
+		return n4d.responses.build_successful_call_response(data)
+		#return ({'status':status,'data':data})
 	#def write_config
 
 	def get_tasks(self,*args):
-		return(self._read_wrkfiles(self.tasks_dir))
+		#return(self._read_wrkfiles(self.tasks_dir))
+		data=(self._read_wrkfiles(self.tasks_dir))
+		return n4d.responses.build_successful_call_response(data)
 	#def get_tasks
 
 	def get_local_tasks(self,*args):
@@ -113,7 +120,8 @@ class SchedulerServer():
 					else:
 						local_tasks[task_name]={serial:tasks_data[task_name][serial]}
 						status=True
-		return ({'status':status,'data':local_tasks})
+		return n4d.responses.build_successful_call_response(local_tasks)
+		#return ({'status':status,'data':local_tasks})
 
 	def get_remote_tasks(self,*args):
 		remote_tasks={}
@@ -131,10 +139,13 @@ class SchedulerServer():
 						else:
 							remote_tasks[task_name]={'r'+serial:tasks_data[task_name][serial]}
 							status=True
-		return ({'status':status,'data':remote_tasks})
+		#return ({'status':status,'data':remote_tasks})
+		return n4d.responses.build_successful_call_response(remote_tasks)
 
 	def get_available_tasks(self):
-		return(self._read_wrkfiles(self.available_tasks_dir))
+		#return(self._read_wrkfiles(self.available_tasks_dir))
+		data=(self._read_wrkfiles(self.available_tasks_dir))
+		return n4d.responses.build_successful_call_response(data)
 
 	def _read_wrkfiles(self,folder):
 		tasks={}
@@ -151,6 +162,7 @@ class SchedulerServer():
 		self._debug("Tasks loaded")
 		self._debug(str(tasks))
 		return({'status':True,'data':tasks})
+		#return n4d.responses.build_successful_call_response(tasks)
 
 	def _get_wrkfiles(self,folder):
 		wrkfiles=[]
@@ -223,7 +235,11 @@ class SchedulerServer():
 			with open(wrkfile,'w') as json_data:
 				json.dump(tasks,json_data,indent=4)
 			self._register_cron_update()
-		return ({'status':sw_del,'data':msg})
+		if sw_del:
+			return n4d.responses.build_successful_call_response(msg)
+		else:
+			return n4d.responses.build_failed_call_response(REMOVE_ERROR)
+	#return ({'status':sw_del,'data':msg})
 	#def remove_task
 
 	def _serialize_task(self,task):
@@ -309,7 +325,11 @@ class SchedulerServer():
 			msg=e
 		self._register_cron_update()
 		self._debug("%s updated" % task_name)
-		return({'status':status,'data':msg})
+		#return({'status':status,'data':msg})
+		if status:
+			return n4d.responses.build_successful_call_response(msg)
+		else:
+			return n4d.responses.build_failed_call_response(WRITE_ERROR)
 	#def write_tasks
 
 	def _fill_task_data(self,task):
@@ -348,7 +368,12 @@ class SchedulerServer():
 		except Exception as e:
 			status=False
 			msg=str(e)
-		return({'status':status,'data':msg})
+		#return({'status':status,'data':msg})
+		if status:
+			return n4d.responses.build_successful_call_response(msg)
+		else:
+			return n4d.responses.build_failed_call_response(ADD_ERROR)
+
 	#def add_command
 
 	def _register_cron_update(self):

@@ -64,10 +64,10 @@ class TaskScheduler():
 		tasks={}
 		if self.n4dserver and self.n4dserver!=self.n4dclient:
 			result=self.n4dserver.get_available_tasks("","SchedulerServer")
-			if type(result)==type({}):
+			if isinstance(result,dict):
 				tasks=result['data'].copy()
-		result=self.n4dclient.get_available_tasks("","SchedulerServer")
-		if type(result)==type({}) and 'data' in result.keys():
+		result=self.n4dclient.get_available_tasks("","SchedulerServer").get('return',{})
+		if isinstance(result,dict) and result.get('data',{}):
 			if tasks:
 				#Merge values
 				for key,data in result['data'].items():
@@ -84,11 +84,11 @@ class TaskScheduler():
 		tasks={}
 		if self.n4dserver and self.n4dserver!=self.n4dclient:
 			self._debug("Retrieving server task list")
-			result=self.n4dserver.get_remote_tasks("","SchedulerServer")['data']
+			result=self.n4dserver.get_remote_tasks("","SchedulerServer")['return']
 			if type(result)==type({}):
 				tasks=result.copy()
 		self._debug("Retrieving local task list")
-		result=self.n4dclient.get_local_tasks("","SchedulerServer")['data']
+		result=self.n4dclient.get_local_tasks("","SchedulerServer")['return']
 		if type(result)==type({}):
 			if tasks:
 				#Merge values
@@ -341,8 +341,8 @@ class TaskScheduler():
 				else:
 					result=self.n4dclient.write_tasks(self.credentials,"SchedulerServer",tasks)
 		if type(result)==type({}):
-			(status,msg)=(result['status'],result['data'])
-		return (status,msg)
+			(status,msg)=(result.get('status',1),result.get('result',{}))
+		return (status,msg.get('data',{}))
 	#def write_tasks
 
 	def remove_task(self,task):
