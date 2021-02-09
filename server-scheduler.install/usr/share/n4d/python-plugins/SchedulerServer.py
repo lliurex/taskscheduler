@@ -161,8 +161,8 @@ class SchedulerServer():
 						tasks.update(task)
 		self._debug("Tasks loaded")
 		self._debug(str(tasks))
-		#return({'status':True,'data':tasks})
-		return n4d.responses.build_successful_call_response(tasks)
+		return({'status':True,'data':tasks})
+		#return n4d.responses.build_successful_call_response(tasks)
 
 	def _get_wrkfiles(self,folder):
 		wrkfiles=[]

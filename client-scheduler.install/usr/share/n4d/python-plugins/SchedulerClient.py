@@ -8,8 +8,10 @@ import os,socket
 import threading
 import time
 from  datetime import date
-import xmlrpclib as xmlrpc
+#import xmlrpclib as xmlrpc
 import signal
+import n4d.responses
+import n4d.client
 
 class SchedulerClient():
 	def __init__(self):
@@ -28,18 +30,26 @@ class SchedulerClient():
 
 	def _debug(self,msg):
 		if self.dbg:
-			print("%s"%msg)
+			print("{}".format(msg))
 
 	def _main_thread(self):
-		objects["VariablesManager"].register_trigger("SCHEDULED_TASKS","SchedulerClient",self.process_tasks)
-		tries=10
-		for x in range (0,tries):
-			self.scheduler_var=objects["VariablesManager"].get_variable("SCHEDULED_TASKS")
-			if self.scheduler_var!=self.count:
-				self.count=self.scheduler_var
-				self.process_tasks()
-			else:
-				time.sleep(1)
+####	objects["VariablesManager"].register_trigger("SCHEDULED_TASKS","SchedulerClient",self.process_tasks)
+####	tries=10
+####	for x in range (0,tries):
+####		self.scheduler_var=objects["VariablesManager"].get_variable("SCHEDULED_TASKS")
+####		if self.scheduler_var!=self.count:
+####			self.count=self.scheduler_var
+####			self.process_tasks()
+####		else:
+####			time.sleep(1)
+		n4dclient=n4d.client.Client()
+		try:
+			self.scheduler_var=n4dclient.get_variable("SCHEDULED_TASKS")
+		except:
+			self.scheduler_var=0
+		if self.scheduler_var!=self.count:
+			self.count=self.scheduler_var
+			self.process_tasks()
 
 	def process_tasks(self,data=None):
 		self._debug("Scheduling tasks")
@@ -52,11 +62,15 @@ class SchedulerClient():
 				prefixes={'local':False}
 		for prefix,sw_remote in prefixes.iteritems():
 			if prefix=='remote':
-				n4d=xmlrpc.ServerProxy("https://server:9779")
-				tasks=n4d.get_remote_tasks("","SchedulerServer")['data'].copy()
+				#n4d=xmlrpc.ServerProxy("https://server:9779")
+				#tasks=n4d.get_remote_tasks("","SchedulerServer")['data'].copy()
+				n4dclient=n4d.client.Client("server")
+				ret=n4dclient.get_remote_tasks("","SchedulerServer")
 			else:
-				n4d=xmlrpc.ServerProxy("https://localhost:9779")
-				tasks=n4d.get_local_tasks("","SchedulerServer")['data'].copy()
+				n4dclient=n4d.client.Client()
+				ret=n4dclient.get_local_tasks("","SchedulerServer")
+				#n4d=xmlrpc.ServerProxy("https://localhost:9779")
+				#tasks=n4d.get_local_tasks("","SchedulerServer")['data'].copy()
 
 			#Delete files
 			for f in os.listdir(self.cron_dir):
@@ -67,7 +81,7 @@ class SchedulerClient():
 				task_names={}
 				self._debug("Processing task: %s"%name)
 				for serial in tasks[name].keys():
-					self._debug("Item %s"%serial)
+					self._debug("Item {}".format(serial))
 					sw_pass=False
 					if 'autoremove' in tasks[name][serial]:
 						if (tasks[name][serial]['mon'].isdigit()):
@@ -81,7 +95,7 @@ class SchedulerClient():
 									sw_pass=True
 					if sw_pass:
 						continue
-					self._debug("Scheduling %s"%name)
+					self._debug("Scheduling {}".format(name))
 					fname=name.replace(' ','_')
 					task_names[fname]=tasks[name][serial].copy()
 					self._write_crontab_for_task(task_names,prefix)
@@ -93,7 +107,7 @@ class SchedulerClient():
 				try:
 					os.kill(int(pid),signal.SIGUSR1)
 				except Exception as e:
-					print("%s"%e)
+					print("{}".format(e))
 					pass
 
 	#def process_tasks

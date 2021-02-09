@@ -20,7 +20,7 @@ from gi.repository import Gtk, Gdk, GdkPixbuf, GObject, GLib, PangoCairo, Pango
 from taskscheduler.taskscheduler import TaskScheduler as scheduler
 from taskscheduler.cronParser import cronParser
 from detailDateBox import DetailBox as detailDateBox 
-from edupals.ui.n4dgtklogin import *
+#from edupals.ui.n4dgtklogin import *
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -100,7 +100,7 @@ class TaskScheduler:
 		self.stack=Gtk.Stack()
 		self.stack.set_transition_duration(1000)
 		self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
-		self.stack.add_titled(self._render_login(), "login", "login")
+		#self.stack.add_titled(self._render_login(), "login", "login")
 		vbox_tasks=Gtk.Grid()
 		vbox_tasks.set_hexpand(True)
 		pb=GdkPixbuf.Pixbuf.new_from_file("%s"%BANNER_IMG)
@@ -113,7 +113,7 @@ class TaskScheduler:
 		self.stack.add_titled(vbox_tasks, "tasks", "tasks")
 		self.stack.add_titled(self._render_new_command(), "ccmds", "ccmds")
 		self.stack.add_titled(self._render_config(), "config", "config")
-		self.stack.set_visible_child_name("login")
+		#self.stack.set_visible_child_name("login")
 		mw.add(self.stack)
 		self.set_css_info()
 		mw.show_all()
@@ -863,7 +863,9 @@ class TaskScheduler:
 				task[g_name][i_task]['cmd']=self._get_description_for_cmd(task[g_name][i_task]['cmd'])
 		self._debug("Writing task info...%s"%task)
 		self.autorefresh=False
-		(status,msg)=self.scheduler.write_tasks(task)
+		(status,result)=self.scheduler.write_tasks(task)
+		msg=result.get('data')
+		print(msg)
 		if status:
 			self._debug("OK - %s - %s"%(msg,tasks))
 			if name in task.keys():
