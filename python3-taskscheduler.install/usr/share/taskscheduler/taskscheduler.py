@@ -67,7 +67,6 @@ class TaskScheduler():
 			if isinstance(result,dict):
 				tasks=result['data'].copy()
 		result=self.n4dclient.get_available_tasks("","SchedulerServer").get('return',{})
-		print("DD: {}".format(result))
 		if isinstance(result,dict) and result.get('data',{}):
 			if tasks:
 				#Merge values
@@ -78,7 +77,6 @@ class TaskScheduler():
 						tasks.update({key:data})
 			else:
 				tasks.update(result['data'].copy())
-		print("DD: {}".format(tasks))
 		return tasks
 	#def get_available_tasks
 
