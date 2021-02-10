@@ -268,9 +268,9 @@ class SchedulerServer():
 		if not os.path.isdir(self.tasks_dir):
 			os.makedirs(self.tasks_dir)
 		#Retrieve task data
-		for name,serial in task.iteritems():
+		for name,serial in task.items():
 			task_name=name
-			for index,data in serial.iteritems():
+			for index,data in serial.items():
 				task_serial=index
 				task_data=data
 				#If bell scheduler wants to schedule something use bellid as task_serial
@@ -379,15 +379,13 @@ class SchedulerServer():
 	def _register_cron_update(self):
 		self._debug("Registering trigger var")
 		val=0
-		if not objects["VariablesManager"].get_variable("SCHEDULED_TASKS"):
+		try:
+			val=self.n4dCore.get_variable('SCHEDULED_TASKS')
+		except:
 			self._debug("Initializing trigger var")
-			objects["VariablesManager"].add_variable("SCHEDULED_TASKS",{},"","Scheduled tasks trigger","n4d-scheduler-server",False,False)
-		val=objects["VariablesManager"].get_variable("SCHEDULED_TASKS")
-		if not val:
-			val=0
 		if val>=1000:
 			val=0
 		val+=1
-		objects["VariablesManager"].set_variable("SCHEDULED_TASKS",val)
+		self.n4dCore.set_variable('SCHEDULED_TASKS',val)
 		self._debug("New value is %s"%val)
 	#def _register_cron_update

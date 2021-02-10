@@ -60,7 +60,7 @@ class SchedulerClient():
 			socket.gethostbyname('server')
 		except:
 				prefixes={'local':False}
-		for prefix,sw_remote in prefixes.iteritems():
+		for prefix,sw_remote in prefixes.items():
 			if prefix=='remote':
 				#n4d=xmlrpc.ServerProxy("https://server:9779")
 				#tasks=n4d.get_remote_tasks("","SchedulerServer")['data'].copy()
@@ -114,7 +114,7 @@ class SchedulerClient():
 
 	def _write_crontab_for_task(self,ftask,prefix):
 		cron_array=[]
-		for task_name,task_data in ftask.iteritems():
+		for task_name,task_data in ftask.items():
 			self._debug("Writing data %s: %s"%(task_name,task_data))
 			fname=self.cron_dir+'/'+prefix+task_name.replace(' ','_')
 			m=task_data['m']
