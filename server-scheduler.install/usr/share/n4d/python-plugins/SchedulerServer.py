@@ -19,6 +19,7 @@ class SchedulerServer():
 		self.available_tasks_dir="/etc/scheduler/conf.d/tasks"
 		self.conf_dir="/etc/scheduler/conf.d/"
 		self.conf_file="%s/scheduler.conf"%self.conf_dir
+		self.n4dcore=n4dcore.Core.get_core()
 	#def __init__
 
 	def _debug(self,msg):
