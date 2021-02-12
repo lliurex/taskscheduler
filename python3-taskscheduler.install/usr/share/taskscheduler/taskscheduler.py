@@ -106,9 +106,6 @@ class TaskScheduler():
 
 		#result=self.n4dclient.get_local_tasks("","SchedulerServer")['return']
 		result=proxy.call()
-		print("################")
-		print(result)
-		print("################")
 		if type(result)==type({}):
 			if tasks:
 				#Merge values
@@ -376,12 +373,17 @@ class TaskScheduler():
 			#	else:
 			#		result=self.n4dclient.write_tasks(self.credentials,"SchedulerServer",tasks)
 				result=self.n4d.n4dQuery(plugin,method,tasks)
-		print("****")
-		print(result)
-		print("****")
+		self._debug("Sending task to cron")
+		plugin="SchedulerClient"
+		method="process_tasks"
+		result=self.n4d.n4dQuery(plugin,method,tasks)
+
 		if type(result)==type({}):
 			(status,msg)=(result.get('status',1),result.get('result',{}))
-		return (status,msg.get('data',{}))
+		else:
+			(status,msg)=(0,{'data':True})
+
+		return (status,msg)
 	#def write_tasks
 
 	def remove_task(self,task):
