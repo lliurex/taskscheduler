@@ -380,14 +380,18 @@ class SchedulerServer():
 
 	def _register_cron_update(self):
 		self._debug("Registering trigger var")
-		val=0
+		val={}
 		try:
 			val=self.n4dCore.get_variable('SCHEDULED_TASKS')
 		except:
 			self._debug("Initializing trigger var")
-		if val>=1000:
-			val=0
-		val+=1
-		self.n4dCore.set_variable('SCHEDULED_TASKS',val)
-		self._debug("New value is %s"%val)
+		if val.get("status",-1)==0:
+			cnt=val.get("return",0)
+			if cnt>=1000:
+				cnt=0
+		else:
+			cnt=0
+		cnt+=1
+		self.n4dCore.set_variable('SCHEDULED_TASKS',cnt)
+		self._debug("New value is %s"%cnt)
 	#def _register_cron_update
