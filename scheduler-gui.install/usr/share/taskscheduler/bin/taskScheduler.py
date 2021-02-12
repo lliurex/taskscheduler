@@ -42,7 +42,7 @@ MARGIN=6
 
 class TaskScheduler:
 	def __init__(self):
-		self.dbg=False
+		self.dbg=True
 		self.last_task_type='remote'
 		self.ldm_helper='/usr/sbin/sched-ldm.sh'
 		self.conf_dir="/etc/scheduler/conf.d"
@@ -81,6 +81,7 @@ class TaskScheduler:
 	#def _parse_config
 
 	def _write_config(self,task,key,value):
+		print("Call LIB")
 		self.scheduler.write_config(task,key,value)
 		self._parse_config()
 	#def _write_config
@@ -202,14 +203,19 @@ class TaskScheduler:
 		toolbar=Gtk.Toolbar()
 		#Menu prefs
 		men_prefs=Gtk.Menu()
-		mei_ant=Gtk.MenuItem(_("Add new task"))
+		mei_ant=Gtk.MenuItem()
+		mei_ant.set_label(_("Add new task"))
 		mei_ant.connect("activate",self._add_task,toolbar)
-		mei_acc=Gtk.MenuItem(_("Add custom command"))
+		mei_acc=Gtk.MenuItem()
+		mei_acc.set_label(_("Add custom command"))
 		mei_acc.connect("activate",self._set_visible_stack,"ccmds",Gtk.StackTransitionType.CROSSFADE,1)
-		mei_mcc=Gtk.MenuItem(_("Manage custom commands"))
-		mei_mtg=Gtk.MenuItem(_("Manage task groups"))
+		mei_mcc=Gtk.MenuItem()
+		mei_mcc.set_label(_("Manage custom commands"))
+		mei_mtg=Gtk.MenuItem()
+		mei_mtg.set_label(_("Manage task groups"))
 		mei_mtg.connect("activate",self._set_visible_stack,"config",Gtk.StackTransitionType.CROSSFADE,1)
-		mei_rtl=Gtk.MenuItem(_("Refresh tasks list"))
+		mei_rtl=Gtk.MenuItem()
+		mei_rtl.set_label(_("Refresh tasks list"))
 		mei_rtl.connect("activate",_refresh_tasks)
 		men_prefs.append(mei_ant)
 		men_prefs.append(mei_acc)
@@ -218,9 +224,11 @@ class TaskScheduler:
 
 		#Menu help
 		men_help=Gtk.Menu()
-		mei_hlp=Gtk.MenuItem(_("Help"))
+		mei_hlp=Gtk.MenuItem()
+		mei_hlp.set_label(_("Help"))
 		mei_hlp.connect("activate",self._help)
-		mei_abo=Gtk.MenuItem(_("About taskscheduler"))
+		mei_abo=Gtk.MenuItem()
+		mei_abo.set_label(_("About taskscheduler"))
 		mei_abo.connect("activate",self._about)
 		men_help.append(mei_hlp)
 		men_help.append(mei_abo)
@@ -292,14 +300,16 @@ class TaskScheduler:
 		grid_cnf.set_halign(Gtk.Align.CENTER)
 		grid_cnf.set_valign(Gtk.Align.CENTER)
 		grid_cnf.set_name("COMMANDS_GRID")
-		lbl_tasks=Gtk.Label(_("Task group"))
+		lbl_tasks=Gtk.Label()
+		lbl_tasks.set_text(_("Task group"))
 		lbl_tasks.set_name("ENTRY_LABEL")
 		lbl_tasks.set_halign(Gtk.Align.START)
 		cmb_tasks=Gtk.ComboBoxText.new()
 		cmb_tasks.set_name("GtkCombo")
 		grid_cnf.add(lbl_tasks)
 		grid_cnf.add(cmb_tasks)
-		lbl_color=Gtk.Label(_("Pick color for group"))
+		lbl_color=Gtk.Label()
+		lbl_color.set_text(_("Pick color for group"))
 		lbl_color.set_name("ENTRY_LABEL")
 		clr_color=Gtk.ColorChooserWidget()
 		for c in clr_color.get_children():
@@ -866,7 +876,7 @@ class TaskScheduler:
 		(status,result)=self.scheduler.write_tasks(task)
 		msg=result.get('data')
 		print(msg)
-		if status:
+		if status==0:
 			self._debug("OK - %s - %s"%(msg,tasks))
 			if name in task.keys():
 				if '' in task[name].keys():
