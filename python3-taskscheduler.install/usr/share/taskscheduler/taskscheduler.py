@@ -9,19 +9,23 @@ import collections
 import datetime
 import os,sys,socket
 from operator import itemgetter
+import n4d.responses
+import n4d.client as n4dclient
+from appconfig.appConfigN4d import appConfigN4d
 
-try:
-	import xmlrpc.client as n4d
-except ImportError:
-	raise ImportError("xmlrpc not available. Disabling server queries")
-import ssl
+#try:
+#	import xmlrpc.client as n4d
+#except ImportError:
+#	raise ImportError("xmlrpc not available. Disabling server queries")
+#import ssl
 
 class TaskScheduler():
 	def __init__(self):
-		self.dbg=False
+		self.dbg=True
 		self.credentials=["",""]
 		self.n4dserver=None
 		self.n4dclient=self._n4d_connect('localhost')
+		self.n4d=appConfigN4d()
 		self.conf_dir="/etc/scheduler/conf.d/"
 		self.conf_file="%s/scheduler.conf"%self.conf_dir
 		self.tasks_dir=self.conf_dir+'/tasks'
@@ -36,15 +40,15 @@ class TaskScheduler():
 	
 	def set_credentials(self,user,pwd,server):
 		self.credentials=[user,pwd]
-		if server!='localhost':
-			self._debug("Connecting to server %s"%server)						
-			self.n4dserver=self._n4d_connect(server)
-		else:
-			try:
-				server_ip=socket.gethostbyname("server")
-				self.n4dserver=self._n4d_connect("server")
-			except:
-				self.n4dserver=self.n4dclient
+	#	if server!='localhost':
+	#		self._debug("Connecting to server %s"%server)						
+	#		self.n4dserver=self._n4d_connect(server,usr,pwd)
+	#	else:
+	#		try:
+	#			server_ip=socket.gethostbyname("server")
+	#			self.n4dserver=self._n4d_connect("server",user,pwd)
+	#		except:
+	#			self.n4dserver=self.n4dclient
 	#def set_credentials
 
 	def read_config(self):
@@ -56,17 +60,25 @@ class TaskScheduler():
 	#def read_config
 
 	def write_config(self,task,key,value):
-		result=self.n4dclient.write_config(self.credentials,"SchedulerServer",task,key,value)
+		n4dclass="SchedulerServer"
+		n4dmethod="write_config"
+		n4parms=[task,key,value]
+		result=self.n4d.n4dQuery(n4dclass,n4dmethod,n4dparms)
+	#	result=self.n4dclient.write_config(self.credentials,"SchedulerServer",task,key,value)
 		return(result['status'])
 	#def write_config
 
 	def get_available_tasks(self):
 		tasks={}
-		if self.n4dserver and self.n4dserver!=self.n4dclient:
-			result=self.n4dserver.get_available_tasks("","SchedulerServer")
-			if isinstance(result,dict):
-				tasks=result['data'].copy()
-		result=self.n4dclient.get_available_tasks("","SchedulerServer").get('return',{})
+		#if self.n4dserver and self.n4dserver!=self.n4dclient:
+		#	result=self.n4dserver.get_available_tasks("","SchedulerServer")
+				
+		#	if isinstance(result,dict):
+		#		tasks=result['data'].copy()
+		#result=self.n4dclient.get_available_tasks("","SchedulerServer").get('return',{})
+		n4dclass="SchedulerServer"
+		n4dmethod="get_available_tasks"
+		result=self.n4d.n4dQuery(n4dclass,n4dmethod)
 		if isinstance(result,dict) and result.get('data',{}):
 			if tasks:
 				#Merge values
@@ -88,7 +100,15 @@ class TaskScheduler():
 			if type(result)==type({}):
 				tasks=result.copy()
 		self._debug("Retrieving local task list")
-		result=self.n4dclient.get_local_tasks("","SchedulerServer")['return']
+		plugin="SchedulerServer"
+		method="get_local_tasks"
+		proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
+
+		#result=self.n4dclient.get_local_tasks("","SchedulerServer")['return']
+		result=proxy.call()
+		print("################")
+		print(result)
+		print("################")
 		if type(result)==type({}):
 			if tasks:
 				#Merge values
@@ -297,8 +317,20 @@ class TaskScheduler():
 		if self.n4dserver and self.n4dserver!=self.n4dclient:
 			ret=self.n4dserver.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
 		else:
-			ret=self.n4dclient.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
-		return(ret['status'])
+			plugin="SchedulerServer"
+			method="add_command"
+			arguments=[task,cmd,cmd_desc]
+			result=self.n4d.n4dQuery(plugin,method,arguments)
+		#	proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
+		#	result={}
+		#	try:
+		#		result=proxy.call(arguments)
+		#	except n4d.client.UserNotAllowedError:
+				#Credentials not valid, ask for
+		#		print("ERROR")
+			#ret=self.n4dclient.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
+			#return(ret['status'])
+		return(True)
 
 	def get_commands(self):
 		cmds={}
@@ -334,12 +366,19 @@ class TaskScheduler():
 	def write_tasks(self,tasks):
 		status=False
 		self._debug("Sending task info to server")
+		plugin="SchedulerServer"
+		method="write_tasks"
+		result={}
 		for group,g_data in tasks.items():
 			for index,i_data in g_data.items():
-				if i_data['spread']:
-					result=self.n4dserver.write_tasks(self.credentials,"SchedulerServer",tasks)
-				else:
-					result=self.n4dclient.write_tasks(self.credentials,"SchedulerServer",tasks)
+					#if i_data['spread']:
+						#			result=self.n4dserver.write_tasks(self.credentials,"SchedulerServer",tasks)
+			#	else:
+			#		result=self.n4dclient.write_tasks(self.credentials,"SchedulerServer",tasks)
+				result=self.n4d.n4dQuery(plugin,method,tasks)
+		print("****")
+		print(result)
+		print("****")
 		if type(result)==type({}):
 			(status,msg)=(result.get('status',1),result.get('result',{}))
 		return (status,msg.get('data',{}))
@@ -359,9 +398,18 @@ class TaskScheduler():
 		return status
 	#def remove_task
 
-	def _n4d_connect(self,server):
+	def _n4d_connect(self,server,user="",pwd=""):
 		#Setup SSL
-		context=ssl._create_unverified_context()
-		n4dclient = n4d.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
-		return(n4dclient)
+		#context=ssl._create_unverified_context()
+		#n4dclient = n4d.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
+		#return(n4dclient)
+		if not server.startswith("http"):
+			server="https://{}".format(server)
+		if len(server.split(":")) < 3:
+				server="{}:9779".format(server)
+			
+		if user:
+			return(n4dclient.Client(server,user,pwd))
+		else:
+			return(n4dclient.Client(server))
 	#def _n4d_connect

@@ -19,7 +19,7 @@ class SchedulerServer():
 		self.available_tasks_dir="/etc/scheduler/conf.d/tasks"
 		self.conf_dir="/etc/scheduler/conf.d/"
 		self.conf_file="%s/scheduler.conf"%self.conf_dir
-		self.n4dcore=n4dcore.Core.get_core()
+		self.n4dCore=n4dCore.Core.get_core()
 	#def __init__
 
 	def _debug(self,msg):
@@ -351,7 +351,8 @@ class SchedulerServer():
 				task['kind'].append('repeat')
 		return task
 
-	def add_command(self,task,cmd,cmd_desc):
+	def add_command(self,*args):
+		(task,cmd,cmd_desc)=args[0]
 		self._debug("Adding command %s - %s - %s"%(task,cmd,cmd_desc))
 		tasks={}
 		status=True
