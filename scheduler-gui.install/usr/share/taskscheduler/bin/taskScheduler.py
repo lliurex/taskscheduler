@@ -876,7 +876,7 @@ class TaskScheduler:
 		(status,result)=self.scheduler.write_tasks(task)
 		msg=result.get('data')
 		print(msg)
-		if status==0:
+		if status:
 			self._debug("OK - %s - %s"%(msg,tasks))
 			if name in task.keys():
 				if '' in task[name].keys():
