@@ -637,9 +637,10 @@ class TaskScheduler:
 		if 'protected' in info.keys() and info['protected']==True:
 				style_context=btn_task.get_style_context()
 				style_provider=Gtk.CssProvider()
-				css_cell = 'background-image:url("%s");background-repeat:no-repeat;background-position:50% 50% 90% 10%;background-size: 45% 50%'%NO_EDIT_ICON
-				css="*{%s}"%css_cell
-				css_style=eval('b"""'+css+'"""')
+				css_cell = 'background-image:url("{}");background-repeat:no-repeat;background-position:center 60%;background-size: 45% 50%'.format(NO_EDIT_ICON)
+				css='*{%s}'%(css_cell)
+				#css_style=eval('b"""'+css+'"""')
+				css_style=bytes(css,'utf8')
 				style_provider.load_from_data(css_style)
 				style_context.add_provider(style_provider,Gtk.STYLE_PROVIDER_PRIORITY_USER)
 				if txt_client:
