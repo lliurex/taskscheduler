@@ -15,8 +15,7 @@ import n4d.client
 
 class SchedulerClient():
 	def __init__(self):
-		self.dbg=False
-		self.cron_dir='/etc/cron.d'
+		self.dbg=True
 		self.task_prefix='remote-' #Temp workaround->Must be declared on a n4d var
 		self.cron_dir='/etc/cron.d'
 		self.count=0
@@ -65,10 +64,10 @@ class SchedulerClient():
 				#n4d=xmlrpc.ServerProxy("https://server:9779")
 				#tasks=n4d.get_remote_tasks("","SchedulerServer")['data'].copy()
 				n4dclient=n4d.client.Client("server")
-				ret=n4dclient.get_remote_tasks("","SchedulerServer")
+				tasks=n4dclient.get_remote_tasks("","SchedulerServer")
 			else:
 				n4dclient=n4d.client.Client()
-				ret=n4dclient.get_local_tasks("","SchedulerServer")
+				tasks=n4dclient.get_local_tasks("","SchedulerServer")
 				#n4d=xmlrpc.ServerProxy("https://localhost:9779")
 				#tasks=n4d.get_local_tasks("","SchedulerServer")['data'].copy()
 
@@ -109,6 +108,7 @@ class SchedulerClient():
 				except Exception as e:
 					print("{}".format(e))
 					pass
+		return n4d.responses.build_successful_call_response()
 
 	#def process_tasks
 
@@ -158,6 +158,6 @@ class SchedulerClient():
 							http_proxy=os.environ['http_proxy']
 							data.write('http_proxy=%s\n'%http_proxy)
 					for cron_line in cron_array:
-						data.write(cron_line.encode('utf8')+"\n")
+						data.write("{}\n".format(cron_line))
 	#def _write_crontab_for_task
 
