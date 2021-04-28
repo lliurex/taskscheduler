@@ -4,7 +4,7 @@ set -e
 case "$1" in
    configure)
    
-	n4d-modules enable-plugin /etc/n4d/conf.d/SchedulerServer || true	
+	n4d-modules enable-plugin /etc/n4d/conf.d/SchedulerServer.json || true	
    ;;
 
    abort-upgrade|abort-remove|abort-deconfigure)
