@@ -70,15 +70,10 @@ class TaskScheduler():
 
 	def get_available_tasks(self):
 		tasks={}
-		#if self.n4dserver and self.n4dserver!=self.n4dclient:
-		#	result=self.n4dserver.get_available_tasks("","SchedulerServer")
-				
-		#	if isinstance(result,dict):
-		#		tasks=result['data'].copy()
-		#result=self.n4dclient.get_available_tasks("","SchedulerServer").get('return',{})
-		n4dclass="SchedulerServer"
-		n4dmethod="get_available_tasks"
-		result=self.n4d.n4dQuery(n4dclass,n4dmethod)
+		plugin="SchedulerServer"
+		method="get_available_tasks"
+		proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
+		result=proxy.call()
 		if isinstance(result,dict) and result.get('data',{}):
 			if tasks:
 				#Merge values
@@ -106,9 +101,6 @@ class TaskScheduler():
 
 		#result=self.n4dclient.get_local_tasks("","SchedulerServer")['return']
 		result=proxy.call()
-		print("################")
-		print(result)
-		print("################")
 		if type(result)==type({}):
 			if tasks:
 				#Merge values
@@ -368,6 +360,8 @@ class TaskScheduler():
 		self._debug("Sending task info to server")
 		plugin="SchedulerServer"
 		method="write_tasks"
+		plugin="SchedulerServer"
+		proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
 		result={}
 		for group,g_data in tasks.items():
 			for index,i_data in g_data.items():
@@ -375,13 +369,21 @@ class TaskScheduler():
 						#			result=self.n4dserver.write_tasks(self.credentials,"SchedulerServer",tasks)
 			#	else:
 			#		result=self.n4dclient.write_tasks(self.credentials,"SchedulerServer",tasks)
-				result=self.n4d.n4dQuery(plugin,method,tasks)
-		print("****")
-		print(result)
-		print("****")
+				result=proxy.call(tasks)
+				#result=self.n4d.n4dQuery(plugin,method,tasks)
+		self._debug("Sending task to cron")
+		plugin="SchedulerClient"
+		method="process_tasks"
+		proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
+		#result=self.n4d.n4dQuery(plugin,method,tasks)
+		result=proxy.call(tasks)
+
 		if type(result)==type({}):
 			(status,msg)=(result.get('status',1),result.get('result',{}))
-		return (status,msg.get('data',{}))
+		else:
+			(status,msg)=(0,{'data':True})
+
+		return (status,msg)
 	#def write_tasks
 
 	def remove_task(self,task):
