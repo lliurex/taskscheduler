@@ -8,6 +8,7 @@
 		"write_tasks":
 		{
 			"allowed_groups":[
+				"sudo",
 				"admins",
 				"teachers"
 			]
@@ -15,6 +16,7 @@
 		"remove_task":
 		{
 			"allowed_groups":[
+				"sudo",
 				"admins",
 				"teachers"
 			]
@@ -50,6 +52,7 @@
 		"add_command":
 		{
 			"allowed_groups":[
+				"sudo",
 				"admins",
 				"teachers"
 			]
@@ -57,6 +60,7 @@
 		"write_config":
 		{
 			"allowed_groups":[
+				"sudo",
 				"admins",
 				"teachers"
 			]

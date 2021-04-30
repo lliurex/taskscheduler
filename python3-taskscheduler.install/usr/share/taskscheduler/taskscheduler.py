@@ -12,6 +12,7 @@ from operator import itemgetter
 import n4d.responses
 import n4d.client as n4dclient
 from appconfig.appConfigN4d import appConfigN4d
+import subprocess
 
 #try:
 #	import xmlrpc.client as n4d
@@ -19,12 +20,14 @@ from appconfig.appConfigN4d import appConfigN4d
 #	raise ImportError("xmlrpc not available. Disabling server queries")
 #import ssl
 
+USERNOTALLOWED_ERROR=-10
 class TaskScheduler():
 	def __init__(self):
 		self.dbg=True
 		self.credentials=["",""]
 		self.n4dserver=None
-		self.n4dclient=self._n4d_connect('localhost')
+		self.server='localhost'
+		self.n4dclient=self._n4d_connect()
 		self.n4d=appConfigN4d()
 		self.conf_dir="/etc/scheduler/conf.d/"
 		self.conf_file="%s/scheduler.conf"%self.conf_dir
@@ -369,14 +372,15 @@ class TaskScheduler():
 						#			result=self.n4dserver.write_tasks(self.credentials,"SchedulerServer",tasks)
 			#	else:
 			#		result=self.n4dclient.write_tasks(self.credentials,"SchedulerServer",tasks)
-				result=proxy.call(tasks)
+				#result=proxy.call(tasks)
+				result=self._proxyLaunch(plugin,method,tasks)
 				#result=self.n4d.n4dQuery(plugin,method,tasks)
 		self._debug("Sending task to cron")
 		plugin="SchedulerClient"
 		method="process_tasks"
-		proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
+		#proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
 		#result=self.n4d.n4dQuery(plugin,method,tasks)
-		result=proxy.call(tasks)
+		result=self._proxyLaunch(plugin,method,tasks)
 
 		if type(result)==type({}):
 			(status,msg)=(result.get('status',1),result.get('result',{}))
@@ -400,18 +404,68 @@ class TaskScheduler():
 		return status
 	#def remove_task
 
-	def _n4d_connect(self,server,user="",pwd=""):
-		#Setup SSL
-		#context=ssl._create_unverified_context()
-		#n4dclient = n4d.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
-		#return(n4dclient)
-		if not server.startswith("http"):
-			server="https://{}".format(server)
-		if len(server.split(":")) < 3:
-				server="{}:9779".format(server)
-			
-		if user:
-			return(n4dclient.Client(server,user,pwd))
+	def _proxyLaunch(self,plugin,method,*args):
+		client=self._n4d_connect()
+		proxy=n4dclient.Proxy(client,plugin,method)
+		try:
+			if args[0]:
+				self._debug("Call Args: {}".format(*args))
+				result=proxy.call(*args)
+			else:
+				result=proxy.call()
+		except n4d.client.UserNotAllowedError as e:
+			#User not allowed, ask for credentials and relaunch
+			result={'status':-1,'code':USERNOTALLOWED_ERROR}
+			#Get credentials
+			loginBox=subprocess.run(["/usr/lib/python3/dist-packages/appconfig/n4dCredentialsBox.py"],text=True,capture_output=True)
+			ticket=loginBox.stdout.rstrip()
+			client=self._n4d_connect(ticket)
+			proxy=n4dclient.Proxy(client,plugin,method)
+			try:
+				if args[0]:
+					self._debug("Call Args: {}".format(*args))
+					result=proxy.call(*args)
+				else:
+					result=proxy.call()
+			except Exception as e:
+				print(str(e))
+
+		except Exception as e:
+			print(str(e))
+
+		print("Return %s"%result)
+		return(result)
+
+	def _n4d_connect(self,ticket=''):
+		self.n4dClient=None
+		self._debug("Connecting to n4d")
+		client=""
+		if ticket:
+			ticket=ticket.replace('##U+0020##',' ').rstrip()
+			tk=n4d.client.Ticket(ticket)
+			client=n4d.client.Client(ticket=tk)
+			self._debug("N4d Object2: {}".format(client.credential.auth_type))
 		else:
-			return(n4dclient.Client(server))
+			try:
+				socket.gethostbyname(self.server)
+			except:
+				#It could be an ip
+				try:
+					socket.inet_aton(self.server)
+				except Exception as e:
+						#			self.error(e)
+				#	self.error("No server found. Reverting to localhost")
+					self.server='https://localhost:9779'
+			if not self.server.startswith("http"):
+				self.server="https://{}".format(self.server)
+			if len(self.server.split(":")) < 3:
+					self.server="{}:9779".format(self.server)
+				
+		#	if self.username:
+		#		client=n4d.client.Client(self.server,self.username,self.password)
+		#	else:
+			client=n4d.client.Client(self.server)
+		self.n4dClient=client
+		self._debug("N4d Object2: {}".format(self.n4dClient.credential.auth_type))
+		return(client)
 	#def _n4d_connect
