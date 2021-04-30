@@ -12,6 +12,7 @@ from operator import itemgetter
 import n4d.responses
 import n4d.client as n4dclient
 from appconfig.appConfigN4d import appConfigN4d
+import subprocess
 
 #try:
 #	import xmlrpc.client as n4d
@@ -19,6 +20,7 @@ from appconfig.appConfigN4d import appConfigN4d
 #	raise ImportError("xmlrpc not available. Disabling server queries")
 #import ssl
 
+USERNOTALLOWED_ERROR=-10
 class TaskScheduler():
 	def __init__(self):
 		self.dbg=True
@@ -369,14 +371,15 @@ class TaskScheduler():
 						#			result=self.n4dserver.write_tasks(self.credentials,"SchedulerServer",tasks)
 			#	else:
 			#		result=self.n4dclient.write_tasks(self.credentials,"SchedulerServer",tasks)
-				result=proxy.call(tasks)
+				#result=proxy.call(tasks)
+				result=self._proxyLaunch(proxy,tasks)
 				#result=self.n4d.n4dQuery(plugin,method,tasks)
 		self._debug("Sending task to cron")
 		plugin="SchedulerClient"
 		method="process_tasks"
 		proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
 		#result=self.n4d.n4dQuery(plugin,method,tasks)
-		result=proxy.call(tasks)
+		result=self._proxyLaunch(proxy,tasks)
 
 		if type(result)==type({}):
 			(status,msg)=(result.get('status',1),result.get('result',{}))
@@ -399,6 +402,34 @@ class TaskScheduler():
 		self._debug("Status %s"%status)
 		return status
 	#def remove_task
+
+	def _proxyLaunch(self,proxy,*args):
+		try:
+			if args[0]:
+				self._debug("Call Args: {}".format(*args))
+				result=proxy.call(*args)
+			else:
+				result=proxy.call()
+		except n4d.client.UserNotAllowedError as e:
+			#User not allowed, ask for credentials and relaunch
+			result={'status':-1,'code':USERNOTALLOWED_ERROR}
+			#Get credentials
+			loginBox=subprocess.run(["/usr/lib/python3/dist-packages/appconfig/n4dCredentialsBox.py"],text=True,capture_output=True)
+			ticket=loginBox.stdout
+			client=self._n4d_connect(ticket)
+			try:
+				if args[0]:
+					self._debug("Call Args: {}".format(*args))
+					result=proxy.call(*args)
+				else:
+					result=proxy.call()
+			except Exception as e:
+				print(str(e))
+
+		except Exception as e:
+			print(str(e))
+
+		return(result)
 
 	def _n4d_connect(self,server,user="",pwd=""):
 		#Setup SSL
