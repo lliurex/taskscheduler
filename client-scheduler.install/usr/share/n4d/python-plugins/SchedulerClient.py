@@ -12,15 +12,17 @@ from  datetime import date
 import signal
 import n4d.responses
 import n4d.client as n4dclient
+import n4d.server.core as n4dCore
 
 class SchedulerClient():
 	def __init__(self):
-		self.dbg=True
+		self.dbg=False
 		self.task_prefix='remote-' #Temp workaround->Must be declared on a n4d var
 		self.cron_dir='/etc/cron.d'
 		self.count=0
 		self.holidays_shell="/usr/bin/check_holidays.py"
 		self.pidfile="/tmp/taskscheduler.pid"
+		self.core=n4dCore.Core.get_core()
 		self.n4dclient=self._n4d_connect('localhost')
 
 	def startup(self,options):
@@ -33,23 +35,16 @@ class SchedulerClient():
 			print("{}".format(msg))
 
 	def _main_thread(self):
-####	objects["VariablesManager"].register_trigger("SCHEDULED_TASKS","SchedulerClient",self.process_tasks)
-####	tries=10
-####	for x in range (0,tries):
-####		self.scheduler_var=objects["VariablesManager"].get_variable("SCHEDULED_TASKS")
-####		if self.scheduler_var!=self.count:
-####			self.count=self.scheduler_var
-####			self.process_tasks()
-####		else:
-####			time.sleep(1)
-		client=n4dclient.Client()
-		try:
-			self.scheduler_var=client.get_variable("SCHEDULED_TASKS")
-		except:
-			self.scheduler_var=0
-		if self.scheduler_var!=self.count:
-			self.count=self.scheduler_var
-			self.process_tasks()
+		self.core.register_variable_trigger("SCHEDULED_TASKS","SchedulerClient",self.process_tasks)
+		tries=10
+		for x in range (0,tries):
+			#self.scheduler_var=objects["VariablesManager"].get_variable("SCHEDULED_TASKS")
+			self.scheduler_var=self.core.get_variable("SCHEDULED_TASKS")["return"]
+			if self.scheduler_var!=self.count:
+				self.count=self.scheduler_var
+				self.process_tasks()
+			else:
+				time.sleep(1)
 
 	def process_tasks(self,data=None):
 		self._debug("Scheduling tasks2")
@@ -66,21 +61,11 @@ class SchedulerClient():
 				method="get_remote_tasks"
 				proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
 				tasks=proxy.call()
-				print(tasks)
-				#n4d=xmlrpc.ServerProxy("https://server:9779")
-				#tasks=n4d.get_remote_tasks("","SchedulerServer")['data'].copy()
-				##n4dclient=n4d.client.Client("https://server;9779")
-				##tasks=n4dclient.get_remote_tasks("","SchedulerServer")
 			else:
 				plugin="SchedulerServer"
 				method="get_local_tasks"
 				proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
 				tasks=proxy.call()
-				print(tasks)
-				#n4dclient=n4d.client.Client()
-				#tasks=n4dclient.get_local_tasks("","SchedulerServer")
-				##n4d=xmlrpc.ServerProxy("https://localhost:9779")
-				##tasks=n4d.get_local_tasks("","SchedulerServer")['data'].copy()
 
 			#Delete files
 			for f in os.listdir(self.cron_dir):
@@ -173,10 +158,6 @@ class SchedulerClient():
 	#def _write_crontab_for_task
 
 	def _n4d_connect(self,server,user="",pwd=""):
-		#Setup SSL
-		#context=ssl._create_unverified_context()
-		#n4dclient = n4d.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
-		#return(n4dclient)
 		if not server.startswith("http"):
 			server="https://{}".format(server)
 		if len(server.split(":")) < 3:
