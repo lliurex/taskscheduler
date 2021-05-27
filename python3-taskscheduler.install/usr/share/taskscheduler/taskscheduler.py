@@ -9,10 +9,13 @@ import collections
 import datetime
 import os,sys,socket
 from operator import itemgetter
+from PySide2.QtCore import QObject,Signal
 import n4d.responses
 import n4d.client as n4dclient
 from appconfig.appConfigN4d import appConfigN4d
 import subprocess
+sys.path.insert(1, '/usr/lib/python3/dist-packages/appconfig')
+import n4dCredentialsBox as login
 
 #try:
 #	import xmlrpc.client as n4d
@@ -21,13 +24,19 @@ import subprocess
 #import ssl
 
 USERNOTALLOWED_ERROR=-10
-class TaskScheduler():
+class TaskScheduler(QObject):
+	onCredentials=Signal(dict)
 	def __init__(self):
+		super(TaskScheduler, self).__init__()
 		self.dbg=True
 		self.credentials=["",""]
 		self.n4dserver=None
+		self.username=''
+		self.password=''
+		self.launchQueue={}
 		self.server='localhost'
-		self.n4dclient=self._n4d_connect()
+		self.n4dClient=self._n4d_connect()
+		self.n4dMaster=None
 		self.n4d=appConfigN4d()
 		self.conf_dir="/etc/scheduler/conf.d/"
 		self.conf_file="%s/scheduler.conf"%self.conf_dir
@@ -40,22 +49,9 @@ class TaskScheduler():
 		if (self.dbg):
 			print("Scheduler lib: %s" % msg)
 	#def _debug
-	
-	def set_credentials(self,user,pwd,server):
-		self.credentials=[user,pwd]
-	#	if server!='localhost':
-	#		self._debug("Connecting to server %s"%server)						
-	#		self.n4dserver=self._n4d_connect(server,usr,pwd)
-	#	else:
-	#		try:
-	#			server_ip=socket.gethostbyname("server")
-	#			self.n4dserver=self._n4d_connect("server",user,pwd)
-	#		except:
-	#			self.n4dserver=self.n4dclient
-	#def set_credentials
 
 	def read_config(self):
-		result=self.n4dclient.read_config("","SchedulerServer")
+		result=self.n4dClient.read_config("","SchedulerServer")
 		if 'data' in result.keys():
 			return (result['data'])
 		else:
@@ -67,7 +63,7 @@ class TaskScheduler():
 		n4dmethod="write_config"
 		n4parms=[task,key,value]
 		result=self.n4d.n4dQuery(n4dclass,n4dmethod,n4dparms)
-	#	result=self.n4dclient.write_config(self.credentials,"SchedulerServer",task,key,value)
+	#	result=self.n4dClient.write_config(self.credentials,"SchedulerServer",task,key,value)
 		return(result['status'])
 	#def write_config
 
@@ -75,7 +71,7 @@ class TaskScheduler():
 		tasks={}
 		plugin="SchedulerServer"
 		method="get_available_tasks"
-		proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
+		proxy=n4dclient.Proxy(self.n4dClient,plugin,method)
 		result=proxy.call()
 		if isinstance(result,dict) and result.get('data',{}):
 			if tasks:
@@ -92,7 +88,7 @@ class TaskScheduler():
 
 	def get_scheduled_tasks(self):
 		tasks={}
-		if self.n4dserver and self.n4dserver!=self.n4dclient:
+		if self.n4dserver and self.n4dserver!=self.n4dClient:
 			self._debug("Retrieving server task list")
 			result=self.n4dserver.get_remote_tasks("","SchedulerServer")['return']
 			if type(result)==type({}):
@@ -100,9 +96,9 @@ class TaskScheduler():
 		self._debug("Retrieving local task list")
 		plugin="SchedulerServer"
 		method="get_local_tasks"
-		proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
+		proxy=n4dclient.Proxy(self.n4dClient,plugin,method)
 
-		#result=self.n4dclient.get_local_tasks("","SchedulerServer")['return']
+		#result=self.n4dClient.get_local_tasks("","SchedulerServer")['return']
 		result=proxy.call()
 		if type(result)==type({}):
 			if tasks:
@@ -309,21 +305,21 @@ class TaskScheduler():
 	#def get_task_command
 
 	def add_command(self,task,cmd,cmd_desc):
-		if self.n4dserver and self.n4dserver!=self.n4dclient:
+		if self.n4dserver and self.n4dserver!=self.n4dClient:
 			ret=self.n4dserver.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
 		else:
 			plugin="SchedulerServer"
 			method="add_command"
 			arguments=[task,cmd,cmd_desc]
 			result=self.n4d.n4dQuery(plugin,method,arguments)
-		#	proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
+		#	proxy=n4dclient.Proxy(self.n4dClient,plugin,method)
 		#	result={}
 		#	try:
 		#		result=proxy.call(arguments)
 		#	except n4d.client.UserNotAllowedError:
 				#Credentials not valid, ask for
 		#		print("ERROR")
-			#ret=self.n4dclient.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
+			#ret=self.n4dClient.add_command(self.credentials,"SchedulerServer",task,cmd,cmd_desc)
 			#return(ret['status'])
 		return(True)
 
@@ -364,21 +360,21 @@ class TaskScheduler():
 		plugin="SchedulerServer"
 		method="write_tasks"
 		plugin="SchedulerServer"
-		proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
+		#proxy=n4dclient.Proxy(self.n4dClient,plugin,method)
 		result={}
 		for group,g_data in tasks.items():
 			for index,i_data in g_data.items():
 					#if i_data['spread']:
 						#			result=self.n4dserver.write_tasks(self.credentials,"SchedulerServer",tasks)
 			#	else:
-			#		result=self.n4dclient.write_tasks(self.credentials,"SchedulerServer",tasks)
+			#		result=self.n4dClient.write_tasks(self.credentials,"SchedulerServer",tasks)
 				#result=proxy.call(tasks)
 				result=self._proxyLaunch(plugin,method,tasks)
 				#result=self.n4d.n4dQuery(plugin,method,tasks)
 		self._debug("Sending task to cron")
 		plugin="SchedulerClient"
 		method="process_tasks"
-		#proxy=n4dclient.Proxy(self.n4dclient,plugin,method)
+		#proxy=n4dclient.Proxy(self.n4dClient,plugin,method)
 		#result=self.n4d.n4dQuery(plugin,method,tasks)
 		result=self._proxyLaunch(plugin,method,tasks)
 
@@ -397,48 +393,138 @@ class TaskScheduler():
 		if task['spread']:
 			result=self.n4dserver.remove_task(self.credentials,"SchedulerServer",task)
 		else:
-			result=self.n4dclient.remove_task(self.credentials,"SchedulerServer",task)
+			result=self.n4dClient.remove_task(self.credentials,"SchedulerServer",task)
 		if type(result)==type({}):
 			status=result['status']
 		self._debug("Status %s"%status)
 		return status
 	#def remove_task
 
-	def _proxyLaunch(self,plugin,method,*args):
-		client=self._n4d_connect()
-		proxy=n4dclient.Proxy(client,plugin,method)
+	def setCredentials(self,tickets):
+		client=None
+		master=None
+		if not self.key in self.launchQueue.keys():
+			print("EXIT!!!!!")
+			return
+		for ticket in tickets:
+			n4dProxy=self._n4d_connect(ticket)
+			self._debug("N4d client: {}".format(n4dProxy))
+			self._debug("N4d old client: {}".format(self.n4dClient))
+			if 'localhost:' in ticket:
+				self._debug("Relaunching n4dMethod on client")
+				oldProxy=self.n4dClient
+				self.n4dClient=n4dProxy
+			elif server_ip in ticket:
+				self._debug("Relaunching n4dMethod on master")
+				oldProxy=self.n4dMaster
+				self.n4dMaster=n4dProxy
+			data=self.launchQueue[self.key]
+			del(self.launchQueue[self.key])
+			#Update all n4dcalls
+			delKeys=[]
+			for key in self.launchQueue.keys():
+				if key.startswith(str(oldProxy)):
+					delKeys.append(key)
+			for delKey in delKeys:
+				a=delKey
+				a=a.replace(str(oldProxy),str(n4dProxy))
+				self.launchQueue[a]=self.launchQueue.pop(delKey)
+				self.launchQueue[a]['client']=n4dProxy
+			key=self.key.replace(str(oldProxy),str(n4dProxy))
+			self.launchQueue[key]={'client':n4dProxy,'n4dClass':data['n4dClass'],'n4dMethod':data['n4dMethod'],'args':data['args'],'kwargs':data.get('kwargs','')}
+		self.onCredentials.emit(self.launchQueue)
+		self.launchN4dQueue(self.launchQueue)
+	#def setCredentials
+
+	def _proxyLaunch(self,n4dClass,n4dMethod,*args,**kwargs):
+		client=""
+		server_ip="localhost"
+		self._debug("Kwargs: {}".format(kwargs))
+
+		if kwargs:
+			server_ip=kwargs.get('ip','server')
+			self._debug("Received server: {}".format(server_ip))
+			
+		result={'status':-1,'return':''}
+		if server_ip=='localhost' and self.n4dClient==None:
+			self._debug("Creating client connection")
+			self.n4dClient=self._n4d_connect(server=server_ip)
+		elif self.n4dMaster==None:
+			self._debug("Creating server connection for {}".format(server_ip))
+				#	if self.n4dMaster==None and server_ip and server_ip!='localhost':
+			self.n4dMaster=self._n4d_connect(server=server_ip)
+
+		#Launch and pray. If there's validation error ask for credentials
 		try:
-			if args[0]:
-				self._debug("Call Args: {}".format(*args))
-				result=proxy.call(*args)
+			if server_ip and server_ip!='localhost':
+				self._debug("Launching n4dMethod on master")
+				result=self._launch(self.n4dMaster,n4dClass,n4dMethod,*args)
 			else:
-				result=proxy.call()
+				self._debug("Launching n4dMethod on client")
+				result=self._launch(self.n4dClient,n4dClass,n4dMethod,*args)
+			del(self.launchQueue["{}:{}".format(n4dClass,n4dMethod)])
 		except n4d.client.UserNotAllowedError as e:
 			#User not allowed, ask for credentials and relaunch
 			result={'status':-1,'code':USERNOTALLOWED_ERROR}
+			if server_ip and server_ip!='localhost':
+				key="{}:{}:{}".format(str(self.n4dMaster),n4dClass,n4dMethod)
+				self.launchQueue[key]={'client':self.n4dMaster,'n4dClass':n4dClass,'n4dMethod':n4dMethod,'args':list(args),'kwargs':kwargs}
+			else:
+				key="{}:{}:{}".format(str(self.n4dClient),n4dClass,n4dMethod)
+				self.launchQueue[key]={'client':self.n4dClient,'n4dClass':n4dClass,'n4dMethod':n4dMethod,'args':list(args),'kwargs':kwargs}
+			self.key=key
 			#Get credentials
-			loginBox=subprocess.run(["/usr/lib/python3/dist-packages/appconfig/n4dCredentialsBox.py"],text=True,capture_output=True)
-			ticket=loginBox.stdout.rstrip()
-			client=self._n4d_connect(ticket)
-			proxy=n4dclient.Proxy(client,plugin,method)
-			try:
-				if args[0]:
-					self._debug("Call Args: {}".format(*args))
-					result=proxy.call(*args)
-				else:
-					result=proxy.call()
-			except Exception as e:
-				print(str(e))
-
+			self._debug("Registering to server: {}".format(server_ip))
+			credentials=login.n4dCredentials(server_ip)
+			self.loginBox=credentials.dialog
+			#self.loginBox.loginBox(server_ip)
+			#self.loginBox.loginBox(self.server)
+			self.loginBox.onTicket.connect(self.setCredentials)
+			self.loginBox.exec()
+			self._debug("2Registering to server: {}".format(server_ip))
+			self.onCredentials.connect(self.launchN4dQueue)
+		except n4d.client.InvalidServerResponseError as e:
+			self._debug("Response: {}".format(e))
 		except Exception as e:
-			print(str(e))
-
-		print("Return %s"%result)
+			print('Error: {}'.format(e))
+		self._debug("N4d response: {}".format(result))
 		return(result)
+	#def n4dQuery(self,n4dclass,n4dmethod,*args):
+	
+	def launchN4dQueue(self,launchQueue):
+		self._debug("Launch: {}".format(launchQueue))
+		launch=launchQueue.copy()
+		for client,callData in launch.items():
+			self._debug("Exec: {}:{}".format(client,callData))
+			try:
+				result=self._launch(callData['client'],callData['n4dClass'],callData['n4dMethod'],*callData['args'])#,callData['kwargs'])
+			except Exception as e:
+				self._debug("Client: {} Error: {}".format(callData['client'],e))
+	
+	def _launch(self,n4dClient,n4dClass,n4dMethod,*args):
+		proxy=n4d.client.Proxy(n4dClient,n4dClass,n4dMethod)
+		if "{}:̣{}".format(n4dClass,n4dMethod) in self.launchQueue.keys():
+			del(self.launchQueue["{}:̣{}".format(n4dClass,n4dMethod)])
+		try:
+			self._debug("Call client: {}".format(n4dClient))
+			self._debug("Call class: {}".format(n4dClass))
+			self._debug("Call method: {}".format(n4dMethod))
+			if len(args):
+				args1=json.dumps(args)
+				self._debug("Call Args: {}".format(args1))
+				result=proxy.call(args1)
+			else:
+				result=proxy.call()
+			del(self.launchQueue["{}:{}:{}".format(str(n4dClient),n4dClass,n4dMethod)])
+		except Exception as e:
+			print(e)
+			raise e
+		print("Launch Result: {}".format(result))
+		return result
 
-	def _n4d_connect(self,ticket=''):
-		self.n4dClient=None
-		self._debug("Connecting to n4d")
+	def _n4d_connect(self,ticket='',server='localhost'):
+		#self.n4dClient=None
+		self._debug("Connecting to n4d at {}".format(server))
 		client=""
 		if ticket:
 			ticket=ticket.replace('##U+0020##',' ').rstrip()
@@ -447,25 +533,26 @@ class TaskScheduler():
 			self._debug("N4d Object2: {}".format(client.credential.auth_type))
 		else:
 			try:
-				socket.gethostbyname(self.server)
+				socket.gethostbyname(server)
 			except:
 				#It could be an ip
 				try:
-					socket.inet_aton(self.server)
+					socket.inet_aton(server)
 				except Exception as e:
-						#			self.error(e)
-				#	self.error("No server found. Reverting to localhost")
+					self.error(e)
+					self.error("No server found. Reverting to localhost")
 					self.server='https://localhost:9779'
-			if not self.server.startswith("http"):
-				self.server="https://{}".format(self.server)
-			if len(self.server.split(":")) < 3:
-					self.server="{}:9779".format(self.server)
+			if not server.startswith("http"):
+				server="https://{}".format(server)
+			if len(server.split(":")) < 3:
+					server="{}:9779".format(server)
 				
-		#	if self.username:
-		#		client=n4d.client.Client(self.server,self.username,self.password)
-		#	else:
-			client=n4d.client.Client(self.server)
-		self.n4dClient=client
-		self._debug("N4d Object2: {}".format(self.n4dClient.credential.auth_type))
+			if self.username:
+				client=n4d.client.Client(server,self.username,self.password)
+			else:
+				client=n4d.client.Client(server)
+		#self.n4dClient=client
+		self._debug("N4d Object2: {}".format(client.credential.auth_type))
 		return(client)
 	#def _n4d_connect
+
