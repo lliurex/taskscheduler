@@ -259,9 +259,19 @@ class SchedulerServer():
 		task_serial=""
 		if len(args)==2:
 			task_type=args[0]
-			task=args[1]
+			a=args[1]
+			if isinstance(a,str):
+				tasks=json.loads(a)
+				task=tasks[0]
+			else:
+				task=a
 		elif len(args)==1:
-			task=args[0]
+			a=args[0]
+			if isinstance(a,str):
+				tasks=json.loads(a)
+				task=tasks[0]
+			else:
+				task=a
 		msg=''
 		self._debug("Received task: %s"%task)
 		status=False
@@ -287,7 +297,7 @@ class SchedulerServer():
 		sched_tasks={}
 		if os.path.isfile(wrkfile):
 			sched_tasks=json.loads(open(wrkfile).read())
-			if not task_serial:# or str(task_serial)=="0":
+			if not task_serial or str(task_serial)=="null":
 				try:
 					serials=[str(i) for i in sched_tasks[task_name].keys()]
 				except:
