@@ -28,7 +28,7 @@ class TaskScheduler(QObject):
 	onCredentials=Signal(dict)
 	def __init__(self):
 		super(TaskScheduler, self).__init__()
-		self.dbg=True
+		self.dbg=False
 		self.credentials=["",""]
 		self.n4dserver=None
 		self.username=''
