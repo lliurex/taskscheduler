@@ -359,7 +359,6 @@ class TaskScheduler(QObject):
 		self._debug("Sending task info to server")
 		plugin="SchedulerServer"
 		method="write_tasks"
-		plugin="SchedulerServer"
 		#proxy=n4dclient.Proxy(self.n4dClient,plugin,method)
 		result={}
 		for group,g_data in tasks.items():
@@ -378,7 +377,7 @@ class TaskScheduler(QObject):
 		#result=self.n4d.n4dQuery(plugin,method,tasks)
 		result=self._proxyLaunch(plugin,method,tasks)
 
-		if type(result)==type({}):
+		if isinstance(result,dict):
 			(status,msg)=(result.get('status',1),result.get('result',{}))
 		else:
 			(status,msg)=(0,{'data':True})
@@ -390,12 +389,18 @@ class TaskScheduler(QObject):
 		status=False
 		sw_remote=False
 		self._debug("Removing task %s"%task)
+		plugin="SchedulerServer"
+		method="remove_task"
 		if task['spread']:
-			result=self.n4dserver.remove_task(self.credentials,"SchedulerServer",task)
+			result=self._proxyLaunch(plugin,method,task)
+			#result=self.n4dserver.remove_task(self.credentials,"SchedulerServer",task)
 		else:
-			result=self.n4dClient.remove_task(self.credentials,"SchedulerServer",task)
-		if type(result)==type({}):
-			status=result['status']
+			result=self._proxyLaunch(plugin,method,task)
+			#result=self.n4dClient.remove_task(self.credentials,"SchedulerServer",task)
+		if isinstance(result,dict):
+			(status,msg)=(result.get('status',1),result.get('result',{}))
+		else:
+			(status,msg)=(0,{'data':True})
 		self._debug("Status %s"%status)
 		return status
 	#def remove_task
@@ -404,7 +409,6 @@ class TaskScheduler(QObject):
 		client=None
 		master=None
 		if not self.key in self.launchQueue.keys():
-			print("EXIT!!!!!")
 			return
 		for ticket in tickets:
 			n4dProxy=self._n4d_connect(ticket)
@@ -510,7 +514,10 @@ class TaskScheduler(QObject):
 			self._debug("Call class: {}".format(n4dClass))
 			self._debug("Call method: {}".format(n4dMethod))
 			if len(args):
-				args1=json.dumps(args)
+				if isinstance(args,dict):
+					args1=json.dumps(args)
+				else:
+					args1=args
 				self._debug("Call Args: {}".format(args1))
 				result=proxy.call(args1)
 			else:
