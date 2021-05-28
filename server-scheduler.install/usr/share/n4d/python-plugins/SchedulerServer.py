@@ -189,18 +189,21 @@ class SchedulerServer():
 	
 	def remove_task(self,task,*args):
 		#Retrocompatibility
-		if type(task)==type(""):
+		if isinstance(task,list):
+			task=task[0]
+		if isinstance(task,str):
 			task_compat={}
 			if task=='remote':
 				task_compat['sw_remote']=True
 			else:
 				task_compat['sw_remote']=False
-			if args[0]:
-				task_compat['name']=args[0]
-			if args[1]:
-				task_compat['serial']=args[1]
-			if args[2]:
-				task_compat['cmd']=args[2]
+			if isinstance(args,list):
+				if args[0]:
+					task_compat['name']=args[0]
+				if args[1]:
+					task_compat['serial']=args[1]
+				if args[2]:
+					task_compat['cmd']=args[2]
 			task=task_compat
 		wrk_dir=self.tasks_dir
 		self._debug("Removing task from system")
@@ -270,6 +273,8 @@ class SchedulerServer():
 			if isinstance(a,str):
 				tasks=json.loads(a)
 				task=tasks[0]
+			if isinstance(a,list):
+				task=a[0]
 			else:
 				task=a
 		msg=''
