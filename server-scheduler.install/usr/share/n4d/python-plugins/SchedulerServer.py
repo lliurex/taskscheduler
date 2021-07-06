@@ -197,7 +197,7 @@ class SchedulerServer():
 				task_compat['sw_remote']=True
 			else:
 				task_compat['sw_remote']=False
-			if isinstance(args,list):
+			if isinstance(args,list) or isinstance(args,tuple):
 				if args[0]:
 					task_compat['name']=args[0]
 				if args[1]:
@@ -205,8 +205,9 @@ class SchedulerServer():
 				if args[2]:
 					task_compat['cmd']=args[2]
 			task=task_compat
+
 		wrk_dir=self.tasks_dir
-		self._debug("Removing task from system")
+		self._debug("Removing task {} from system".format(task['name']))
 		sw_del=False
 		sw_bell=False
 		msg=''
