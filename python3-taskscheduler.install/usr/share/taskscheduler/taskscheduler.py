@@ -106,7 +106,9 @@ class TaskScheduler(QObject):
 		proxy=n4dclient.Proxy(self.n4dClient,plugin,method)
 
 		#result=self.n4dClient.get_local_tasks("","SchedulerServer")['return']
-		result=proxy.call().get('data',{})
+		result=proxy.call()
+		print(tasks)
+		print(result)
 		if type(result)==type({}):
 			if tasks:
 				#Merge values
