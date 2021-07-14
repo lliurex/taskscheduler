@@ -102,7 +102,7 @@ class TaskScheduler(QObject):
 				tasks=result.copy()
 		self._debug("Retrieving task list")
 		plugin="SchedulerServer"
-		method="get_tasks"
+		method="get_local_tasks"
 		proxy=n4dclient.Proxy(self.n4dClient,plugin,method)
 
 		#result=self.n4dClient.get_local_tasks("","SchedulerServer")['return']
