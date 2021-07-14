@@ -1,8 +1,9 @@
-taskscheduler (2.2.2) focal; urgency=medium
+taskscheduler (2.3) focal; urgency=medium
 
   * focal release
   * Fix compatibility with older API
   * N4d plugins in python3
+  * Reworked connection pool
 
  -- Juanma1980 <juanma1980@gmail.com>  Mon, 08 Feb 2021 22:52:10 +0100
 
