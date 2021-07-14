@@ -42,7 +42,7 @@ MARGIN=6
 
 class TaskScheduler:
 	def __init__(self):
-		self.dbg=False
+		self.dbg=True
 		self.last_task_type='remote'
 		self.ldm_helper='/usr/sbin/sched-ldm.sh'
 		self.conf_dir="/etc/scheduler/conf.d"
@@ -153,7 +153,7 @@ class TaskScheduler:
 	#def _set_visible_stack
 
 	def _entry_field(self,label,cmb=False):
-		box=Gtk.VBox(True,True)
+		box=Gtk.VBox(homogeneous=True)
 		box.set_name("WHITE_BACKGROUND")
 		lbl=Gtk.Label()
 		lbl.set_name("ENTRY_LABEL")
@@ -235,25 +235,25 @@ class TaskScheduler:
 
 		toolbar.set_vexpand(False)
 		btn_add=Gtk.Button()
-		tlb_add=Gtk.ToolButton(btn_add)
+		tlb_add=Gtk.ToolButton(stock_id=btn_add)
 		tlb_add.connect("clicked",self._add_task)
 		tlb_add.set_icon_name("list-add")
 		tlb_add.set_tooltip_text(_("Add new task"))
 		toolbar.insert(tlb_add,0)
 		btn_refresh=Gtk.Button()
-		tlb_refresh=Gtk.ToolButton(btn_refresh)
+		tlb_refresh=Gtk.ToolButton(stock_id=btn_refresh)
 		tlb_refresh.connect("clicked",_refresh_tasks)
 		tlb_refresh.set_icon_name("view-refresh")
 		tlb_refresh.set_tooltip_text(_("Reload tasks"))
 		toolbar.insert(tlb_refresh,1)
 		btn_config=Gtk.Button()
-		tlb_config=Gtk.ToolButton(btn_config)
+		tlb_config=Gtk.ToolButton(stock_id=btn_config)
 		tlb_config.connect("clicked",_show_prefs)
 		tlb_config.set_icon_name("preferences-other")
 		tlb_config.set_tooltip_text(_("Open preferences menu"))
 		toolbar.insert(tlb_config,2)
 		btn_help=Gtk.Button()
-		tlb_help=Gtk.ToolButton(btn_help)
+		tlb_help=Gtk.ToolButton(stock_id=btn_help)
 		tlb_help.set_tooltip_text(_("Open help menu"))
 		tlb_help.connect("clicked",_show_help)
 		tlb_help.set_icon_name("help-contents")
@@ -292,7 +292,7 @@ class TaskScheduler:
 			for task in names:
 				cmb_tasks.append_text(_(task))
 			cmb_tasks.set_active(0)
-		grid=Gtk.Box(True,True)
+		grid=Gtk.Box(homogeneous=True)
 		grid.set_name("MAIN_COMMANDS_GRID")
 		grid_cnf=Gtk.Grid(orientation=Gtk.Orientation.VERTICAL)
 		grid_cnf.set_hexpand(False)
@@ -481,16 +481,16 @@ class TaskScheduler:
 				pb=GdkPixbuf.Pixbuf.new_from_file("%s/rsrc/dist_task.png"%BASE_DIR)
 				img_banner=Gtk.Image.new_from_pixbuf(pb)
 				img_banner.props.halign=Gtk.Align.START
-				img_banner.set_margin_left(MARGIN)
+				img_banner.set_margin_start(MARGIN)
 				hbox_task.add(img_banner)
 				txt_client=_("\nClient task")
-		hour_box=Gtk.VBox(False,False)
+		hour_box=Gtk.VBox(homogeneous=False)
 		hour_box.set_name("HOUR_BOX")
-		date_box=Gtk.VBox(False,False,spacing=MARGIN)
+		date_box=Gtk.VBox(homogeneous=False,spacing=MARGIN)
 		date_box.set_margin_bottom(MARGIN)
 		date_box.set_valign(Gtk.Align.END)
 		date_box.set_halign(Gtk.Align.END)
-		dow_box=Gtk.VBox(False,False,spacing=MARGIN)
+		dow_box=Gtk.VBox(homogeneous=False,spacing=MARGIN)
 		dow_box.set_valign(Gtk.Align.CENTER)
 		eta='--'
 		if 'val' in info.keys():
@@ -504,7 +504,8 @@ class TaskScheduler:
 		#Header
 		self._debug("Search for %s"%info['cmd'])
 		cmd=self._get_cmd_for_description(info['cmd'])
-		lbl_task=Gtk.Label(False,False)
+		#lbl_task=Gtk.Label(homogeneous=False,spacing=False)
+		lbl_task=Gtk.Label()
 		lbl_task.set_ellipsize(Pango.EllipsizeMode.END)
 		lbl_task.set_max_width_chars(25)
 		lbl_task.set_markup("<span><big>%s</big></span>"%(_(cmd)))
@@ -538,9 +539,9 @@ class TaskScheduler:
 				style_context.add_provider(style_provider,Gtk.STYLE_PROVIDER_PRIORITY_USER)
 		lbl_group.set_valign(Gtk.Align.START)
 		lbl_group.set_hexpand(True)
-		lbl_group.set_margin_left(0)
+		lbl_group.set_margin_start(0)
 		lbl_group.set_margin_top(0)
-		lbl_group.set_margin_right(0)
+		lbl_group.set_margin_end(0)
 		vbox_task.add(lbl_group)
 		vbox_task.add(lbl_task)
 		#Date Time
@@ -582,7 +583,7 @@ class TaskScheduler:
 					add_date=False
 			else:
 				lbl_mon.set_name("DATE_BOX_HEADER")
-				lbl_day=Gtk.Label(day)
+				lbl_day=Gtk.Label(label=ay)
 				date_box.add(lbl_mon)
 				date_box.add(lbl_day)
 			hbox_task.add(hour_box)
@@ -594,11 +595,11 @@ class TaskScheduler:
 		else:
 			(month,day,f_date,repeat_date)=self._format_date(info['mon'],info['dom'])
 			if month.isdigit():
-				lbl_mon=Gtk.Label(month_array[int(month)-1])
+				lbl_mon=Gtk.Label(label=month_array[int(month)-1])
 			else:
-				lbl_mon=Gtk.Label(month)
+				lbl_mon=Gtk.Label(label=month)
 			lbl_mon.set_name("DATE_BOX_HEADER")
-			lbl_day=Gtk.Label(day)
+			lbl_day=Gtk.Label(label=day)
 			lbl_date=Gtk.Label()
 			date_box.set_name("DATE_BOX")
 			hour_box.set_halign(Gtk.Align.CENTER)
@@ -622,7 +623,7 @@ class TaskScheduler:
 					add_date=False
 			else:
 				lbl_mon.set_name("DATE_BOX_HEADER")
-				lbl_day=Gtk.Label(day)
+				lbl_day=Gtk.Label(label=day)
 				date_box.set_name("DATE_BOX")
 				date_box.set_halign(Gtk.Align.CENTER)
 				date_box.add(lbl_mon)
@@ -1187,6 +1188,7 @@ class TaskScheduler:
 	#def set_css_info	
 	
 	def sig_refresh_grid_tasks(self,*args):
+		self._debug("Refresh signal detected")
 		if self.autorefresh==False:
 			self.autorefresh=True
 		else:
@@ -1209,6 +1211,6 @@ if os.path.isfile(pidfile):
 f_pid=open(pidfile,'w')
 f_pid.write(pid)
 f_pid.close()
-GObject.threads_init()
+#GObject.threads_init()
 t=TaskScheduler()
 t.start_gui()		
