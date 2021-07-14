@@ -42,7 +42,7 @@ MARGIN=6
 
 class TaskScheduler:
 	def __init__(self):
-		self.dbg=False
+		self.dbg=True
 		self.last_task_type='remote'
 		self.ldm_helper='/usr/sbin/sched-ldm.sh'
 		self.conf_dir="/etc/scheduler/conf.d"
