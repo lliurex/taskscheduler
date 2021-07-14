@@ -494,6 +494,8 @@ class TaskScheduler(QObject):
 		self._debug("Query: {}.{}".format(n4dClass,n4dMethod))
 		if kwargs:
 			server_ip=kwargs.get('ip','server')
+			if server_ip=="":
+				server_ip='localhost'
 			self._debug("Received server: {}".format(server_ip))
 			
 		result={'status':-1,'return':''}
