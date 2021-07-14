@@ -89,9 +89,15 @@ class TaskScheduler(QObject):
 
 	def get_scheduled_tasks(self):
 		tasks={}
+		if not self.n4dserver:
+			self.n4dserver=self._n4d_connect(server='server')
+		self._debug("SERVER {} CLIENT {}".format(self.n4dserver,self.n4dClient))
 		if self.n4dserver and self.n4dserver!=self.n4dClient:
 			self._debug("Retrieving server task list")
-			result=self.n4dserver.get_remote_tasks("","SchedulerServer")['return']
+			plugin="SchedulerServer"
+			method="get_remote_tasks"
+			proxy=n4dclient.Proxy(self.n4dserver,plugin,method)
+			result=proxy.call()
 			if type(result)==type({}):
 				tasks=result.copy()
 		self._debug("Retrieving task list")
