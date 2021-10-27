@@ -682,9 +682,10 @@ class TaskScheduler(QObject):
 				try:
 					socket.inet_aton(server)
 				except Exception as e:
-					self.error(e)
-					self.error("No server found. Reverting to localhost")
+					print(e)
+					print("No server found. Reverting to localhost")
 					self.server='https://localhost:9779'
+					server=self.server
 			if not server.startswith("http"):
 				server="https://{}".format(server)
 			if len(server.split(":")) < 3:
