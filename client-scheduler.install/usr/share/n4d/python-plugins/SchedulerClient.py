@@ -143,10 +143,11 @@ class SchedulerClient():
 						data.write('DISPLAY=:0\n')
 						#Get authority file
 						xauth=""
-						for f in os.listdir("/var/run/sddm"):
-							if f.startswith("{"):
-								xauth="/var/run/sddm/%s"%f
-						data.write('XAUTHORITY=%s\n'%xauth)
+						if os.path.isdir("/var/run/sddm"):
+							for f in os.listdir("/var/run/sddm"):
+								if f.startswith("{"):
+									xauth="/var/run/sddm/%s"%f
+							data.write('XAUTHORITY=%s\n'%xauth)
 						if 'https_proxy' in os.environ.keys():
 							https_proxy=os.environ['https_proxy']
 							data.write('https_proxy=%s\n'%https_proxy)
