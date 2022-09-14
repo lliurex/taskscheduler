@@ -220,7 +220,6 @@ class TaskScheduler(QObject):
 	def _get_time_for_next_execution(self,data,data_type,timenow):
 		inc_data=0
 		timestamp={'year':timenow.year,'mon':timenow.month,'dom':timenow.day,'h':timenow.hour,'m':timenow.minute}
-		timelimit={'mon':12,'dom':31,'h':23,'m':59}
 		if data_type=='mon':
 			timeconv=30*24*60*60
 		elif data_type=='dom':
@@ -231,34 +230,65 @@ class TaskScheduler(QObject):
 			timeconv=60
 
 		if data.isdigit():
-			l_data=int(data)
-			if l_data<timestamp[data_type]:
-				#time exceeded
-				inc_data=((timelimit[data_type]-timestamp[data_type])+l_data)*timeconv
-			else:
-				inc_data=(l_data-timestamp[data_type])*timeconv
-			self._debug("Calc: %s"%data_type)
-			self._debug("Inc: %s"%inc_data)
-			self._debug("Now: %s"%timestamp[data_type])
-			self._debug("Pro: %s"%l_data)
+			(l_data,inc_data)=self._get_next_time_digit(data,data_type,timestamp,timeconv)
 		elif '*' in data:
 		#Repeat. As is an "all-times" time unit is set to actual date/time unit
 			l_data=timestamp[data_type]
 		elif '/' in data:
-		#Cyclic. If current time<step then next execution is at step. If step>timelimit (each 61 minutes,ie) then current_time will ever be<step so extract parent units (1h for 61min) and convert
-			c_data=int(data.split('/')[-1])
-			l_data=timestamp[data_type]
-			if c_data<l_data:
-				if l_data%c_data:
-					data_left=(((l_data//c_data)+1)*c_data)-l_data
-					if l_data+data_left>timelimit[data_type]:
-						data_left=timelimit[data_type]-l_data
-					inc_data=data_left*timeconv
-			elif c_data>timelimit[data_type]:
-				cycles=c_data//timelimit[data_type]
-				inc_data=inc_data+(cycles*timelimit[data_type]*timeconv)
+			(l_data,inc_data)=self._get_next_time_step(data,data_type,timestamp,timeconv)
+		elif '-'in data:
+			(l_data,inc_data)=self._get_next_time_range(data,data_type,timestamp,timeconv)
 		return (inc_data,l_data)
 	#def _get_time_for_next_execution
+
+	def _get_next_time_digit(self,data,data_type,timestamp,timeconv):
+		inc_data=0
+		timelimit={'mon':12,'dom':31,'h':23,'m':59}
+		l_data=int(data)
+		if l_data<timestamp[data_type]:
+			#time exceeded
+			inc_data=((timelimit[data_type]-timestamp[data_type])+l_data)*timeconv
+		else:
+			inc_data=(l_data-timestamp[data_type])*timeconv
+		self._debug("Calc: %s"%data_type)
+		self._debug("Inc: %s"%inc_data)
+		self._debug("Now: %s"%timestamp[data_type])
+		self._debug("Pro: %s"%l_data)
+		return(l_data,inc_data)
+	#def _get_next_time_digit
+
+	def _get_next_time_step(self,data,data_type,timestamp,timeconv):
+		#Cyclic. If current time<step then next execution is at step. If step>timelimit (each 61 minutes,ie) then current_time will ever be<step so extract parent units (1h for 61min) and convert
+		timelimit={'mon':12,'dom':31,'h':23,'m':59}
+		inc_data=0
+		c_data=int(data.split('/')[-1])
+		l_data=timestamp[data_type]
+		if c_data<l_data:
+			if l_data%c_data:
+				data_left=(((l_data//c_data)+1)*c_data)-l_data
+				if l_data+data_left>timelimit[data_type]:
+					data_left=timelimit[data_type]-l_data
+				inc_data=data_left*timeconv
+		elif c_data>timelimit[data_type]:
+			cycles=c_data//timelimit[data_type]
+			inc_data=inc_data+(cycles*timelimit[data_type]*timeconv)
+		return(l_data,inc_data)
+	#def _get_next_time_digit
+
+	def _get_next_time_range(self,data,data_type,timestamp,timeconv):
+		#If current time<step then next execution is at step. If step>timelimit (each 61 minutes,ie) then current_time will ever be<step so extract parent units (1h for 61min) and convert
+		inc_data=0
+		timelimit={'mon':12,'dom':31,'h':23,'m':59}
+		min_data=int(data.split('-')[0])
+		max_data=int(data.split('-')[-1])
+		l_data=timestamp[data_type]
+		if min_data<=l_data and max_data>=l_data:
+			inc_data=(max_data-timestamp[data_type])*timeconv
+		else:
+			#time exceeded
+			inc_data=((timelimit[data_type]-timestamp[data_type])+min_data)*timeconv
+		return(timestamp[data_type],inc_data)
+	#def _get_next_time_digit
 
 	def _calculate_timestamp(self,year,mon,dom,h,m):
 		time_task=0
