@@ -96,7 +96,7 @@ class TaskScheduler:
 		mw.set_title("TaskScheduler")
 		mw.connect("destroy",self._quit)
 		mw.connect("key_press_event",keypress)
-		mw.set_resizable(False)
+		mw.set_resizable(True)
 		mw.set_size_request(WIDTH,HEIGHT)
 		self.stack=Gtk.Stack()
 		self.stack.set_transition_duration(1000)
@@ -582,8 +582,10 @@ class TaskScheduler:
 					hour_box.set_halign(Gtk.Align.CENTER)
 					add_date=False
 			else:
+				lbl_mon=Gtk.Label()
 				lbl_mon.set_name("DATE_BOX_HEADER")
-				lbl_day=Gtk.Label(label=ay)
+				#lbl_day=Gtk.Label(label=ay)
+				lbl_day=Gtk.Label()
 				date_box.add(lbl_mon)
 				date_box.add(lbl_day)
 			hbox_task.add(hour_box)
@@ -722,9 +724,9 @@ class TaskScheduler:
 	#def _format_date
 
 	def _format_time_unit(self,unit):
-		if ('*' not in unit and '/' not in unit):
-			if int(unit)<10:
-				unit="0%s"%unit
+		unit=str(unit)
+		if len(unit)<2:
+			unit="0{}".format(unit)
 		return unit
 	#def _format_time_unit
 
