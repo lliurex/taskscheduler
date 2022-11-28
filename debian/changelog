@@ -1,3 +1,9 @@
+taskscheduler (2.6) jammy; urgency=medium
+
+  * Jammy release
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 28 Nov 2022 12:04:42 +0100
+
 taskscheduler (2.4) lliurex22; urgency=medium
 
   * Add support for cron ranges (format x-y)
