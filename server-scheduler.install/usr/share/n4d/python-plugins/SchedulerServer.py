@@ -40,15 +40,17 @@ class SchedulerServer():
 		if os.path.isfile(self.conf_file):
 			try:
 				data=json.loads(open(self.conf_file).read())
+				return n4d.responses.build_successful_call_response(data)
 			except Exception as e:
 				data=e
 				status=False
 				self._debug(("unable to open %s") % self.conf_file)
-		return n4d.responses.build_successful_call_response(data)
+				return n4d.responses.build_successful_call_response("")
 		#return ({'status':status,'data':data})
 	#def read_config
 
-	def write_config(self,task,key,value):
+	def write_config(self,data):
+		(task,key,value)=data
 		status=True
 		data={}
 		config={}
