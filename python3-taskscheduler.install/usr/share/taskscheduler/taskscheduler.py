@@ -53,7 +53,7 @@ class TaskScheduler(QObject):
 
 	def read_config(self):
 		result={}
-		try
+		try:
 			result=self.n4dClient.read_config("","SchedulerServer")
 		except:
 			print("No config found")
