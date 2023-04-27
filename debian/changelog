@@ -1,3 +1,9 @@
+taskscheduler (2.4.1) focal; urgency=medium
+
+  * Fix custom command creation
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 27 Apr 2023 11:50:08 +0200
+
 taskscheduler (2.4) lliurex22; urgency=medium
 
   * Add support for cron ranges (format x-y)
