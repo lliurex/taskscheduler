@@ -81,7 +81,6 @@ class TaskScheduler:
 	#def _parse_config
 
 	def _write_config(self,task,key,value):
-		print("Call LIB")
 		self.scheduler.write_config(task,key,value)
 		self._parse_config()
 	#def _write_config
@@ -879,7 +878,6 @@ class TaskScheduler:
 		self.autorefresh=False
 		(status,result)=self.scheduler.write_tasks(task)
 		msg=result.get('data')
-		print(msg)
 		if status:
 			self._debug("OK - %s - %s"%(msg,tasks))
 			if name in task.keys():
