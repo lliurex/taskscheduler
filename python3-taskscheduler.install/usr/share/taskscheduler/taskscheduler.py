@@ -52,11 +52,14 @@ class TaskScheduler(QObject):
 	#def _debug
 
 	def read_config(self):
-		result=self.n4dClient.read_config("","SchedulerServer")
-		if isinstance(result,dict):
-			return (result)
-		else:
-			return({})
+		result={}
+		try
+			result=self.n4dClient.read_config("","SchedulerServer")
+		except:
+			print("No config found")
+		if isinstance(result,dict)==False:
+			result={}
+		return (result)
 	#def read_config
 
 	def write_config(self,task,key,value):
