@@ -53,8 +53,8 @@ class TaskScheduler(QObject):
 
 	def read_config(self):
 		result=self.n4dClient.read_config("","SchedulerServer")
-		if 'data' in result.keys():
-			return (result['data'])
+		if isinstance(result,dict):
+			return (result)
 		else:
 			return({})
 	#def read_config
@@ -62,10 +62,10 @@ class TaskScheduler(QObject):
 	def write_config(self,task,key,value):
 		n4dclass="SchedulerServer"
 		n4dmethod="write_config"
-		n4parms=[task,key,value]
+		n4dparms=[task,key,value]
 		result=self.n4d.n4dQuery(n4dclass,n4dmethod,n4dparms)
 	#	result=self.n4dClient.write_config(self.credentials,"SchedulerServer",task,key,value)
-		return(result['status'])
+		return(result)
 	#def write_config
 
 	def get_available_tasks(self):
@@ -107,8 +107,6 @@ class TaskScheduler(QObject):
 
 		#result=self.n4dClient.get_local_tasks("","SchedulerServer")['return']
 		result=proxy.call()
-		print(tasks)
-		print(result)
 		if type(result)==type({}):
 			if tasks:
 				#Merge values
@@ -586,9 +584,8 @@ class TaskScheduler(QObject):
 			self._debug("Exec: {}".format(callData))
 			try:
 				self.result=self._launch(callData['client'],callData['n4dClass'],callData['n4dMethod'],*callData['args'])
-			except:
-				print("***********************************************")
-				pass
+			except Exception as e:
+				print(e)
 	#def launchN4dQueue(self,launchQueue):
 	def _proxyLaunch2(self,n4dClass,n4dMethod,*args,**kwargs):
 		client=""
@@ -696,7 +693,7 @@ class TaskScheduler(QObject):
 		except Exception as e:
 			print(e)
 			raise e
-		print("Launch Result: {}".format(result))
+		self._debug("Launch Result: {}".format(result))
 		return result
 
 	def _n4d_connect(self,ticket='',server='localhost'):
