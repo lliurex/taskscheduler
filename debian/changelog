@@ -1,3 +1,10 @@
+taskscheduler (2.9.99) focal-updates; urgency=medium
+
+  * removed python and n4d modules (now are independent)
+  * QT version
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 24 Jul 2023 12:20:48 +0200
+
 taskscheduler (2.4.1) focal; urgency=medium
 
   * Fix custom command creation

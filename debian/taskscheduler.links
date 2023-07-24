@@ -1,1 +1,1 @@
-/usr/share/taskscheduler/bin/taskScheduler.py /usr/bin/taskscheduler
+/usr/share/taskscheduler/taskscheduler-qt.py /usr/bin/taskscheduler
