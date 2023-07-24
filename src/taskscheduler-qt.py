@@ -5,7 +5,7 @@ from PySide2.QtWidgets import QApplication
 from appconfig.appConfigScreen import appConfigScreen as appConfig
 NAME="TaskScheduler"
 app=QApplication([NAME])
-config=appConfig(NAME,{'app':app})
+config=appConfig(NAME.lower(),{'app':app})
 config.setRsrcPath("/usr/share/{}/rsrc".format(NAME.lower()))
 config.setIcon(NAME.lower())
 config.setBanner("{}_banner.png".format(NAME.lower()))
