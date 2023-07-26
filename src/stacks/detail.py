@@ -355,39 +355,45 @@ class detail(confStack):
 			self.stack._showStack(idx=1,parms="")
 	#def _delTask
 
+	def _readWidgetData(self,key,wdg):
+		values=[]
+		allEnabled=True
+		for i in wdg.findChildren(QPushButton):
+			if i.isChecked()==True:
+				data=i.text()
+				if not data.isdigit():
+					for dmon,mon in MONTHS.items():
+						if mon==data:
+							data=dmon
+				values.append(str(data))
+			else:
+				allEnabled=False
+		for i in wdg.findChildren(QComboBox):
+			if isinstance(i,QCheckableComboBox):
+				if key=="dow":
+					values=[]
+					items=i.getItems()
+					for item in items:
+						if item.checkState() == Qt.Checked:
+							values.append(item.index().row())
+						else:
+							print("False: {}".format(item.index().row()))
+							allEnabled=False
+			elif key=="m":
+				values.append(str(int(i.currentText())))
+		return(values,allEnabled)
+	#def _readWidgetData
+
 	def _readScreen(self,alias={}):
 		processWdg={"m":self.minutes,"h":self.hours,"dom":self.days,"mon":self.months,"dow":self.days}
 		processInfo={"m":[],"h":[],"dom":[],"mon":[],"dow":[]}
 		for key,wdg in processWdg.items():
 			allEnabled=True
-			values=[]
-			for i in wdg.findChildren(QPushButton):
-				if i.isChecked()==True:
-					data=i.text()
-					if not data.isdigit():
-						for dmon,mon in MONTHS.items():
-							if mon==data:
-								data=dmon
-					values.append(str(data))
-				else:
-					allEnabled=False
-			for i in wdg.findChildren(QComboBox):
-				if isinstance(i,QCheckableComboBox):
-					if key=="dow":
-						values=[]
-						items=i.getItems()
-						for item in items:
-							if item.checkState() == Qt.Checked:
-								values.append(item.index().row())
-							else:
-								allEnabled=False
-				elif key=="m":
-					values.append(str(int(i.currentText())))
-				allEnabled=False
+			values,allEnabled=self._readWidgetData(key,wdg)
 			if allEnabled==True or len(values)==0:
 				values=["*"]
-
 			processInfo[key]=self._generateCronRegex(values)
+
 		processInfo["cmd"]=self.cmbCmd.currentText()
 		if processInfo["cmd"] in alias.keys():
 			processInfo["cmd"]=alias[processInfo["cmd"]]
@@ -401,6 +407,7 @@ class detail(confStack):
 
 	def writeConfig(self):
 		config=self.getConfig("user")
+		cron=[]
 		processInfo=self._readScreen(config.get("user",{}).get("alias",{}))
 		cmdName=processInfo["cmd"].split(" ")[0]
 		if os.path.isfile(cmdName)==False and cmdName[0].isalnum():
@@ -422,6 +429,9 @@ class detail(confStack):
 			cronF=self.task["file"]
 		elif self.cmbType.currentIndex()==1:
 			cronF=os.path.join("/","etc","cron.d","taskscheduler")
-		self.scheduler.cronFromJson(processInfo,self.task.get("raw",""),cronF)
+		cron.append(processInfo)
+		self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
 		self.changes=True
+		self.currentTaskData=self.task.copy()
+		self.stack.gotoStack(1,parms="")
 	#def writeConfig

@@ -218,6 +218,7 @@ class simple(confStack):
 	def writeConfig(self):
 		config=self.getConfig("user")
 		processInfo=self._readScreen(config.get("user",{}).get("alias",{}))
+		cron=[]
 		if len(processInfo)>0:
 			cmdName=processInfo["cmd"].split(" ")[0]
 			if os.path.isfile(cmdName)==False and  cmdName[0].isalnum():
@@ -228,6 +229,7 @@ class simple(confStack):
 			cronF=""
 			if self.cmbType.currentIndex()==1:
 				cronF=os.path.join("/","etc","cron.d","taskscheduler")
-			self.scheduler.cronFromJson(processInfo,self.task.get("raw",""),cronF)
+			cron.append(processInfo)
+			self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
 	#def writeConfig
 
