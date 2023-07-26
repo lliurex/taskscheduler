@@ -380,6 +380,7 @@ class detail(confStack):
 							print("False: {}".format(item.index().row()))
 							allEnabled=False
 			elif key=="m":
+				allEnabled=False
 				values.append(str(int(i.currentText())))
 		return(values,allEnabled)
 	#def _readWidgetData
@@ -432,6 +433,6 @@ class detail(confStack):
 		cron.append(processInfo)
 		self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
 		self.changes=True
-		self.currentTaskData=self.task.copy()
+		self.currentTaskData=processInfo
 		self.stack.gotoStack(1,parms="")
 	#def writeConfig
