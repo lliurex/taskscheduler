@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-24 12:59+0200\n"
+"POT-Creation-Date: 2023-08-01 07:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,8 +46,7 @@ msgid "Take a look to next scheduled tasks"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:17
-msgid ""
-"From here you can update the repositories info or launch lliurex-upgrade"
+msgid "Show scheduled tasks ordered by next execution time"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:18

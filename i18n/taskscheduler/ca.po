@@ -11,7 +11,7 @@ msgstr ""
 "PO-Revision-Date: 2023-08-01 07:49+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: es\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,55 +20,55 @@ msgstr ""
 
 #: ../src/stacks/custom.py:15
 msgid "Add custom commands"
-msgstr "Añadir comandos"
+msgstr "Comandaments personalitzats"
 
 #: ../src/stacks/custom.py:16
 msgid "Add custom commmands with aliases for later use"
-msgstr "Guardar comandos personalizados para su uso posterior"
+msgstr "Afegir un alias a comandaments personalitzats"
 
 #: ../src/stacks/custom.py:17
 msgid "Command alias"
-msgstr "Alias del comando"
+msgstr "Alias"
 
 #: ../src/stacks/custom.py:18
 msgid "Add"
-msgstr "Añadir"
+msgstr "Afegir"
 
 #: ../src/stacks/custom.py:19
 msgid "Full command"
-msgstr "Comando completo"
+msgstr "Comandament"
 
 #: ../src/stacks/custom.py:20
 msgid "no found"
-msgstr "no encontrado"
+msgstr "no trobat"
 
 #: ../src/stacks/dashboard.py:16
 msgid "Take a look to next scheduled tasks"
-msgstr "Revisa el calendario de tareas"
+msgstr "Una ullada a les pròximes tasques"
 
 #: ../src/stacks/dashboard.py:17
 msgid "Show scheduled tasks ordered by next execution time"
-msgstr "Muestra las tareas ordenadas por próxima hora de ejecución"
+msgstr "Mostra les tasques ordenades per pròxima hora d'execució"
 
 #: ../src/stacks/dashboard.py:18
 msgid "Next in"
-msgstr "Siguiente en"
+msgstr "Pròxima"
 
 #: ../src/stacks/dashboard.py:19
 msgid "User cron"
-msgstr "Cron del usuario"
+msgstr "Cron de l'usuari"
 
 #: ../src/stacks/dashboard.py:22
 msgid "January"
-msgstr "Enero"
+msgstr "Gener"
 
 #: ../src/stacks/dashboard.py:23
 msgid "February"
-msgstr "Febrero"
+msgstr "Febrer"
 
 #: ../src/stacks/dashboard.py:24
 msgid "March"
-msgstr "Marzo"
+msgstr "Març"
 
 #: ../src/stacks/dashboard.py:25
 msgid "April"
@@ -77,51 +77,51 @@ msgstr "Abril"
 #: ../src/stacks/dashboard.py:26 ../src/stacks/detail.py:40
 #: ../src/stacks/simple.py:36
 msgid "May"
-msgstr "Mayo"
+msgstr "Maig"
 
 #: ../src/stacks/dashboard.py:27
 msgid "June"
-msgstr "Junio"
+msgstr "Juni"
 
 #: ../src/stacks/dashboard.py:28
 msgid "July"
-msgstr "Julio"
+msgstr "Juliol"
 
 #: ../src/stacks/dashboard.py:29
 msgid "August"
-msgstr "Agosto"
+msgstr "Agost"
 
 #: ../src/stacks/dashboard.py:30
 msgid "September"
-msgstr "Septiembre"
+msgstr "Septembre"
 
 #: ../src/stacks/dashboard.py:31
 msgid "October"
-msgstr "Octubre"
+msgstr "Octobre"
 
 #: ../src/stacks/dashboard.py:32
 msgid "November"
-msgstr "Noviembre"
+msgstr "Novembre"
 
 #: ../src/stacks/dashboard.py:33
 msgid "December"
-msgstr "Diciembre"
+msgstr "Decembre"
 
 #: ../src/stacks/detail.py:16
 msgid "Advanced scheduling for expert users"
-msgstr "Programación avanzada (modo experto)"
+msgstr "Programació avançada per a experts"
 
 #: ../src/stacks/detail.py:17 ../src/stacks/simple.py:16
 msgid "Add scheduled tasks"
-msgstr "Programar tareas"
+msgstr "Afegir tasques"
 
 #: ../src/stacks/detail.py:18 ../src/stacks/simple.py:17
 msgid "Task"
-msgstr "Tarea"
+msgstr "Tasca"
 
 #: ../src/stacks/detail.py:19 ../src/stacks/simple.py:18
 msgid "User's cron"
-msgstr "Cron del usuario"
+msgstr "Cron de l'usuari"
 
 #: ../src/stacks/detail.py:20 ../src/stacks/simple.py:19
 msgid "System cron"
@@ -141,31 +141,31 @@ msgstr "Horaria"
 
 #: ../src/stacks/detail.py:24
 msgid "Months"
-msgstr "Meses"
+msgstr "Mesos"
 
 #: ../src/stacks/detail.py:25
 msgid "Days"
-msgstr "Días"
+msgstr "Dies"
 
 #: ../src/stacks/detail.py:26
 msgid "Hours"
-msgstr "Horas"
+msgstr "Hores"
 
 #: ../src/stacks/detail.py:27 ../src/stacks/simple.py:29
 msgid "Minute"
-msgstr "Minuto"
+msgstr "Minut"
 
 #: ../src/stacks/detail.py:28
 msgid "Select weekdays"
-msgstr "Días de la semana"
+msgstr "Dia setmana"
 
 #: ../src/stacks/detail.py:29
 msgid "Weekdays"
-msgstr "Días de la semana"
+msgstr "Dies de la setmana"
 
 #: ../src/stacks/detail.py:30
 msgid "Delete"
-msgstr "Borrar"
+msgstr "Eliminar"
 
 #: ../src/stacks/detail.py:31
 msgid "Cancel"
@@ -173,15 +173,15 @@ msgstr "Cancelar"
 
 #: ../src/stacks/detail.py:32
 msgid "Sure?"
-msgstr "¿Seguro?"
+msgstr "Segur?"
 
 #: ../src/stacks/detail.py:33
 msgid "Write or select a command"
-msgstr "Introduce o selecciona un comando"
+msgstr "Escriure o seleccionar comandament"
 
 #: ../src/stacks/detail.py:36 ../src/stacks/simple.py:32
 msgid "Jan"
-msgstr "Ene"
+msgstr "Gen"
 
 #: ../src/stacks/detail.py:37 ../src/stacks/simple.py:33
 msgid "Feb"
@@ -221,47 +221,47 @@ msgstr "Nov"
 
 #: ../src/stacks/detail.py:47 ../src/stacks/simple.py:43
 msgid "Dec"
-msgstr "Dic"
+msgstr "Dec"
 
 #: ../src/stacks/detail.py:50
 msgid "Monday"
-msgstr "Lunes"
+msgstr "Dilluns"
 
 #: ../src/stacks/detail.py:51
 msgid "Tuesday"
-msgstr "Martes"
+msgstr "Dimarts"
 
 #: ../src/stacks/detail.py:52
 msgid "Wednesday"
-msgstr "Miércoles"
+msgstr "Dimecres"
 
 #: ../src/stacks/detail.py:53
 msgid "Thursday"
-msgstr "Jueves"
+msgstr "Dijous"
 
 #: ../src/stacks/detail.py:54
 msgid "Friday"
-msgstr "Viernes"
+msgstr "Divendres"
 
 #: ../src/stacks/detail.py:55
 msgid "Saturday"
-msgstr "Sábado"
+msgstr "Dissabte"
 
 #: ../src/stacks/detail.py:56
 msgid "Sunday"
-msgstr "Domingo"
+msgstr "Diumenge"
 
 #: ../src/stacks/remainder.py:15
 msgid "Add remainder"
-msgstr "Añadir recordatorio"
+msgstr "Afegir recordatori"
 
 #: ../src/stacks/remainder.py:16
 msgid "One-shot notifications/alarms"
-msgstr "Descartar notificación/alarma"
+msgstr "Notificacions úniques/alarmes"
 
 #: ../src/stacks/simple.py:15
 msgid "Add schedule for task"
-msgstr "Programar una tarea"
+msgstr "Afegir tasca programada"
 
 #: ../src/stacks/simple.py:20
 msgid "Repeat"
@@ -269,7 +269,7 @@ msgstr "Repetir"
 
 #: ../src/stacks/simple.py:21
 msgid "No repeat"
-msgstr "No  repetir"
+msgstr "No repetir"
 
 #: ../src/stacks/simple.py:22
 msgid "Yearly"
@@ -281,8 +281,11 @@ msgstr "Mes"
 
 #: ../src/stacks/simple.py:27
 msgid "Day"
-msgstr "Día"
+msgstr "Dia"
 
 #: ../src/stacks/simple.py:28
 msgid "Hour"
 msgstr "Hora"
+
+#~ msgid "From here you can update the repositories info or launch lliurex-upgrade"
+#~ msgstr "Desde d'ací es poden actualit"
