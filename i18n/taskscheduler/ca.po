@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-01 07:48+0200\n"
-"PO-Revision-Date: 2023-08-01 07:49+0200\n"
+"POT-Creation-Date: 2023-08-01 08:14+0200\n"
+"PO-Revision-Date: 2023-08-01 08:18+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -17,6 +17,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../src/stacks/custom.py:14
+msgid "Add commands"
+msgstr "Afegit comandaments"
 
 #: ../src/stacks/custom.py:15
 msgid "Add custom commands"
@@ -41,6 +45,10 @@ msgstr "Comandament"
 #: ../src/stacks/custom.py:20
 msgid "no found"
 msgstr "no trobat"
+
+#: ../src/stacks/dashboard.py:15
+msgid "Dashboard"
+msgstr "Panell"
 
 #: ../src/stacks/dashboard.py:16
 msgid "Take a look to next scheduled tasks"
@@ -106,6 +114,10 @@ msgstr "Novembre"
 #: ../src/stacks/dashboard.py:33
 msgid "December"
 msgstr "Decembre"
+
+#: ../src/stacks/detail.py:15
+msgid "Advance schedule"
+msgstr "Programació avançada"
 
 #: ../src/stacks/detail.py:16
 msgid "Advanced scheduling for expert users"
@@ -258,6 +270,10 @@ msgstr "Afegir recordatori"
 #: ../src/stacks/remainder.py:16
 msgid "One-shot notifications/alarms"
 msgstr "Notificacions úniques/alarmes"
+
+#: ../src/stacks/simple.py:14
+msgid "Schedule task"
+msgstr "Programar tasca"
 
 #: ../src/stacks/simple.py:15
 msgid "Add schedule for task"
