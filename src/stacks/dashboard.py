@@ -14,7 +14,7 @@ _ = gettext.gettext
 
 i18n={"DESCRIPTION":("Dashboard"),
 	"DESCRIPTION_MENU":_("Take a look to next scheduled tasks"),
-	"TOOLTIP":_("From here you can update the repositories info or launch lliurex-upgrade"),
+	"TOOLTIP":_("Show scheduled tasks ordered by next execution time"),
 	"REST":_("Next in"),
 	"USERCRON":_("User cron")
 	}
