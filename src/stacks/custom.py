@@ -11,7 +11,7 @@ import taskscheduler.taskscheduler as taskscheduler
 import gettext
 _ = gettext.gettext
 
-i18n={"DESCRIPTION":("Add commands"),
+i18n={"DESCRIPTION":_("Add commands"),
 	"DESCRIPTION_MENU":_("Add custom commands"),
 	"TOOLTIP":_("Add custom commmands with aliases for later use"),
 	"ALIAS":_("Command alias"),

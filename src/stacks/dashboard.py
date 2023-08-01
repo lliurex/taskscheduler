@@ -12,7 +12,7 @@ import taskscheduler.taskscheduler as taskscheduler
 import gettext
 _ = gettext.gettext
 
-i18n={"DESCRIPTION":("Dashboard"),
+i18n={"DESCRIPTION":_("Dashboard"),
 	"DESCRIPTION_MENU":_("Take a look to next scheduled tasks"),
 	"TOOLTIP":_("Show scheduled tasks ordered by next execution time"),
 	"REST":_("Next in"),

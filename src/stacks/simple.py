@@ -11,7 +11,7 @@ import taskscheduler.taskscheduler as taskscheduler
 import gettext
 _ = gettext.gettext
 
-i18n={"DESCRIPTION":("Schedule task"),
+i18n={"DESCRIPTION":_("Schedule task"),
 	"DESCRIPTION_MENU":_("Add schedule for task"),
 	"TOOLTIP":_("Add scheduled tasks"),
 	"CMD":_("Task"),
