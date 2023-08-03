@@ -17,6 +17,9 @@ i18n={"DESCRIPTION":_("Schedule task"),
 	"CMD":_("Task"),
 	"USERCRON":_("User's cron"),
 	"SYSCRON":_("System cron"),
+	"ATJOB":_("At job"),
+	"ATNOTMOD":_("This at job can't be modified"),
+	"MALFORMED":_("Jobs can run only on fixed dates"),
 	"REPEAT":_("Repeat"),
 	"NOREPEAT":_("No repeat"),
 	"YEARLY":_("Yearly"),
@@ -78,6 +81,7 @@ class simple(confStack):
 		self.cmbType=QComboBox()
 		self.cmbType.addItem(i18n.get("USERCRON"))
 		self.cmbType.addItem(i18n.get("SYSCRON"))
+		self.cmbType.addItem(i18n.get("ATJOB"))
 		self.lay.addWidget(self.cmbType,0,4,1,1,Qt.AlignRight)
 		self.lay.setRowStretch(3,2)
 		self.lay.setRowStretch(3,3)
@@ -222,14 +226,20 @@ class simple(confStack):
 		if len(processInfo)>0:
 			cmdName=processInfo["cmd"].split(" ")[0]
 			if os.path.isfile(cmdName)==False and  cmdName[0].isalnum():
-				self.showMsg("{} {}".format(cmdName,i18n.get("NOTCMD")))
+				if len(self.task.get("atid",""))>0:
+					self.showMsg("{}".format(i18n.get("ATNOTMOD")))
+				else:
+					self.showMsg("{} {}".format(cmdName,i18n.get("NOTCMD")))
 				return ({})
 			if not processInfo["cmd"] in config.get("user",{}).get("alias",{}).keys():
 				self._addCmdToHistory(processInfo["cmd"])
 			cronF=""
+			cron.append(processInfo)
 			if self.cmbType.currentIndex()==1:
 				cronF=os.path.join("/","etc","cron.d","taskscheduler")
-			cron.append(processInfo)
-			self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
+				self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
+			elif self.cmbType.currentIndex()==2:
+				if not (self.scheduler.addAtJob(cron[0].get("m"),cron[0].get("h"),cron[0].get("dom"),cron[0].get("mon"),cron[0].get("cmd"))):
+					self.showMsg("{}".format(cmdName,i18n.get("MALFORMED")))
 	#def writeConfig
 

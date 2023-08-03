@@ -16,7 +16,8 @@ i18n={"DESCRIPTION":_("Dashboard"),
 	"DESCRIPTION_MENU":_("Take a look to next scheduled tasks"),
 	"TOOLTIP":_("Show scheduled tasks ordered by next execution time"),
 	"REST":_("Next in"),
-	"USERCRON":_("User cron")
+	"USERCRON":_("User cron"),
+	"ATID":_("at job")
 	}
 
 MONTHS={1:_("January"),
@@ -73,6 +74,11 @@ class taskButton(QPushButton):
 			self.lblFile.setToolTip(task.get("file"))
 			icn=QtGui.QIcon.fromTheme("package-available-locked")
 			self.setIcon(icn)
+		elif len(task.get("atid",""))>0:
+			self.lblFile.setText(i18n.get("ATID"))
+			self.lblFile.setToolTip(task.get("file"))
+			icn=QtGui.QIcon.fromTheme("package-available-locked")
+			self.setIcon(icn)
 		self.lblFile.adjustSize()
 		self.lay.addWidget(self.lblFile,3,0,1,2,Qt.AlignBottom)
 		self.lblRest=QLabel()
@@ -90,6 +96,7 @@ class taskButton(QPushButton):
 	def _debug(self,msg):
 		if self.dbg==True:
 			print("Taskbutton {}".format(msg))
+	#def _debug
 
 	def _formatTooltip(self,textArray):
 		tooltip=""
@@ -106,6 +113,7 @@ class taskButton(QPushButton):
 			idx+=1
 		tooltip="{}\n{}".format("  ".join(labels),"  ".join(sched))
 		return(tooltip)
+	#def _formatTooltip
 
 	def _getHeight(self):
 		h=self.lblTime.geometry().height()+self.lblDate.geometry().height()+self.lblRest.geometry().height()+self.label.geometry().height()+self.lblFile.geometry().height()
@@ -126,6 +134,7 @@ class taskButton(QPushButton):
 		self._debug(size)
 		self._debug("H: {}".format(h))
 		return (h)
+	#def _getHeight
 
 	def _setTime(self,time):
 		self.lblTime.setText(time)
@@ -143,6 +152,7 @@ class taskButton(QPushButton):
 
 	def getTask(self):
 		return(self.task)
+	#def getTask
 
 class dashboard(confStack):
 	def __init_stack__(self):
@@ -176,6 +186,7 @@ class dashboard(confStack):
 		cron=self.scheduler.getUserCron()
 		#crond=self.scheduler.getSystemCron()
 		cron.update(self.scheduler.getSystemCron())
+		cron.update(self.scheduler.getAt())
 		config=self.getConfig("user").get("user",{})
 		alias=config.get("alias")
 		self.table.setRowCount(0)

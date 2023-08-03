@@ -18,6 +18,8 @@ i18n={"DESCRIPTION":_("Advance schedule"),
 	"CMD":_("Task"),
 	"USERCRON":_("User's cron"),
 	"SYSCRON":_("System cron"),
+	"ATJOB":_("At job"),
+	"ATNOTMOD":_("This at job can't be modified"),
 	"MONTHLY":_("Monthly"),
 	"DAILY":_("Daily"),
 	"HOURLY":_("Hourly"),
@@ -30,6 +32,8 @@ i18n={"DESCRIPTION":_("Advance schedule"),
 	"DELETE":_("Delete"),
 	"CANCEL":_("Cancel"),
 	"CONFIRM":_("Sure?"),
+	"NOTCMD":_("not found"),
+	"MALFORMED":_("Jobs can run only on fixed dates"),
 	"LABELCMD":_("Write or select a command")
 	}
 
@@ -98,6 +102,7 @@ class detail(confStack):
 		self.cmbType=QComboBox()
 		self.cmbType.addItem(i18n.get("USERCRON"))
 		self.cmbType.addItem(i18n.get("SYSCRON"))
+		self.cmbType.addItem(i18n.get("ATJOB"))
 		lay.addWidget(self.cmbType,1,1,1,1,Qt.AlignTop|Qt.AlignRight)
 		self.months=self._drawDateTimeWidget("MONTH_SCHED","MONTHLY",1,13)
 		self.months.adjustSize()
@@ -265,6 +270,8 @@ class detail(confStack):
 		if len(self.task)==0:
 			self.btnDelete.setVisible(False)
 			self.cmbType.setVisible(True)
+			self.cmbCmd.setEnabled(True)
+			self.cmbType.setEnabled(True)
 		self.cmbCmd.clear()
 		processWdg=[self.minutes,self.hours,self.days,self.months]
 		for wdg in processWdg:
@@ -288,6 +295,8 @@ class detail(confStack):
 		self.index=3
 		self.currentTaskData=args[0]
 		self.btnDelete.setVisible(True)
+		self.cmbCmd.setEnabled(False)
+		self.cmbType.setEnabled(False)
 	#def setParms
 
 	def _addCmdToHistory(self,cmd):
@@ -343,11 +352,14 @@ class detail(confStack):
 		if dlg.exec_():
 			raw=self.currentTaskData.get("raw","")
 			if len(raw)>0:
-				cronF=self.currentTaskData.get("file","")
-				if len(cronF)>0:
-					self.scheduler.removeFromSystemCron(raw,cronF)
+				if len(self.currentTaskData.get("atid",""))>0:
+					self.scheduler.removeFromAt(self.currentTaskData.get("atid"))
 				else:
-					self.scheduler.removeFromCron(raw)
+					cronF=self.currentTaskData.get("file","")
+					if len(cronF)>0:
+						self.scheduler.removeFromSystemCron(raw,cronF)
+					else:
+						self.scheduler.removeFromCron(raw)
 			self.changes=False
 			self.optionChanged=[]
 			self.currentTaskData={}
@@ -416,7 +428,10 @@ class detail(confStack):
 				processInfo["cmd"]=" ".join([fullcmd]+processInfo["cmd"].split(" ")[1:])
 				cmdName=processInfo["cmd"].split(" ")[0]
 			if os.path.isfile(cmdName)==False and  cmdName[0].isalnum():
-				self.showMsg("{} {}".format(cmdName,i18n.get("NOTCMD")))
+				if len(self.currentTaskData.get("atid",""))>0:
+					self.showMsg("{}".format(i18n.get("ATNOTMOD")))
+				else:
+					self.showMsg("{} {}".format(cmdName,i18n.get("NOTCMD")))
 				return ()
 		if len(self.currentTaskData)>0:
 			self.task=self.currentTaskData.copy()
@@ -424,13 +439,19 @@ class detail(confStack):
 			return
 		if not processInfo["cmd"] in config.get("user",{}).get("alias",{}).keys():
 			self._addCmdToHistory(processInfo["cmd"])
-		cronF=""
-		if self.task.get("file","")!="":
-			cronF=self.task["file"]
-		elif self.cmbType.currentIndex()==1:
-			cronF=os.path.join("/","etc","cron.d","taskscheduler")
 		cron.append(processInfo)
-		self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
+		cronF=""
+		if len(self.task.get("atid",""))>0 or self.cmbType.currentIndex()==2:
+			if len(self.task.get("atid",""))>0:
+				self.scheduler.removeFromAt(self.task.get("atid"))
+			if not (self.scheduler.addAtJob(cron[0].get("m"),cron[0].get("h"),cron[0].get("dom"),cron[0].get("mon"),cron[0].get("cmd"))):
+				self.showMsg("{}".format(i18n.get("MALFORMED")))
+		else:
+			if self.task.get("file","")!="":
+				cronF=self.task["file"]
+			elif self.cmbType.currentIndex()==1:
+				cronF=os.path.join("/","etc","cron.d","taskscheduler")
+			self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
 		self.changes=True
 		self.currentTaskData=processInfo
 		self.stack.gotoStack(1,parms="")
