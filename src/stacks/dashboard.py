@@ -72,12 +72,12 @@ class taskButton(QPushButton):
 		if len(task.get("file",""))>0:
 			self.lblFile.setText(os.path.basename(task.get("file")))
 			self.lblFile.setToolTip(task.get("file"))
-			icn=QtGui.QIcon.fromTheme("package-available-locked")
+			icn=QtGui.QIcon.fromTheme( "folder-locked")
 			self.setIcon(icn)
 		elif len(task.get("atid",""))>0:
 			self.lblFile.setText(i18n.get("ATID"))
 			self.lblFile.setToolTip(task.get("file"))
-			icn=QtGui.QIcon.fromTheme("package-available-locked")
+			icn=QtGui.QIcon.fromTheme( "clock")
 			self.setIcon(icn)
 		self.lblFile.adjustSize()
 		self.lay.addWidget(self.lblFile,3,0,1,2,Qt.AlignBottom)
