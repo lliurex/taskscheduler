@@ -376,8 +376,7 @@ class detail(confStack):
 					for item in items:
 						if item.checkState() == Qt.Checked:
 							values.append(item.index().row())
-						else:
-							print("False: {}".format(item.index().row()))
+						elif item.index().row()>0:
 							allEnabled=False
 			elif key=="m":
 				allEnabled=False
