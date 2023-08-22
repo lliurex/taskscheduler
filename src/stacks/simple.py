@@ -220,6 +220,7 @@ class simple(confStack):
 	#def _readScreen
 
 	def writeConfig(self):
+		sw_ok=True
 		config=self.getConfig("user")
 		processInfo=self._readScreen(config.get("user",{}).get("alias",{}))
 		cron=[]
@@ -233,13 +234,16 @@ class simple(confStack):
 				return ({})
 			if not processInfo["cmd"] in config.get("user",{}).get("alias",{}).keys():
 				self._addCmdToHistory(processInfo["cmd"])
-			cronF=""
 			cron.append(processInfo)
-			if self.cmbType.currentIndex()==1:
-				cronF=os.path.join("/","etc","cron.d","taskscheduler")
+			if self.cmbType.currentIndex()<=1:
+				cronF=""
+				if self.cmbType.currentIndex()==1:
+					cronF=os.path.join("/","etc","cron.d","taskscheduler")
 				self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
-			elif self.cmbType.currentIndex()==2:
+			else:
 				if not (self.scheduler.addAtJob(cron[0].get("m"),cron[0].get("h"),cron[0].get("dom"),cron[0].get("mon"),cron[0].get("cmd"))):
 					self.showMsg("{}".format(cmdName,i18n.get("MALFORMED")))
+					return ({})
+			self.stack.gotoStack(1,parms="")
 	#def writeConfig
 
