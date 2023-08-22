@@ -17,6 +17,7 @@ i18n={"DESCRIPTION":_("Dashboard"),
 	"TOOLTIP":_("Show scheduled tasks ordered by next execution time"),
 	"REST":_("Next in"),
 	"USERCRON":_("User cron"),
+	"NEWTASK":_("Schedule a new task"),
 	"ATID":_("at job")
 	}
 
@@ -54,13 +55,13 @@ class taskButton(QPushButton):
 		self.label.adjustSize()
 		self.lay.addWidget(self.label,0,0,2,2,Qt.AlignLeft|Qt.AlignTop)
 		self.lblDate=QLabel()
-		self._setDate(task.get('next').split(" ")[1])
+		self._setDate(task.get('next',"scheduled:Task new-Add").split(" ")[1])
 		self.lblDate.setToolTip("d:{0} m:{1}".format(task.get("raw","* * * *").split()[2],task.get("raw","* * * *").split()[3]))
 		self.lblDate.setWordWrap(True)
 		self.lblDate.adjustSize()
 		self.lay.addWidget(self.lblDate,2,0,1,1,Qt.AlignLeft)
 		self.lblTime=QLabel()
-		self._setTime(task.get('next').split(" ")[0])
+		self._setTime(task.get('next',"scheduled:Task new-Add").split(" ")[0])
 		#self.lblTime.setToolTip(self.lblTime.text())
 		self.lblTime.setToolTip("m:{0} h:{1}".format(task.get("raw","* * * *").split()[0],task.get("raw","* * * *").split()[1]))
 		self.lblTime.setWordWrap(True)
@@ -70,21 +71,21 @@ class taskButton(QPushButton):
 		self.lblFile.setAlignment(Qt.AlignLeft)
 		self.lblFile.setText(i18n.get("USERCRON"))
 		if len(task.get("file",""))>0:
-			self.lblFile.setText(os.path.basename(task.get("file")))
+			self.lblFile.setText(os.path.basename(task.get("file","")))
 			self.lblFile.setToolTip(task.get("file"))
 			icn=QtGui.QIcon.fromTheme( "folder-locked")
 			self.setIcon(icn)
 		elif len(task.get("atid",""))>0:
 			self.lblFile.setText(i18n.get("ATID"))
-			self.lblFile.setToolTip(task.get("file"))
+			self.lblFile.setToolTip(task.get("file",""))
 			icn=QtGui.QIcon.fromTheme( "clock")
 			self.setIcon(icn)
 		self.lblFile.adjustSize()
 		self.lay.addWidget(self.lblFile,3,0,1,2,Qt.AlignBottom)
 		self.lblRest=QLabel()
 		self.lblRest.setAlignment(Qt.AlignCenter)
-		self._setRest(task.get('rest'))
-		sched=self._formatTooltip(task.get("raw").split()[:5])
+		self._setRest(task.get('rest',""))
+		sched=self._formatTooltip(task.get("raw",i18n.get("NEWTASK")).split()[:5])
 		self.lblRest.setToolTip("{}".format(sched))
 		self.lblRest.adjustSize()
 		self.lay.addWidget(self.lblRest,4,0,1,2,Qt.AlignCenter)
@@ -143,7 +144,10 @@ class taskButton(QPushButton):
 	def _setDate(self,date):
 		(month,day)=date.split("-")
 		#self.lblDate.setText("{0}<br>{1}".format(MONTHS.get(int(month)),day))
-		self.lblDate.setText("{1} {0}".format(MONTHS.get(int(month)),day))
+		if month.isdigit():
+			self.lblDate.setText("{1} {0}".format(MONTHS.get(int(month)),day))
+		else:
+			self.lblDate.setText("{1} {0}".format(month,day))
 	#def _setDate
 
 	def _setRest(self,rest):
@@ -178,7 +182,6 @@ class dashboard(confStack):
 		self.table.horizontalHeader().hide()
 		self.lay.addWidget(self.table,0,0,1,1)
 		self.setLayout(self.lay)
-		return(self)
 	#def _load_screen
 
 	def updateScreen(self):
@@ -211,8 +214,15 @@ class dashboard(confStack):
 				row+=1
 				self.table.setRowCount(row+1)
 			maxH.append(btnTask._getHeight())
-
-#		self.table.resizeColumnsToContents()
+		if col+row==0:
+			btnTask=QPushButton("+")
+			self.table.setCellWidget(row,col,btnTask)
+			btnTask.setStyleSheet("font-size: 2em;font: bold; margin:6px;padding:6px;")
+			btnTask.setMaximumWidth(128)
+			btnTask.setMinimumHeight(btnTask.width()*2)
+			btnTask.clicked.connect(self._gotoTask)
+			self.table.resizeRowsToContents()
+			self.table.resizeColumnsToContents()
 		if len(maxH)>=1:
 			idx=-1
 			maxH.sort()
@@ -222,6 +232,9 @@ class dashboard(confStack):
 
 	def _gotoTask(self):
 		wdg=self.table.cellWidget(self.table.currentRow(),self.table.currentColumn())
-		self.stack.gotoStack(idx=3,parms=wdg.getTask())
+		if isinstance(wdg,taskButton):
+			self.stack.gotoStack(idx=3,parms=wdg.getTask())
+		else:
+			self.stack.gotoStack(idx=2,parms={})
 	#def _gotoTask
 
