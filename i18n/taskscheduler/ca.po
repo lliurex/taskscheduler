@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-01 08:14+0200\n"
-"PO-Revision-Date: 2023-08-01 08:18+0200\n"
+"POT-Creation-Date: 2023-08-30 08:12+0200\n"
+"PO-Revision-Date: 2023-08-30 08:17+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -66,52 +66,60 @@ msgstr "Pròxima"
 msgid "User cron"
 msgstr "Cron de l'usuari"
 
-#: ../src/stacks/dashboard.py:22
+#: ../src/stacks/dashboard.py:20
+msgid "Schedule a new task"
+msgstr "Programar tasca"
+
+#: ../src/stacks/dashboard.py:21
+msgid "at job"
+msgstr "Treball puntual"
+
+#: ../src/stacks/dashboard.py:24
 msgid "January"
 msgstr "Gener"
 
-#: ../src/stacks/dashboard.py:23
+#: ../src/stacks/dashboard.py:25
 msgid "February"
 msgstr "Febrer"
 
-#: ../src/stacks/dashboard.py:24
+#: ../src/stacks/dashboard.py:26
 msgid "March"
 msgstr "Març"
 
-#: ../src/stacks/dashboard.py:25
+#: ../src/stacks/dashboard.py:27
 msgid "April"
 msgstr "Abril"
 
-#: ../src/stacks/dashboard.py:26 ../src/stacks/detail.py:40
-#: ../src/stacks/simple.py:36
+#: ../src/stacks/dashboard.py:28 ../src/stacks/detail.py:44
+#: ../src/stacks/simple.py:39
 msgid "May"
 msgstr "Maig"
 
-#: ../src/stacks/dashboard.py:27
+#: ../src/stacks/dashboard.py:29
 msgid "June"
 msgstr "Juni"
 
-#: ../src/stacks/dashboard.py:28
+#: ../src/stacks/dashboard.py:30
 msgid "July"
 msgstr "Juliol"
 
-#: ../src/stacks/dashboard.py:29
+#: ../src/stacks/dashboard.py:31
 msgid "August"
 msgstr "Agost"
 
-#: ../src/stacks/dashboard.py:30
+#: ../src/stacks/dashboard.py:32
 msgid "September"
 msgstr "Septembre"
 
-#: ../src/stacks/dashboard.py:31
+#: ../src/stacks/dashboard.py:33
 msgid "October"
 msgstr "Octobre"
 
-#: ../src/stacks/dashboard.py:32
+#: ../src/stacks/dashboard.py:34
 msgid "November"
 msgstr "Novembre"
 
-#: ../src/stacks/dashboard.py:33
+#: ../src/stacks/dashboard.py:35
 msgid "December"
 msgstr "Decembre"
 
@@ -139,127 +147,143 @@ msgstr "Cron de l'usuari"
 msgid "System cron"
 msgstr "Cron del sistema"
 
-#: ../src/stacks/detail.py:21 ../src/stacks/simple.py:23
+#: ../src/stacks/detail.py:21 ../src/stacks/simple.py:20
+msgid "At job"
+msgstr "Treball puntual"
+
+#: ../src/stacks/detail.py:22 ../src/stacks/simple.py:21
+msgid "This at job can't be modified"
+msgstr "No es pot modificar el treball"
+
+#: ../src/stacks/detail.py:23 ../src/stacks/simple.py:26
 msgid "Monthly"
 msgstr "Mensual"
 
-#: ../src/stacks/detail.py:22 ../src/stacks/simple.py:24
+#: ../src/stacks/detail.py:24 ../src/stacks/simple.py:27
 msgid "Daily"
 msgstr "Diaria"
 
-#: ../src/stacks/detail.py:23 ../src/stacks/simple.py:25
+#: ../src/stacks/detail.py:25 ../src/stacks/simple.py:28
 msgid "Hourly"
 msgstr "Horaria"
 
-#: ../src/stacks/detail.py:24
+#: ../src/stacks/detail.py:26
 msgid "Months"
 msgstr "Mesos"
 
-#: ../src/stacks/detail.py:25
+#: ../src/stacks/detail.py:27
 msgid "Days"
 msgstr "Dies"
 
-#: ../src/stacks/detail.py:26
+#: ../src/stacks/detail.py:28
 msgid "Hours"
 msgstr "Hores"
 
-#: ../src/stacks/detail.py:27 ../src/stacks/simple.py:29
+#: ../src/stacks/detail.py:29 ../src/stacks/simple.py:32
 msgid "Minute"
 msgstr "Minut"
 
-#: ../src/stacks/detail.py:28
+#: ../src/stacks/detail.py:30
 msgid "Select weekdays"
 msgstr "Dia setmana"
 
-#: ../src/stacks/detail.py:29
+#: ../src/stacks/detail.py:31
 msgid "Weekdays"
 msgstr "Dies de la setmana"
 
-#: ../src/stacks/detail.py:30
+#: ../src/stacks/detail.py:32
 msgid "Delete"
 msgstr "Eliminar"
 
-#: ../src/stacks/detail.py:31
+#: ../src/stacks/detail.py:33
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: ../src/stacks/detail.py:32
+#: ../src/stacks/detail.py:34
 msgid "Sure?"
 msgstr "Segur?"
 
-#: ../src/stacks/detail.py:33
+#: ../src/stacks/detail.py:35
+msgid "not found"
+msgstr "no trobat"
+
+#: ../src/stacks/detail.py:36 ../src/stacks/simple.py:22
+msgid "Jobs can run only on fixed dates"
+msgstr "Els treballs no mes es poden executar a una data concreta"
+
+#: ../src/stacks/detail.py:37
 msgid "Write or select a command"
 msgstr "Escriure o seleccionar comandament"
 
-#: ../src/stacks/detail.py:36 ../src/stacks/simple.py:32
+#: ../src/stacks/detail.py:40 ../src/stacks/simple.py:35
 msgid "Jan"
 msgstr "Gen"
 
-#: ../src/stacks/detail.py:37 ../src/stacks/simple.py:33
+#: ../src/stacks/detail.py:41 ../src/stacks/simple.py:36
 msgid "Feb"
 msgstr "Feb"
 
-#: ../src/stacks/detail.py:38 ../src/stacks/simple.py:34
+#: ../src/stacks/detail.py:42 ../src/stacks/simple.py:37
 msgid "Mar"
 msgstr "Mar"
 
-#: ../src/stacks/detail.py:39 ../src/stacks/simple.py:35
+#: ../src/stacks/detail.py:43 ../src/stacks/simple.py:38
 msgid "Apr"
 msgstr "Abr"
 
-#: ../src/stacks/detail.py:41 ../src/stacks/simple.py:37
+#: ../src/stacks/detail.py:45 ../src/stacks/simple.py:40
 msgid "Jun"
 msgstr "Jun"
 
-#: ../src/stacks/detail.py:42 ../src/stacks/simple.py:38
+#: ../src/stacks/detail.py:46 ../src/stacks/simple.py:41
 msgid "Jul"
 msgstr "Jul"
 
-#: ../src/stacks/detail.py:43 ../src/stacks/simple.py:39
+#: ../src/stacks/detail.py:47 ../src/stacks/simple.py:42
 msgid "Aug"
 msgstr "Ago"
 
-#: ../src/stacks/detail.py:44 ../src/stacks/simple.py:40
+#: ../src/stacks/detail.py:48 ../src/stacks/simple.py:43
 msgid "Sep"
 msgstr "Sep"
 
-#: ../src/stacks/detail.py:45 ../src/stacks/simple.py:41
+#: ../src/stacks/detail.py:49 ../src/stacks/simple.py:44
 msgid "Oct"
 msgstr "Oct"
 
-#: ../src/stacks/detail.py:46 ../src/stacks/simple.py:42
+#: ../src/stacks/detail.py:50 ../src/stacks/simple.py:45
 msgid "Nov"
 msgstr "Nov"
 
-#: ../src/stacks/detail.py:47 ../src/stacks/simple.py:43
+#: ../src/stacks/detail.py:51 ../src/stacks/simple.py:46
 msgid "Dec"
 msgstr "Dec"
 
-#: ../src/stacks/detail.py:50
+#: ../src/stacks/detail.py:54
 msgid "Monday"
 msgstr "Dilluns"
 
-#: ../src/stacks/detail.py:51
+#: ../src/stacks/detail.py:55
 msgid "Tuesday"
 msgstr "Dimarts"
 
-#: ../src/stacks/detail.py:52
+#: ../src/stacks/detail.py:56
 msgid "Wednesday"
 msgstr "Dimecres"
 
-#: ../src/stacks/detail.py:53
+#: ../src/stacks/detail.py:57
 msgid "Thursday"
 msgstr "Dijous"
 
-#: ../src/stacks/detail.py:54
+#: ../src/stacks/detail.py:58
 msgid "Friday"
 msgstr "Divendres"
 
-#: ../src/stacks/detail.py:55
+#: ../src/stacks/detail.py:59
 msgid "Saturday"
 msgstr "Dissabte"
 
-#: ../src/stacks/detail.py:56
+#: ../src/stacks/detail.py:60
 msgid "Sunday"
 msgstr "Diumenge"
 
@@ -279,27 +303,27 @@ msgstr "Programar tasca"
 msgid "Add schedule for task"
 msgstr "Afegir tasca programada"
 
-#: ../src/stacks/simple.py:20
+#: ../src/stacks/simple.py:23
 msgid "Repeat"
 msgstr "Repetir"
 
-#: ../src/stacks/simple.py:21
+#: ../src/stacks/simple.py:24
 msgid "No repeat"
 msgstr "No repetir"
 
-#: ../src/stacks/simple.py:22
+#: ../src/stacks/simple.py:25
 msgid "Yearly"
 msgstr "Anual"
 
-#: ../src/stacks/simple.py:26
+#: ../src/stacks/simple.py:29
 msgid "Month"
 msgstr "Mes"
 
-#: ../src/stacks/simple.py:27
+#: ../src/stacks/simple.py:30
 msgid "Day"
 msgstr "Dia"
 
-#: ../src/stacks/simple.py:28
+#: ../src/stacks/simple.py:31
 msgid "Hour"
 msgstr "Hora"
 
