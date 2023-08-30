@@ -82,6 +82,7 @@ class simple(confStack):
 		self.cmbType.addItem(i18n.get("USERCRON"))
 		self.cmbType.addItem(i18n.get("SYSCRON"))
 		self.cmbType.addItem(i18n.get("ATJOB"))
+		self.cmbType.currentTextChanged.connect(self._lockRepeat)
 		self.lay.addWidget(self.cmbType,0,4,1,1,Qt.AlignRight)
 		self.lay.setRowStretch(3,2)
 		self.lay.setRowStretch(3,3)
@@ -90,10 +91,17 @@ class simple(confStack):
 	#def _load_screen
 
 	def _drawRepeat(self):
-		for i in ["NOREPEAT","HOURLY","DAILY","MONTHLY","YEARLY"]:
+		for i in ["DAILY","MONTHLY","YEARLY"]:
 			text=i18n.get(i)
 			self.cmbRepeat.addItem(text,userData=i)
-	#def _drawHours
+	#def _drawRepeat
+
+	def _lockRepeat(self):
+		if self.cmbType.currentText()==i18n.get("ATJOB"):
+			self.cmbRepeat.setEnabled(False)
+		else:
+			self.cmbRepeat.setEnabled(True)
+	#def _lockRepeat
 
 	def _drawHours(self):
 		for i in range(0,24):
