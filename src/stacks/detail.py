@@ -442,10 +442,10 @@ class detail(confStack):
 		cron.append(processInfo)
 		cronF=""
 		if len(self.task.get("atid",""))>0 or self.cmbType.currentIndex()==2:
-			if len(self.task.get("atid",""))>0:
-				self.scheduler.removeFromAt(self.task.get("atid"))
 			if not (self.scheduler.addAtJob(cron[0].get("m"),cron[0].get("h"),cron[0].get("dom"),cron[0].get("mon"),cron[0].get("cmd"))):
 				self.showMsg("{}".format(i18n.get("MALFORMED")))
+			elif len(self.task.get("atid",""))>0:
+				self.scheduler.removeFromAt(self.task.get("atid"))
 		else:
 			if self.task.get("file","")!="":
 				cronF=self.task["file"]
