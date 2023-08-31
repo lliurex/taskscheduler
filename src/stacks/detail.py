@@ -292,7 +292,6 @@ class detail(confStack):
 
 	def setParms(self,*args):
 		self.task=args[0]
-		self.index=3
 		self.currentTaskData=args[0]
 		self.btnDelete.setVisible(True)
 		self.cmbCmd.setEnabled(False)
@@ -363,8 +362,7 @@ class detail(confStack):
 			self.changes=False
 			self.optionChanged=[]
 			self.currentTaskData={}
-			self.last_index=0
-			self.stack._showStack(idx=1,parms="")
+			self.stack.gotoStack(1,parms="")
 	#def _delTask
 
 	def _readWidgetData(self,key,wdg):
@@ -443,7 +441,15 @@ class detail(confStack):
 		cronF=""
 		if len(self.task.get("atid",""))>0 or self.cmbType.currentIndex()==2:
 			if not (self.scheduler.addAtJob(cron[0].get("m"),cron[0].get("h"),cron[0].get("dom"),cron[0].get("mon"),cron[0].get("cmd"))):
-				self.showMsg("{}".format(i18n.get("MALFORMED")))
+				field="Error"
+				a={"m":"MINUTE_SCHED","h":"HOUR_SCHED","dom":"DAY_SCHED","mon":"MONTH_SCHED"}
+				for i in ["m","h","dom","mon"]:
+					if str(cron[0].get(i)).isdigit()==False:
+						field=i18n.get(a[i])
+						break
+
+				self.showMsg("{}: {}".format(field,i18n.get("MALFORMED")))
+				return()
 			elif len(self.task.get("atid",""))>0:
 				self.scheduler.removeFromAt(self.task.get("atid"))
 		else:
