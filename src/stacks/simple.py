@@ -209,20 +209,23 @@ class simple(confStack):
 				processInfo["cmd"]=" ".join([fullcmd]+processInfo["cmd"].split(" ")[1:])
 		processInfo["dow"]="*"
 		processInfo["m"]=self.minutes.currentText()
-		repeat=self.cmbRepeat.currentData()
 		h=self.hours.currentText()
-		if repeat=="HOURLY":
-			h="*"
-		processInfo["h"]=h
 		date=self.calendar.selectedDate()
 		dom=date.day()
 		mon=date.month()
-		if repeat=="DAILY":
-			dom="*"
-			mon="*"
+		if self.cmbRepeat.isEnabled():
+			repeat=self.cmbRepeat.currentData()
+			if repeat=="HOURLY":
+				h="*"
+				dom="*"
+				mon="*"
+			elif repeat=="DAILY":
+				dom="*"
+				mon="*"
+			elif repeat=="MONTHLY":
+				mon="*"
+		processInfo["h"]=h
 		processInfo["dom"]=dom
-		if repeat=="MONTHLY":
-			mon="*"
 		processInfo["mon"]=mon
 		return(processInfo)
 	#def _readScreen
@@ -250,8 +253,8 @@ class simple(confStack):
 				self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
 			else:
 				if not (self.scheduler.addAtJob(cron[0].get("m"),cron[0].get("h"),cron[0].get("dom"),cron[0].get("mon"),cron[0].get("cmd"))):
-					self.showMsg("{}".format(cmdName,i18n.get("MALFORMED")))
-					return ({})
+					self.showMsg("{}".format(cmdName,i18n.get("MALFORMED","ERROR")))
+					return()
 			self.stack.gotoStack(1,parms="")
 	#def writeConfig
 
