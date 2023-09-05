@@ -1,1 +1,1 @@
-scheduler-gui.install/* /
+src/* /usr/share/taskscheduler

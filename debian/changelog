@@ -1,8 +1,15 @@
-taskscheduler (2.6) jammy; urgency=medium
+taskscheduler (3.0) jammy; urgency=medium
 
-  * Jammy release
+  * removed python and n4d modules (now are independent)
+  * QT version
 
- -- Juanma1980 <juanma1980@gmail.com>  Mon, 28 Nov 2022 12:04:42 +0100
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 24 Jul 2023 12:20:48 +0200
+
+taskscheduler (2.4.1) focal; urgency=medium
+
+  * Fix custom command creation
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 27 Apr 2023 11:50:08 +0200
 
 taskscheduler (2.4) lliurex22; urgency=medium
 

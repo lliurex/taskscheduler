@@ -8,8 +8,7 @@
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
-export PYBUILD_NAME=taskscheduler
 
 %:
-	dh $@ --with llxsrc,i18n,python3 --buildsystem pybuild
+	dh $@ --with llxsrc,i18n 
 	
