@@ -6,25 +6,10 @@ Uploaders: M.Angel Juan <m.angel.juan@gmail.com>, Raul Rodrigo Segura <lliurex_d
 Build-Depends: llxsrchelper,debhelper (>= 7.0),dh-python,python3-all, python3-poinstaller, python3-setuptools
 Standards-Version: 3.9.5
 
-Package: python3-taskscheduler
-Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends} 
-Description: Python libraries for taskscheduler
-
 Package: taskscheduler
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, python3-taskscheduler (= ${binary:Version}),n4d-taskscheduler-client (= ${binary:Version}), taskscheduler-data (= ${binary:Version})
 Description: Main taskschedular program
-
-Package: n4d-taskscheduler-server
-Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}
-Description: Server side of taskscheduler
-
-Package: n4d-taskscheduler-client
-Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends},n4d-taskscheduler-server
-Description: client side of taskscheduler
 
 Package: taskscheduler-data
 Architecture: all
