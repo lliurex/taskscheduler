@@ -9,11 +9,9 @@
 <summary xml:lang="ca_ES@valencia">Programador de tasques del Lliurex.</summary>
 <summary xml:lang="ca_ES.UTF-8@valencia">Programador de tasques del Lliurex.</summary>
 <description>
-<p>Lliurex TaskScheduler is a scheduler for preconfigured tasks that allows to distribute the tasks among all the lliurex clients of the nertwork.</p>
-<p xml:lang="es">El Programador de Tareas de Lliurex es un programador para tareas predefinidas que permite distribuir las tareas programadas a todos los clientes Lliurex presentes en la red</p>
-<p xml:lang="ca">El programador de tasques del Lliurex es un programador per a tasques predefinides que permet distribuir les tasques programades a tots els clients Lliurex presentes a la xarxa</p>
-<p xml:lang="ca_ES.UTF-8@valencia">El programador de tasques del Lliurex es un programador per a tasques predefinides que permet distribuir les tasques programades a tots els clients Lliurex presentes a la xarxa</p>
-<p xml:lang="ca_ES@valencia">El programador de tasques del Lliurex es un programador per a tasques predefinides que permet distribuir les tasques programades a tots els clients Lliurex presentes a la xarxa</p>
+<p>Lliurex TaskScheduler is a simple manager for schedule cron or at jobs. Cron is the system daemon that executes jobs at regular schedules. At executes jobs at a fixed schedule..</p>
+<p xml:lang="es">El Programador de Tareas de Lliurex es un gestor sencillo para programar tareas de cron o de at. Cron es el demonio del sistema encargado de ejecutar tareas a intervalos de tiempo regulares (todos los días, cada mes, una vez al año...). At ejecuta comandos en una fecha concreta (el 26 de Junio de 2023 a las 14:03, por ejemplo).
+<p xml:lang="ca">El programador de tasques del Lliurex es un gestor sentzill per a programar tasques al cron o al at. Cron es el demoni del sistema encarregat d'executar tasques a intérvals de temps regulats (tots els díes, cada mes, una vegada a l'any...). At executa comandaments a una data concreta (el 25 d'Abril de 2025 a les 14:03, per exemple).
 </description>
 <categories>
 <category>Administration</category>
@@ -32,6 +30,7 @@
 <keyword>agenda</keyword>
 <keyword>herramienta</keyword>
 <keyword>ferramenta</keyword>
+<keyword>eina</keyword>
 </keywords>
 <developer_name>Lliurex Team</developer_name>
 </component>
