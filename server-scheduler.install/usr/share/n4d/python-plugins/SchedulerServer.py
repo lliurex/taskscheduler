@@ -14,7 +14,7 @@ from n4d.utils import n4d_mv
 
 class SchedulerServer():
 	def __init__(self):
-		self.dbg=False
+		self.dbg=True
 		self.tasks_dir="/etc/scheduler/tasks.d"
 		self.available_tasks_dir="/etc/scheduler/conf.d/tasks"
 		self.conf_dir="/etc/scheduler/conf.d/"
@@ -28,7 +28,7 @@ class SchedulerServer():
 	#def _debug
 	
 	def read_config(self):
-		status=True
+		status=False
 		data={}
 		if not os.path.isdir(self.conf_dir):
 			try:
@@ -40,15 +40,17 @@ class SchedulerServer():
 		if os.path.isfile(self.conf_file):
 			try:
 				data=json.loads(open(self.conf_file).read())
+				return n4d.responses.build_successful_call_response(data)
 			except Exception as e:
 				data=e
 				status=False
 				self._debug(("unable to open %s") % self.conf_file)
-		return n4d.responses.build_successful_call_response(data)
+				return n4d.responses.build_successful_call_response("")
 		#return ({'status':status,'data':data})
 	#def read_config
 
-	def write_config(self,task,key,value):
+	def write_config(self,data):
+		(task,key,value)=data
 		status=True
 		data={}
 		config={}
@@ -145,7 +147,7 @@ class SchedulerServer():
 
 	def get_available_tasks(self):
 		#return(self._read_wrkfiles(self.available_tasks_dir))
-		data=(self._read_wrkfiles(self.available_tasks_dir))
+		data=self._read_wrkfiles(self.available_tasks_dir)
 		return n4d.responses.build_successful_call_response(data)
 
 	def _read_wrkfiles(self,folder):
@@ -159,7 +161,7 @@ class SchedulerServer():
 					if task_key in tasks.keys():
 						tasks[task_key].update(task[task_key])
 					else:
-						tasks.update(task)
+						tasks[task_key]=task[task_key]
 		self._debug("Tasks loaded")
 		self._debug(str(tasks))
 		return({'status':True,'data':tasks})
