@@ -1,22 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
 <component type="desktop-application">
-<id>taskscheduler</id>
+<id>net.lliurex.taskscheduler</id>
 <metadata_license>CC0-1.0</metadata_license>
 <name>TaskScheduler</name>
-<summary>Lliurex task scheduler.</summary>
-<summary xml:lang="es">Programador de tareas de Lliurex.</summary>
-<summary xml:lang="ca">Programador de tasques del Lliurex.</summary>
-<summary xml:lang="ca_ES@valencia">Programador de tasques del Lliurex.</summary>
-<summary xml:lang="ca_ES.UTF-8@valencia">Programador de tasques del Lliurex.</summary>
+<summary>Lliurex task scheduler</summary>
+<summary xml:lang="es">Programador de tareas de Lliurex</summary>
+<summary xml:lang="ca">Programador de tasques del Lliurex</summary>
+<summary xml:lang="ca_ES@valencia">Programador de tasques del Lliurex</summary>
+<summary xml:lang="ca_ES.UTF-8@valencia">Programador de tasques del Lliurex</summary>
 <description>
 <p>Lliurex TaskScheduler is a simple manager for schedule cron or at jobs. Cron is the system daemon that executes jobs at regular schedules. At executes jobs at a fixed schedule..</p>
-<p xml:lang="es">El Programador de Tareas de Lliurex es un gestor sencillo para programar tareas de cron o de at. Cron es el demonio del sistema encargado de ejecutar tareas a intervalos de tiempo regulares (todos los días, cada mes, una vez al año...). At ejecuta comandos en una fecha concreta (el 26 de Junio de 2023 a las 14:03, por ejemplo).
-<p xml:lang="ca">El programador de tasques del Lliurex es un gestor sentzill per a programar tasques al cron o al at. Cron es el demoni del sistema encarregat d'executar tasques a intérvals de temps regulats (tots els díes, cada mes, una vegada a l'any...). At executa comandaments a una data concreta (el 25 d'Abril de 2025 a les 14:03, per exemple).
+<p xml:lang="es">El Programador de Tareas de Lliurex es un gestor sencillo para programar tareas de cron o de at. Cron es el demonio del sistema encargado de ejecutar tareas a intervalos de tiempo regulares (todos los días, cada mes, una vez al año...). At ejecuta comandos en una fecha concreta (el 26 de Junio de 2023 a las 14:03, por ejemplo).</p>
+<p xml:lang="ca">El programador de tasques del Lliurex es un gestor sentzill per a programar tasques al cron o al at. Cron es el demoni del sistema encarregat d'executar tasques a intérvals de temps regulats (tots els díes, cada mes, una vegada a l'any...). At executa comandaments a una data concreta (el 25 d'Abril de 2025 a les 14:03, per exemple).</p>
 </description>
 <categories>
-<category>Administration</category>
+<category>System</category>
 <category>LliureX</category>
-
 </categories>
 <icon type="stock">taskscheduler</icon>
 <keywords>
@@ -33,4 +32,5 @@
 <keyword>eina</keyword>
 </keywords>
 <developer_name>Lliurex Team</developer_name>
+<launchable type="desktop-id">taskscheduler.desktop</launchable>
 </component>
