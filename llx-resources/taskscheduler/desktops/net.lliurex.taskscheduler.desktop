@@ -15,5 +15,5 @@ Name[ca_ES.UTF-8@valencia]=Programador de tasques
 Name[ca_ES@valencia]=Programador de tasques
 Name[ca]=Programador de tasques
 Name[es]=Programador de tareas
-Categories=System;X-LliureX-Administration;
+Categories=System;LliureX-Administration;
 TryExec=/usr/bin/taskscheduler
