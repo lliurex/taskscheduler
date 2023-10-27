@@ -12,5 +12,6 @@ config.setBanner("{}_banner.png".format(NAME.lower()))
 config.setBackgroundImage("{}_bkg.svg".format(NAME.lower()))
 config.setConfig(confDirs={'system':os.path.join('/usr/share',NAME.lower()),'user':os.path.join(os.environ['HOME'],'.config/{}'.format(NAME.lower()))},confFile="{}.conf".format(NAME.lower()))
 config.Show()
+config.setMinimumWidth(config.sizeHint().width())
 
 app.exec_()
