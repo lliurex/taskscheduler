@@ -1,1 +1,2 @@
 src/* /usr/share/taskscheduler
+rsrc/* /usr/share/taskscheduler/rsrc
