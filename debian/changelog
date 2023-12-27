@@ -1,4 +1,4 @@
-taskscheduler (3.0.1) jammy; urgency=medium
+taskscheduler (3.0.2) jammy; urgency=medium
 
   * removed python and n4d modules (now are independent)
   * QT version
