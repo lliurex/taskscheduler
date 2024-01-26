@@ -5,15 +5,15 @@ import subprocess
 from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QHBoxLayout,QTableWidget,QHeaderView,QVBoxLayout,QLineEdit,QComboBox,QCheckBox,QScrollArea,QDialog,QSizePolicy
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal
-from appconfig.appConfigStack import appConfigStack as confStack
-from appconfig.appconfigControls import QCheckableComboBox
+from  appconfig import appConfig 
+from QtExtraWidgets import QTableTouchWidget, QCheckableComboBox, QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler
 
 import gettext
 _ = gettext.gettext
 
-i18n={"DESCRIPTION":_("Advance schedule"),
-	"DESCRIPTION_MENU":_("Advanced scheduling for expert users"),
+i18n={"MENU":_("Advance schedule"),
+	"DESC":_("Advanced scheduling for expert users"),
 	"TOOLTIP":_("Add scheduled tasks"),
 	"CMD":_("Task"),
 	"USERCRON":_("User's cron"),
@@ -34,7 +34,7 @@ i18n={"DESCRIPTION":_("Advance schedule"),
 	"CONFIRM":_("Sure?"),
 	"NOTCMD":_("not found"),
 	"MALFORMED":_("Jobs can run only on fixed dates"),
-	"LABELCMD":_("Write or select a command")
+	"LBLCMD":_("Write or select a command")
 	}
 
 MONTHS={1:_("Jan"),
@@ -60,10 +60,16 @@ DAYS={"Monday":_("Monday"),
 	"Sunday":_("Sunday")
 	}
 
-class detail(confStack):
+class detail(QStackedWindowItem):
 	def __init_stack__(self):
-		self.dbg=False
+		self.dbg=True
 		self._debug("detail Load")
+		self.setProps(shortDesc=i18n.get("MENU"),
+			longDesc=i18n.get("DESC"),
+			icon="go-home",
+			tooltip=i18n.get("TOOLTIP"),
+			index=3,
+			visible=True)
 		self.description=i18n.get("DESCRIPTION")
 		self.menu_description=i18n.get("DESCRIPTION_MENU")
 		self.icon=('address-book-new')
@@ -72,11 +78,13 @@ class detail(confStack):
 		self.enabled=True
 		self.level='user'
 		self.scheduler=taskscheduler.TaskScheduler()
+		self.appconfig=appConfig.appConfig()
+		self.appconfig.setConfig(confDirs={'system':os.path.join('/usr/share',"taskscheduler"),'user':os.path.join(os.environ['HOME'],'.config',"taskscheduler")},confFile="taskscheduler.conf")
 		self.task={}
 		self.currentTaskData={}
 	#def __init__
 	
-	def _load_screen(self):
+	def __initScreen__(self):
 		self.lay=QGridLayout()
 		scr=QScrollArea()
 		scr.setHorizontalScrollBarPolicy( Qt.ScrollBarAlwaysOff )
@@ -116,6 +124,7 @@ class detail(confStack):
 		scr.setMinimumWidth(self.hours.width()*1.4)
 		scr.adjustSize()
 		self.setLayout(self.lay)
+		self.btnAccept.clicked.connect(self.writeConfig)
 		return(self)
 	#def _load_screen
 
@@ -129,10 +138,11 @@ class detail(confStack):
 			self.cmbCmd.setCurrentText(self.task.get("cmd"))
 		else:
 			cmds=self._loadCommands()
+			self.cmbCmd.setPlaceholderText(i18n.get("LBLCMD"))
 			for cmd in cmds:
 				if len(cmd)>0:
 					self.cmbCmd.addItem(cmd)
-			self.cmbCmd.setPlaceholderText(i18n.get("LBLCMD"))
+			self.cmbCmd.setCurrentIndex(-1)
 		data=self.task.get("raw","")
 		ldata=data.split(" ")
 		if len(ldata)>1:
@@ -143,9 +153,11 @@ class detail(confStack):
 	def _drawDateTimeWidget(self,desc,desc2,minRange,maxRange):
 		wdg=QWidget()
 		wdg.setObjectName("cell")
-		wdg.setStyleSheet("#cell{border: 1px solid #000000;}")
+		wdg.setStyleSheet("#cell{border: 1px solid #AAAAAA;}")
 		lay=QGridLayout()
 		lay.addWidget(QLabel(i18n.get(desc)),0,0,1,2,Qt.AlignTop|Qt.AlignCenter)
+		maxCols=int(maxRange/5)
+		maxCols=int(maxCols) + bool(maxCols%1)
 		col=0
 		row=1
 		for i in range(minRange,maxRange):
@@ -154,10 +166,10 @@ class detail(confStack):
 				text=MONTHS.get(i)
 			btn=QPushButton(text)
 			btn.setCheckable(True)
-			btn.adjustSize()
-			lay.addWidget(btn,row,col,Qt.AlignTop)
+			btn.setMaximumWidth(64)
+			lay.addWidget(btn,row,col,Qt.AlignTop|Qt.AlignCenter)
 			col+=1
-			if col>=6:
+			if col>maxCols:
 				col=0
 				row+=1
 		chk=QCheckBox(i18n.get(desc2))
@@ -166,11 +178,17 @@ class detail(confStack):
 			cmbDay.setText(i18n.get("DOW_SCHED"))
 			for key,item in DAYS.items():
 				cmbDay.addItem(item)
-				
-			lay.addWidget(cmbDay,row,1,1,4)
+			if col>=maxCols-2:
+				row+=1
+				col=0
+			else:
+				col+=1
+			lay.addWidget(cmbDay,row,col,1,maxCols-col+1)
 			#lay.addWidget(chk,row,5,1,1,Qt.AlignRight|Qt.AlignBottom)
 		#else:
 		#	lay.addWidget(chk,row,0,1,6,Qt.AlignRight)
+		lay.setSpacing(0)
+		lay.setContentsMargins(0,0,0,0)
 		wdg.setLayout(lay)
 		return(wdg)
 	#def _drawDateTimeWidget
@@ -189,7 +207,7 @@ class detail(confStack):
 	def _loadCommands(self):
 		self.refresh=True
 		cmds=[]
-		config=self.getConfig("user")
+		config=self.appconfig.getConfig("user")
 		cmds.extend(config.get("user",{}).get("alias",{}).keys())
 		cmds.sort()
 		hst=config.get("user",{}).get("cmd",[])
@@ -300,12 +318,12 @@ class detail(confStack):
 
 	def _addCmdToHistory(self,cmd):
 		self.refresh=True
-		config=self.getConfig("user")
+		config=self.appconfig.getConfig("user")
 		userconf=config.get("user")
 		usercmd=userconf.get("cmd",[])
 		if cmd not in usercmd and len(cmd)>0:
 			usercmd.append(cmd)
-			self.saveChanges("cmd",usercmd,level="user")
+			self.appconfig.saveChanges("cmd",usercmd,level="user")
 	#def _addCmdToHistory
 
 	def _generateCronRegex(self,values):
@@ -362,7 +380,7 @@ class detail(confStack):
 			self.changes=False
 			self.optionChanged=[]
 			self.currentTaskData={}
-			self.stack.gotoStack(1,parms="")
+			self.parent.setCurrentStack(1)
 	#def _delTask
 
 	def _readWidgetData(self,key,wdg):
@@ -416,7 +434,7 @@ class detail(confStack):
 	#def _readScreen
 
 	def writeConfig(self):
-		config=self.getConfig("user")
+		config=self.appconfig.getConfig("user")
 		cron=[]
 		processInfo=self._readScreen(config.get("user",{}).get("alias",{}))
 		cmdName=processInfo["cmd"].split(" ")[0]
@@ -439,6 +457,7 @@ class detail(confStack):
 			self._addCmdToHistory(processInfo["cmd"])
 		cron.append(processInfo)
 		cronF=""
+		res=None
 		if len(self.task.get("atid",""))>0 or self.cmbType.currentIndex()==2:
 			if not (self.scheduler.addAtJob(cron[0].get("m"),cron[0].get("h"),cron[0].get("dom"),cron[0].get("mon"),cron[0].get("cmd"))):
 				field="Error"
@@ -457,8 +476,9 @@ class detail(confStack):
 				cronF=self.task["file"]
 			elif self.cmbType.currentIndex()==1:
 				cronF=os.path.join("/","etc","cron.d","taskscheduler")
-			self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
-		self.changes=True
-		self.currentTaskData=processInfo
-		self.stack.gotoStack(1,parms="")
+			res=self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
+		if res==True:
+			self.currentTaskData=processInfo
+			self.updateScreen()
+			self.parent.setCurrentStack(0)
 	#def writeConfig

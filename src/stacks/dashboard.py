@@ -5,15 +5,15 @@ import subprocess
 from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QTableWidget,QHeaderView,QAbstractScrollArea
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal
-from appconfig.appConfigStack import appConfigStack as confStack
-import appconfig.appconfigControls as appconfigControls
+from QtExtraWidgets import QTableTouchWidget, QStackedWindowItem
+from appconfig import appConfig
 import taskscheduler.taskscheduler as taskscheduler
 
 import gettext
 _ = gettext.gettext
 
-i18n={"DESCRIPTION":_("Dashboard"),
-	"DESCRIPTION_MENU":_("Take a look to next scheduled tasks"),
+i18n={"MENU":_("Dashboard"),
+	"DESC":_("Take a look to next scheduled tasks"),
 	"TOOLTIP":_("Show scheduled tasks ordered by next execution time"),
 	"REST":_("Next in"),
 	"USERCRON":_("User cron"),
@@ -41,9 +41,12 @@ class taskButton(QPushButton):
 		self.dbg=False
 		self.task=task
 		self.lay=QGridLayout()
-		cmd=task.get("cmd","")[0:40]
+		cmd=task.get("cmd","")
+		if len(cmd)>50:
+			cmd="{}...".format(cmd[0:50])
 		if alias:
 			for key,item in alias.items():
+				print("{} == {}".format(item,task.get("cmd")))
 				if task.get('cmd').strip()==item.strip():
 					cmd=key
 					break
@@ -52,8 +55,8 @@ class taskButton(QPushButton):
 		self.label.setText("<strong>{0}</strong>".format(cmd))
 		self.label.setToolTip(task.get("cmd"))
 		self.label.setWordWrap(True)
-		self.label.adjustSize()
-		self.lay.addWidget(self.label,0,0,2,2,Qt.AlignLeft|Qt.AlignTop)
+		#self.label.adjustSize()
+		self.lay.addWidget(self.label,0,0,2,2)#Qt.AlignLeft|Qt.AlignTop)
 		self.lblDate=QLabel()
 		self._setDate(task.get('next',"scheduled:Task new-Add").split(" ")[1])
 		self.lblDate.setToolTip("d:{0} m:{1}".format(task.get("raw","* * * *").split()[2],task.get("raw","* * * *").split()[3]))
@@ -90,8 +93,8 @@ class taskButton(QPushButton):
 		self.lblRest.adjustSize()
 		self.lay.addWidget(self.lblRest,4,0,1,2,Qt.AlignCenter)
 		self.setMinimumSize(self.sizeHint().width(),self._getHeight())
-		self.adjustSize()
 		self.setLayout(self.lay)
+		self.adjustSize()
 	#def __init__
 
 	def _debug(self,msg):
@@ -158,10 +161,21 @@ class taskButton(QPushButton):
 		return(self.task)
 	#def getTask
 
-class dashboard(confStack):
+class dashboard(QStackedWindowItem):
 	def __init_stack__(self):
-		self.dbg=False
+		self.dbg=True
 		self._debug("dashboard Load")
+		self.appconfig=appConfig.appConfig()
+		self.appconfig.setConfig(confDirs={'system':'/usr/share/taskscheduler','user':'{}/.config/taskscheduler'.format(os.environ['HOME'])},confFile="alias.conf")
+		self.appconfig.setLevel("user")
+		self.scheduler=taskscheduler.TaskScheduler()
+		self.setProps(shortDesc=i18n.get("MENU"),
+			longDesc=i18n.get("DESC"),
+			icon="go-home",
+			tooltip=i18n.get("TOOLTIP"),
+			index=1,
+			visible=True)
+		self.enabled=True
 		self.description=i18n.get("DESCRIPTION")
 		self.menu_description=i18n.get("DESCRIPTION_MENU")
 		self.icon=('x-office-calendar')
@@ -170,12 +184,11 @@ class dashboard(confStack):
 		self.enabled=True
 		self.level='system'
 		self.hideControlButtons()
-		self.scheduler=taskscheduler.TaskScheduler()
 	#def __init__
 	
-	def _load_screen(self):
+	def __initScreen__(self):
 		self.lay=QGridLayout()
-		self.table=appconfigControls.QTableTouchWidget()
+		self.table=QTableTouchWidget()
 		self.table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 		self.table.setShowGrid(False)
 		self.table.verticalHeader().hide()
@@ -190,7 +203,10 @@ class dashboard(confStack):
 		#crond=self.scheduler.getSystemCron()
 		cron.update(self.scheduler.getSystemCron())
 		cron.update(self.scheduler.getAt())
-		config=self.getConfig("user").get("user",{})
+		config=self.appconfig.getConfig("user").get("user",{})
+		print("***********")
+		print(config)
+		print("***********")
 		alias=config.get("alias")
 		self.table.setRowCount(0)
 		self.table.setRowCount(1)
@@ -233,8 +249,11 @@ class dashboard(confStack):
 	def _gotoTask(self):
 		wdg=self.table.cellWidget(self.table.currentRow(),self.table.currentColumn())
 		if isinstance(wdg,taskButton):
-			self.stack.gotoStack(idx=3,parms=wdg.getTask())
-		else:
-			self.stack.gotoStack(idx=2,parms={})
+			task=wdg.getTask()
+			if len(task.get("atid",""))>0:
+			#self.stack.gotoStack(idx=3,parms=wdg.getTask())
+				self.parent.setCurrentStack(2,parms=task)
+			else:
+				self.parent.setCurrentStack(3,parms=task)
 	#def _gotoTask
 

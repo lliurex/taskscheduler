@@ -4,15 +4,16 @@ import shutil
 import subprocess
 from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QHBoxLayout,QTableWidget,QHeaderView,QVBoxLayout,QLineEdit,QTableWidgetItem,QComboBox
 from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal
-from appconfig.appConfigStack import appConfigStack as confStack
+from PySide2.QtCore import Qt,QSize,Signal,QDate
+from QtExtraWidgets import QTableTouchWidget, QStackedWindowItem
+from appconfig import appConfig
 import taskscheduler.taskscheduler as taskscheduler
 
 import gettext
 _ = gettext.gettext
 
-i18n={"DESCRIPTION":_("Add commands"),
-	"DESCRIPTION_MENU":_("Add custom commands"),
+i18n={"MENU":_("Add commands"),
+	"DESC":_("Add custom commands"),
 	"TOOLTIP":_("Add custom commmands with aliases for later use"),
 	"ALIAS":_("Command alias"),
 	"ADD":_("Add"),
@@ -20,27 +21,32 @@ i18n={"DESCRIPTION":_("Add commands"),
 	"NOTCMD":_("no found")
 	}
 
-class custom(confStack):
+class custom(QStackedWindowItem):
 	def __init_stack__(self):
 		self.dbg=True
 		self._debug("custom Load")
-		self.description=i18n.get("DESCRIPTION")
-		self.menu_description=i18n.get("DESCRIPTION_MENU")
-		self.icon=('document-new')
-		self.tooltip=i18n.get("TOOLTIP")
-		self.index=4
+		self.appconfig=appConfig.appConfig()
+		self.appconfig.setConfig(confDirs={'system':'/usr/share/taskscheduler','user':'{}/.config/taskscheduler'.format(os.environ['HOME'])},confFile="alias.conf")
+		self.appconfig.setLevel("user")
+		self.scheduler=taskscheduler.TaskScheduler()
+		self.setProps(shortDesc=i18n.get("MENU"),
+			longDesc=i18n.get("DESC"),
+			icon="x-office-calendar",
+			tooltip=i18n.get("TOOLTIP"),
+			index=4,
+			visible=True)
 		self.enabled=True
 		self.level='system'
-		self.scheduler=taskscheduler.TaskScheduler()
 		self.task={}
+		self.btnAccept.clicked.connect(self.writeConfig)
 	#def __init__
 	
-	def _load_screen(self):
+	def __initScreen__(self):
 		self.lay=QGridLayout()
 		self.inpAlias=QLineEdit()
 		self.inpAlias.setPlaceholderText(i18n.get("ALIAS"))
 		self.lay.addWidget(self.inpAlias,0,0,1,1,Qt.AlignLeft)
-		self.cmbCmd=QComboBox()
+		self.cmbCmd=QComboBox()	
 		self.cmbCmd.setEditable(True)
 		self.cmbCmd.setPlaceholderText(i18n.get("CMD"))
 		self.lay.addWidget(self.cmbCmd,0,1,1,1,Qt.Alignment(0))
@@ -54,6 +60,7 @@ class custom(confStack):
 		self.lay.addWidget(self.table,1,0,1,3)
 		self.table.horizontalHeader().setSectionResizeMode(1,QHeaderView.Stretch)
 		self.setLayout(self.lay)
+		self.btnAccept.clicked.connect(self.writeConfig)
 	#def _load_screen
 
 	def updateScreen(self):
@@ -78,7 +85,7 @@ class custom(confStack):
 	#def _resetScreen
 
 	def _getAliases(self):
-		config=self.getConfig("user")
+		config=self.appconfig.getConfig("user")
 		commands=config.get("user",{}).get("alias",{})
 		return(commands)
 	#def _getAliases
@@ -107,7 +114,7 @@ class custom(confStack):
 
 	def _getHistory(self):
 		self.refresh=True
-		config=self.getConfig("user")
+		config=self.appconfig.getConfig("user")
 		hst=config.get("user",{}).get("cmd",[])
 		hst.sort()
 		return(hst)
@@ -124,6 +131,6 @@ class custom(confStack):
 			if len(cmd)<1:
 				continue
 			useralias.update({alias:cmd})
-		self.saveChanges("alias",useralias,"user")
+		self.appconfig.saveChanges("alias",useralias,"user")
 		self.updateScreen()
 	#def writeConfig

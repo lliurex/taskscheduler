@@ -1,18 +1,17 @@
 #!/usr/bin/python3
-import sys
 import os,shutil
-import subprocess
-from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QVBoxLayout,QTableWidget,QHeaderView,QVBoxLayout,QLineEdit,QComboBox,QCheckBox,QCalendarWidget
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QLineEdit,QComboBox,QCheckBox,QCalendarWidget,QDialog
 from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal
-from appconfig.appConfigStack import appConfigStack as confStack
+from PySide2.QtCore import Qt,QDate
+from appconfig import appConfig 
+from QtExtraWidgets import QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler
 
 import gettext
 _ = gettext.gettext
 
-i18n={"DESCRIPTION":_("Schedule task"),
-	"DESCRIPTION_MENU":_("Add schedule for task"),
+i18n={"MENU":_("Schedule task"),
+	"DESC":_("Add schedule for task"),
 	"TOOLTIP":_("Add scheduled tasks"),
 	"CMD":_("Task"),
 	"USERCRON":_("User's cron"),
@@ -22,6 +21,9 @@ i18n={"DESCRIPTION":_("Schedule task"),
 	"MALFORMED":_("Jobs can run only on fixed dates"),
 	"REPEAT":_("Repeat"),
 	"NOREPEAT":_("No repeat"),
+	"DELETE":_("Delete"),
+	"CANCEL":_("Cancel"),
+	"CONFIRM":_("Sure?"),
 	"YEARLY":_("Yearly"),
 	"MONTHLY":_("Monthly"),
 	"DAILY":_("Daily"),
@@ -46,10 +48,20 @@ MONTHS={1:_("Jan"),
 	12:_("Dec")
 	}
 
-class simple(confStack):
+class simple(QStackedWindowItem):
 	def __init_stack__(self):
 		self.dbg=True
 		self._debug("detail Load")
+		self.scheduler=taskscheduler.TaskScheduler()
+		self.setProps(shortDesc=i18n.get("MENU"),
+			longDesc=i18n.get("DESC"),
+			icon="appointment-new",
+			tooltip=i18n.get("TOOLTIP"),
+			index=2,
+			visible=True)
+		self.appconfig=appConfig.appConfig()
+		self.appconfig.setConfig(confDirs={'system':'/usr/share/taskscheduler','user':'{}/.config/taskscheduler'.format(os.environ['HOME'])},confFile="alias.conf")
+		self.appconfig.setLevel("user")
 		self.description=i18n.get("DESCRIPTION")
 		self.menu_description=i18n.get("DESCRIPTION_MENU")
 		self.icon=('appointment-new')
@@ -57,36 +69,39 @@ class simple(confStack):
 		self.index=2
 		self.enabled=True
 		self.level='user'
-		self.scheduler=taskscheduler.TaskScheduler()
 		self.task={}
+		self.currentTaskData={}
 	#def __init__
 	
-	def _load_screen(self):
+	def __initScreen__(self):
 		self.lay=QGridLayout()
-		self.lay.addWidget(QLabel(i18n.get("CMD")),0,0,1,1,Qt.Alignment(0))
+		self.lay.addWidget(QLabel(i18n.get("CMD")),0,0,1,1,Qt.AlignLeft)
 		self.cmbCmd=QComboBox()
 		self.cmbCmd.setEditable(True)
 		self.lay.addWidget(self.cmbCmd,0,1,1,3)
-		self.lay.addWidget(QLabel(i18n.get("HOUR_SCHED")),2,0,1,1,Qt.AlignTop)
+		self.lay.addWidget(QLabel(i18n.get("HOUR_SCHED")),1,0,1,1)
 		self.hours=QComboBox()
-		self.lay.addWidget(self.hours,3,0,1,1,Qt.AlignTop)
-		self.lay.addWidget(QLabel(i18n.get("MINUTE_SCHED")),2,1,1,1,Qt.AlignTop)
+		self.lay.addWidget(self.hours,2,0,1,1,Qt.AlignTop)
+		self.lay.addWidget(QLabel(i18n.get("MINUTE_SCHED")),1,1,1,1)
 		self.minutes=QComboBox()
-		self.lay.addWidget(self.minutes,3,1,1,1,Qt.AlignTop)
-		self.lay.addWidget(QLabel(i18n.get("REPEAT")),2,2,1,1,Qt.AlignTop)
+		self.lay.addWidget(self.minutes,2,1,1,1,Qt.AlignTop)
+		self.lay.addWidget(QLabel(i18n.get("REPEAT")),1,2,1,1)
 		self.cmbRepeat=QComboBox()
-		self.lay.addWidget(self.cmbRepeat,3,2,1,1,Qt.AlignTop)
+		self.lay.addWidget(self.cmbRepeat,2,2,1,1,Qt.AlignTop)
 		self.calendar=QCalendarWidget()
-		self.lay.addWidget(self.calendar,2,3,3,2,Qt.AlignTop|Qt.AlignRight)
+		self.lay.addWidget(self.calendar,3,0,1,4,Qt.AlignCenter|Qt.AlignCenter)
+		self.btnDelete=QPushButton(i18n.get("DELETE"))
+		self.btnDelete.clicked.connect(self._delTask)
+		self.lay.addWidget(self.btnDelete,2,3,1,1,Qt.AlignRight)
 		self.cmbType=QComboBox()
 		self.cmbType.addItem(i18n.get("USERCRON"))
 		self.cmbType.addItem(i18n.get("SYSCRON"))
 		self.cmbType.addItem(i18n.get("ATJOB"))
 		self.cmbType.currentTextChanged.connect(self._lockRepeat)
-		self.lay.addWidget(self.cmbType,0,4,1,1,Qt.AlignRight)
-		self.lay.setRowStretch(3,2)
-		self.lay.setRowStretch(3,3)
+		self.lay.addWidget(self.cmbType,2,3,1,1,Qt.AlignRight)
+		self.lay.setRowStretch(3,1)
 		self.setLayout(self.lay)
+		self.btnAccept.clicked.connect(self.writeConfig)
 		return(self)
 	#def _load_screen
 
@@ -116,7 +131,7 @@ class simple(confStack):
 	def _loadCommands(self):
 		self.refresh=True
 		cmds=[]
-		config=self.getConfig("user")
+		config=self.appconfig.getConfig("user")
 		cmds.extend(config.get("user",{}).get("alias",{}).keys())
 		cmds.sort()
 		hst=config.get("user",{}).get("cmd",[])
@@ -131,6 +146,14 @@ class simple(confStack):
 
 	def updateScreen(self):
 		self._clearScreen()
+		if len(self.currentTaskData)>0:
+			self.task=self.currentTaskData
+			self.currentTaskData={}
+		if len(self.task.get("atid",""))>0:
+			self.cmbType.setVisible(False)
+			self.btnDelete.setVisible(True)
+			self.cmbRepeat.setEnabled(False)
+
 		if (self.task.get("cmd","")!=""):
 			self.cmbCmd.addItem(self.task.get("cmd"))
 		else:
@@ -146,7 +169,26 @@ class simple(confStack):
 		#self.task={}
 	#def _udpate_screen
 
+	def _loadDataFromTask(self,data):
+		(m,h,mon,dom,dow)=["*","*","*","*","*"]
+		if len(data)>3:
+			(m,h,dom,mon,dow)=data.split(" ")[0:5]
+		if m.isnumeric()==False:
+			m="1"
+		if h.isnumeric()==False:
+			h="1"
+		if dom.isnumeric()==False:
+			dom="1"
+		if mon.isnumeric()==False:
+			mon="1"
+		self.minutes.setCurrentText(m)
+		self.hours.setCurrentText(h)
+		qdate=QDate(self.calendar.yearShown(),int(mon),int(dom))
+		self.calendar.setSelectedDate(qdate)
+	#def _loadDataFromTask
+
 	def _clearScreen(self):
+		self.task={}
 		self.cmbCmd.clear()
 		processWdg=[self.minutes,self.hours,self.cmbRepeat]
 		for wdg in processWdg:
@@ -154,21 +196,55 @@ class simple(confStack):
 		self._drawHours()
 		self._drawMinutes()
 		self._drawRepeat()
+		self.calendar.setSelectedDate(QDate.currentDate())
+		self.cmbType.setVisible(True)
+		self.btnDelete.setVisible(False)
+		self.cmbRepeat.setEnabled(True)
 	#def _resetScreen
 
 	def setParms(self,*args):
-		self.task=args[0]
+		self.currentTaskData=args[0]
 	#def setParms
 
 	def _addCmdToHistory(self,cmd):
 		self._debug(self.level)
-		config=self.getConfig("user")
+		config=self.appconfig.getConfig("user")
 		userconf=config.get("user")
 		usercmd=userconf.get("cmd",[])
 		if cmd not in usercmd:
 			usercmd.append(cmd)
-			self.saveChanges("cmd",usercmd,level="user")
+			self.appconfig.saveChanges("cmd",usercmd,level="user")
 	#def _addCmdToHistory
+
+	def _delTask(self):
+		dlg=QDialog()
+		lay=QGridLayout()
+		dlg.setLayout(lay)
+		lblQ=QLabel("{0} <strong>{1}</strong><br>{2}".format(i18n.get("DELETE"),self.task.get("cmd"),i18n.get("CONFIRM")))
+		lay.addWidget(lblQ,0,0,1,2)
+		btn_ok=QPushButton(i18n.get("DELETE"))
+		btn_ok.clicked.connect(dlg.accept)
+		btn_cancel=QPushButton(i18n.get("CANCEL"))
+		btn_cancel.clicked.connect(dlg.reject)
+
+		lay.addWidget(btn_ok,1,0,1,1,Qt.AlignRight)
+		lay.addWidget(btn_cancel,1,1,1,1,Qt.AlignLeft)
+		if dlg.exec_():
+			raw=self.task.get("raw","")
+			if len(raw)>0:
+				if len(self.task.get("atid",""))>0:
+					self.scheduler.removeFromAt(self.task.get("atid"))
+				else:
+					cronF=self.task.get("file","")
+					if len(cronF)>0:
+						self.scheduler.removeFromSystemCron(raw,cronF)
+					else:
+						self.scheduler.removeFromCron(raw)
+			self.changes=False
+			self.optionChanged=[]
+			self.task={}
+			self.parent.setCurrentStack(1)
+	#def _delTask
 
 	def _generateCronRegex(self,values):
 		concat=[]
@@ -231,10 +307,10 @@ class simple(confStack):
 	#def _readScreen
 
 	def writeConfig(self):
-		sw_ok=True
-		config=self.getConfig("user")
+		config=self.appconfig.getConfig("user")
 		processInfo=self._readScreen(config.get("user",{}).get("alias",{}))
 		cron=[]
+		res=None
 		if len(processInfo)>0:
 			cmdName=processInfo["cmd"].split(" ")[0]
 			if os.path.isfile(cmdName)==False and  cmdName[0].isalnum():
@@ -250,11 +326,12 @@ class simple(confStack):
 				cronF=""
 				if self.cmbType.currentIndex()==1:
 					cronF=os.path.join("/","etc","cron.d","taskscheduler")
-				self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
+				res=self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
 			else:
 				if not (self.scheduler.addAtJob(cron[0].get("m"),cron[0].get("h"),cron[0].get("dom"),cron[0].get("mon"),cron[0].get("cmd"))):
 					self.showMsg("{}".format(cmdName,i18n.get("MALFORMED","ERROR")))
 					return()
-			self.stack.gotoStack(1,parms="")
+		self.updateScreen()
+		self.parent.setCurrentStack(1)
 	#def writeConfig
 

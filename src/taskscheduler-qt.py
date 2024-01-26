@@ -2,16 +2,24 @@
 import sys
 import os
 from PySide2.QtWidgets import QApplication
-from appconfig.appConfigScreen import appConfigScreen as appConfig
-NAME="TaskScheduler"
-app=QApplication([NAME])
-config=appConfig(NAME.lower(),{'app':app})
-config.setRsrcPath("/usr/share/{}/rsrc".format(NAME.lower()))
-config.setIcon(NAME.lower())
-config.setBanner("{}_banner.png".format(NAME.lower()))
-config.setBackgroundImage("{}_bkg.svg".format(NAME.lower()))
-config.setConfig(confDirs={'system':os.path.join('/usr/share',NAME.lower()),'user':os.path.join(os.environ['HOME'],'.config/{}'.format(NAME.lower()))},confFile="{}.conf".format(NAME.lower()))
-config.Show()
-config.setMinimumWidth(config.sizeHint().width())
+from QtExtraWidgets import QStackedWindow
+import gettext
+gettext.textdomain('taskscheduler')
+_ = gettext.gettext
+app=QApplication(["TaskScheduler"])
+config=QStackedWindow()
+config.addStacksFromFolder(os.path.join(os.path.dirname(__file__),"stacks"))
+config.setBanner("/usr/share/taskscheduler/rsrc/taskscheduler_banner.png")
+config.show()
+config.setMinimumWidth(1+config.sizeHint().width()*1.2)
+config.setMinimumHeight(config.sizeHint().width()*0.65)
+
+#config=appConfig(NAME.lower(),{'app':app})
+#config.setRsrcPath("/usr/share/{}/rsrc".format(NAME.lower()))
+#config.setIcon(NAME.lower())
+#config.setBackgroundImage("{}_bkg.svg".format(NAME.lower()))
+#config.setConfig(confDirs={'system':os.path.join('/usr/share',NAME.lower()),'user':os.path.join(os.environ['HOME'],'.config/{}'.format(NAME.lower()))},confFile="{}.conf".format(NAME.lower()))
+#config.Show()
+#config.setMinimumWidth(config.sizeHint().width())
 
 app.exec_()
