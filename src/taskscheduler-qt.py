@@ -8,7 +8,10 @@ gettext.textdomain('taskscheduler')
 _ = gettext.gettext
 app=QApplication(["TaskScheduler"])
 config=QStackedWindow()
-config.addStacksFromFolder(os.path.join(os.path.dirname(__file__),"stacks"))
+abspath=os.path.dirname(__file__)
+if os.path.islink(__file__)==True:
+	abspath=os.path.join(os.path.dirname(__file__),os.path.dirname(os.readlink(__file__)))
+config.addStacksFromFolder(os.path.join(abspath,"stacks"))
 config.setBanner("/usr/share/taskscheduler/rsrc/taskscheduler_banner.png")
 config.show()
 config.setMinimumWidth(1+config.sizeHint().width()*1.2)
