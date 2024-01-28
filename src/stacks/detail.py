@@ -118,7 +118,7 @@ class detail(QStackedWindowItem):
 		self.days=self._drawDateTimeWidget("DAY_SCHED","DAILY",1,32)
 		self.days.adjustSize()
 		lay.addWidget(self.days,2,1,1,1)
-		lay.setRowStretch(2,1)
+		lay.setRowStretch(0,1)
 		scr.setWidget(wdg)
 		self.lay.addWidget(scr,0,0,1,1)
 		scr.setMinimumWidth(self.hours.width()*1.4)
@@ -188,7 +188,7 @@ class detail(QStackedWindowItem):
 		#else:
 		#	lay.addWidget(chk,row,0,1,6,Qt.AlignRight)
 		lay.setSpacing(0)
-		lay.setContentsMargins(0,0,0,0)
+		lay.setContentsMargins(3,3,3,3)
 		wdg.setLayout(lay)
 		return(wdg)
 	#def _drawDateTimeWidget

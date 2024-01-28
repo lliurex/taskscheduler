@@ -75,35 +75,48 @@ class simple(QStackedWindowItem):
 	
 	def __initScreen__(self):
 		self.lay=QGridLayout()
-		self.lay.addWidget(QLabel(i18n.get("CMD")),0,0,1,1,Qt.AlignLeft)
+		self.lay.addWidget(QLabel(i18n.get("CMD")),0,0,1,1,Qt.AlignRight|Qt.AlignBottom)
 		self.cmbCmd=QComboBox()
 		self.cmbCmd.setEditable(True)
-		self.lay.addWidget(self.cmbCmd,0,1,1,3)
-		self.lay.addWidget(QLabel(i18n.get("HOUR_SCHED")),1,0,1,1)
+		self.lay.addWidget(self.cmbCmd,0,1,1,3,Qt.AlignBottom)
+		self.lay.addWidget(QLabel(i18n.get("HOUR_SCHED")),1,0,1,1,Qt.AlignBottom)
 		self.hours=QComboBox()
-		self.lay.addWidget(self.hours,2,0,1,1,Qt.AlignTop)
-		self.lay.addWidget(QLabel(i18n.get("MINUTE_SCHED")),1,1,1,1)
+		self.lay.addWidget(self.hours,2,0,1,1)#,Qt.AlignTop)
+		self.lay.addWidget(QLabel(i18n.get("MINUTE_SCHED")),1,1,1,1,Qt.AlignBottom)
 		self.minutes=QComboBox()
-		self.lay.addWidget(self.minutes,2,1,1,1,Qt.AlignTop)
-		self.lay.addWidget(QLabel(i18n.get("REPEAT")),1,2,1,1)
+		self.lay.addWidget(self.minutes,2,1,1,1)#,Qt.AlignTop)
+		self.lay.addWidget(QLabel(i18n.get("REPEAT")),1,2,1,1,Qt.AlignBottom)
 		self.cmbRepeat=QComboBox()
+		self.cmbRepeat.currentTextChanged.connect(self._lockCalendar)
 		self.lay.addWidget(self.cmbRepeat,2,2,1,1,Qt.AlignTop)
 		self.calendar=QCalendarWidget()
-		self.lay.addWidget(self.calendar,3,0,1,4,Qt.AlignCenter|Qt.AlignCenter)
+		self.lay.addWidget(self.calendar,3,1,1,2)#,Qt.AlignCenter)#|Qt.AlignCenter)
 		self.btnDelete=QPushButton(i18n.get("DELETE"))
 		self.btnDelete.clicked.connect(self._delTask)
 		self.lay.addWidget(self.btnDelete,2,3,1,1,Qt.AlignRight)
 		self.cmbType=QComboBox()
+		self.cmbType.currentTextChanged.connect(self._lockRepeat)
 		self.cmbType.addItem(i18n.get("USERCRON"))
 		self.cmbType.addItem(i18n.get("SYSCRON"))
 		self.cmbType.addItem(i18n.get("ATJOB"))
 		self.cmbType.currentTextChanged.connect(self._lockRepeat)
 		self.lay.addWidget(self.cmbType,2,3,1,1,Qt.AlignRight)
-		self.lay.setRowStretch(3,1)
+		self.lay.setRowStretch(0,0)
+		self.lay.setRowStretch(1,0)
+		self.lay.setRowStretch(2,1)
+		self.lay.setRowStretch(3,2)
 		self.setLayout(self.lay)
 		self.btnAccept.clicked.connect(self.writeConfig)
+		self.calendar.setMaximumHeight(self.sizeHint().height()/1)
 		return(self)
 	#def _load_screen
+
+	def _lockCalendar(self):
+		if self.cmbRepeat.currentText()==i18n.get("DAILY"):
+			self.calendar.setEnabled(False)
+		else:
+			self.calendar.setEnabled(True)
+	#def _lockCalendar
 
 	def _drawRepeat(self):
 		for i in ["DAILY","MONTHLY","YEARLY"]:
