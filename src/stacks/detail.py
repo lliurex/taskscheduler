@@ -66,7 +66,7 @@ class detail(QStackedWindowItem):
 		self._debug("detail Load")
 		self.setProps(shortDesc=i18n.get("MENU"),
 			longDesc=i18n.get("DESC"),
-			icon="go-home",
+			icon="address-book-new",
 			tooltip=i18n.get("TOOLTIP"),
 			index=3,
 			visible=True)

@@ -171,7 +171,7 @@ class dashboard(QStackedWindowItem):
 		self.scheduler=taskscheduler.TaskScheduler()
 		self.setProps(shortDesc=i18n.get("MENU"),
 			longDesc=i18n.get("DESC"),
-			icon="go-home",
+			icon="x-office-calendar",
 			tooltip=i18n.get("TOOLTIP"),
 			index=1,
 			visible=True)

@@ -31,7 +31,7 @@ class custom(QStackedWindowItem):
 		self.scheduler=taskscheduler.TaskScheduler()
 		self.setProps(shortDesc=i18n.get("MENU"),
 			longDesc=i18n.get("DESC"),
-			icon="x-office-calendar",
+			icon="document-edit",
 			tooltip=i18n.get("TOOLTIP"),
 			index=4,
 			visible=True)
