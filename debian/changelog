@@ -1,3 +1,10 @@
+taskscheduler (3.1) jammy; urgency=medium
+
+  * Support for range with interval
+  * GUI on QtExtraWidgets
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 06 Feb 2024 10:38:02 +0100
+
 taskscheduler (3.0.2) jammy; urgency=medium
 
   * removed python and n4d modules (now are independent)
