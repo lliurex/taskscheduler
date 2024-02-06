@@ -239,17 +239,17 @@ class detail(QStackedWindowItem):
 
 	def _setWidgetData(self,wdg,dataset):
 		for key,data in dataset.items():
-			active=[]
-			for item in str(data).split(","):
-				if ("-") in item:
-					ranged=item.split("-")
-					for d in range(int(ranged[0]),int(ranged[-1])+1):
-						active.append(str(d))
-				else:
-					if item.isdigit():
-						active.append(str(int(item)))
-					else:
-						active.append(item)
+			active=self.scheduler._processCronField(str(data),0,0)
+			#for item in str(data).split(","):
+			#	if ("-") in item:
+			#		ranged=item.split("-")
+			#		for d in range(int(ranged[0]),int(ranged[-1])+1):
+			#			active.append(str(d))
+			#	else:
+			#		if item.isdigit():
+			#			active.append(str(int(item)))
+			#		else:
+			#			active.append(item)
 			for i in wdg.findChildren(QPushButton):
 				if key=="dow":
 					break
