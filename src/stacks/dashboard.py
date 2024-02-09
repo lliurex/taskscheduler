@@ -94,8 +94,11 @@ class taskButton(QPushButton):
 		self.lay.addWidget(self.lblRest,4,0,1,2,Qt.AlignCenter)
 		self.setMinimumSize(self.sizeHint().width(),self._getHeight())
 		self.setLayout(self.lay)
-		if "bellscheduler" in self.lblFile.text().lower():
-			self.setEnabled(False)
+		blocked=["bellscheduler","lliurex"]
+		for block in blocked:
+			if block in self.lblFile.text().lower():
+				self.setEnabled(False)
+				break
 		self.adjustSize()
 	#def __init__
 
