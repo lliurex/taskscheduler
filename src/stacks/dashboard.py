@@ -46,7 +46,7 @@ class taskButton(QPushButton):
 			cmd="{}...".format(cmd[0:50])
 		if alias:
 			for key,item in alias.items():
-				print("{} == {}".format(item,task.get("cmd")))
+				#print("{} == {}".format(item,task.get("cmd")))
 				if task.get('cmd').strip()==item.strip():
 					cmd=key
 					break
@@ -94,6 +94,8 @@ class taskButton(QPushButton):
 		self.lay.addWidget(self.lblRest,4,0,1,2,Qt.AlignCenter)
 		self.setMinimumSize(self.sizeHint().width(),self._getHeight())
 		self.setLayout(self.lay)
+		if "bellscheduler" in self.lblFile.text().lower():
+			self.setEnabled(False)
 		self.adjustSize()
 	#def __init__
 
@@ -204,9 +206,6 @@ class dashboard(QStackedWindowItem):
 		cron.update(self.scheduler.getSystemCron())
 		cron.update(self.scheduler.getAt())
 		config=self.appconfig.getConfig("user").get("user",{})
-		print("***********")
-		print(config)
-		print("***********")
 		alias=config.get("alias")
 		self.table.setRowCount(0)
 		self.table.setRowCount(1)
