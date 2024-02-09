@@ -1,3 +1,9 @@
+taskscheduler (3.2) jammy; urgency=medium
+
+  * Block bell scheduler tasks
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 09 Feb 2024 12:11:46 +0100
+
 taskscheduler (3.1) jammy; urgency=medium
 
   * Support for range with interval
