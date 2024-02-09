@@ -1,6 +1,6 @@
-taskscheduler (3.2) jammy; urgency=medium
+taskscheduler (3.2.1) jammy; urgency=medium
 
-  * Block bell scheduler tasks
+  * Block lliurex tasks
 
  -- Juanma1980 <juanma1980@gmail.com>  Fri, 09 Feb 2024 12:11:46 +0100
 
