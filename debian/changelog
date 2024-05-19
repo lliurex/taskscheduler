@@ -1,6 +1,7 @@
-taskscheduler (3.2.1) jammy; urgency=medium
+taskscheduler (3.2.2) jammy; urgency=medium
 
   * Block lliurex tasks
+  * Ensure no repeated epochs for displaying
 
  -- Juanma1980 <juanma1980@gmail.com>  Fri, 09 Feb 2024 12:11:46 +0100
 
