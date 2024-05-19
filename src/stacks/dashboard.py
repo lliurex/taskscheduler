@@ -206,8 +206,17 @@ class dashboard(QStackedWindowItem):
 		maxH=[]
 		cron=self.scheduler.getUserCron()
 		#crond=self.scheduler.getSystemCron()
-		cron.update(self.scheduler.getSystemCron())
-		cron.update(self.scheduler.getAt())
+		syscron=self.scheduler.getSystemCron()
+		for epoch,data in syscron.items():
+			while epoch in cron.keys():
+				epoch+=1
+			cron[epoch]=data
+		atjobs=self.scheduler.getAt()
+		for epoch,data in atjobs.items():
+			while epoch in cron.keys():
+				epoch+=1
+			cron[epoch]=data
+
 		config=self.appconfig.getConfig("user").get("user",{})
 		alias=config.get("alias")
 		self.table.setRowCount(0)
