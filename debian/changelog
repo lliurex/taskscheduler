@@ -1,6 +1,8 @@
-taskscheduler (3.2.2) jammy; urgency=medium
+taskscheduler (3.3) jammy; urgency=medium
 
   * Avoid repeated epochs (only affects data visualization)
+  * Adjust screen size
+  * Block edit of cron lines with macros (@reboot and others)
 
  -- Juanma1980 <juanma1980@gmail.com>  Sun, 19 May 2024 10:27:49 +0200
 
