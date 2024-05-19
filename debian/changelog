@@ -1,7 +1,12 @@
 taskscheduler (3.2.2) jammy; urgency=medium
 
+  * Avoid repeated epochs (only affects data visualization)
+
+ -- Juanma1980 <juanma1980@gmail.com>  Sun, 19 May 2024 10:27:49 +0200
+
+taskscheduler (3.2.1) jammy; urgency=medium
+
   * Block lliurex tasks
-  * Ensure no repeated epochs for displaying
 
  -- Juanma1980 <juanma1980@gmail.com>  Fri, 09 Feb 2024 12:11:46 +0100
 
