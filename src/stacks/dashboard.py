@@ -99,6 +99,8 @@ class taskButton(QPushButton):
 			if block in self.lblFile.text().lower():
 				self.setEnabled(False)
 				break
+		if task.get("raw","").startswith("@"):
+			self.setEnabled(False)
 		self.adjustSize()
 	#def __init__
 
