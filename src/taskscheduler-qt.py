@@ -14,7 +14,7 @@ if os.path.islink(__file__)==True:
 config.addStacksFromFolder(os.path.join(abspath,"stacks"))
 config.setBanner("/usr/share/taskscheduler/rsrc/taskscheduler_banner.png")
 config.show()
-config.setMinimumWidth(1+config.sizeHint().width()*1.3)
+config.setMinimumWidth(config.sizeHint().width()*1.8)
 config.setMinimumHeight(config.sizeHint().width()*0.8)
 
 #config=appConfig(NAME.lower(),{'app':app})
