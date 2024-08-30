@@ -1,3 +1,9 @@
+taskscheduler (3.3-0lliurex23) jammy; urgency=medium
+
+  * Set app icon
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 30 Aug 2024 11:08:16 +0200
+
 taskscheduler (3.3) jammy; urgency=medium
 
   * Avoid repeated epochs (only affects data visualization)
