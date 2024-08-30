@@ -8,6 +8,7 @@ gettext.textdomain('taskscheduler')
 _ = gettext.gettext
 app=QApplication(["TaskScheduler"])
 config=QStackedWindow()
+config.setIcon("taskscheduler")
 abspath=os.path.dirname(__file__)
 if os.path.islink(__file__)==True:
 	abspath=os.path.join(os.path.dirname(__file__),os.path.dirname(os.readlink(__file__)))
