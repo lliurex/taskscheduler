@@ -15,8 +15,9 @@ if os.path.islink(__file__)==True:
 mw.addStacksFromFolder(os.path.join(abspath,"stacks"))
 mw.setBanner("/usr/share/taskscheduler/rsrc/taskscheduler_banner.png")
 mw.show()
-mw.setMinimumWidth(mw.sizeHint().width()*1.6)
-mw.setMinimumHeight(mw.sizeHint().width()*0.8)
+#mw.setMinimumWidth(mw.sizeHint().width()*2.2)
+#mw.setMinimumHeight(mw.sizeHint().width())
+mw.resize(mw.sizeHint().width()*2.1,mw.sizeHint().width())
 
 #mw=appmw(NAME.lower(),{'app':app})
 #mw.setRsrcPath("/usr/share/{}/rsrc".format(NAME.lower()))

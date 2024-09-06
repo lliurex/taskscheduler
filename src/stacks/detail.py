@@ -5,7 +5,7 @@ import subprocess
 from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QHBoxLayout,QTableWidget,QHeaderView,QVBoxLayout,QLineEdit,QComboBox,QCheckBox,QScrollArea,QDialog,QSizePolicy
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal
-from  appconfig import appConfig 
+from  appconfig import manager
 from QtExtraWidgets import QTableTouchWidget, QCheckableComboBox, QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler
 
@@ -78,8 +78,8 @@ class detail(QStackedWindowItem):
 		self.enabled=True
 		self.level='user'
 		self.scheduler=taskscheduler.TaskScheduler()
-		self.appconfig=appConfig.appConfig()
-		self.appconfig.setConfig(confDirs={'system':os.path.join('/usr/share',"taskscheduler"),'user':os.path.join(os.environ['HOME'],'.config',"taskscheduler")},confFile="taskscheduler.conf")
+		self.appconfig=manager.manager(relativepath="taskscheduler",name="taskscheduler.json")
+		#self.appconfig.setConfig(confDirs={'system':os.path.join('/usr/share',"taskscheduler"),'user':os.path.join(os.environ['HOME'],'.config',"taskscheduler")},confFile="taskscheduler.conf")
 		self.task={}
 		self.currentTaskData={}
 	#def __init__
@@ -89,20 +89,24 @@ class detail(QStackedWindowItem):
 		scr=QScrollArea()
 		scr.setHorizontalScrollBarPolicy( Qt.ScrollBarAlwaysOff )
 		scr.setWidgetResizable(True)
-		scr.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Expanding))
+		#scr.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Expanding))
 		wdg=QWidget()
-		wdg.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Expanding))
+		#wdg.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Expanding))
 		lay=QGridLayout()
 		wdg.setLayout(lay)
-		lay.addWidget(QLabel(i18n.get("CMD")),0,1,1,1)
+		lay2=QGridLayout()
+		wdg2=QWidget()
+		wdg2.setLayout(lay2)
+		lay2.addWidget(QLabel(i18n.get("CMD")),0,1,1,1,Qt.AlignLeft)
 		self.cmbCmd=QComboBox()
 		self.cmbCmd.setEditable(True)
-		lay.addWidget(self.cmbCmd,0,0,1,2)
+		lay2.addWidget(self.cmbCmd,0,0,1,1)
+		lay.addWidget(wdg2,0,0,1,2)
 		self.hours=self._drawDateTimeWidget("HOUR_SCHED","HOURLY",0,24)
 		self.hours.adjustSize()
 		lay.addWidget(self.hours,1,0,1,1)
 		self.minutes=self._drawMinutes()
-		self.minutes.adjustSize()
+		#self.minutes.adjustSize()
 		lay.addWidget(self.minutes,1,1,1,1)
 		self.btnDelete=QPushButton(i18n.get("DELETE"))
 		self.btnDelete.clicked.connect(self._delTask)
@@ -113,16 +117,16 @@ class detail(QStackedWindowItem):
 		self.cmbType.addItem(i18n.get("ATJOB"))
 		lay.addWidget(self.cmbType,1,1,1,1,Qt.AlignTop|Qt.AlignRight)
 		self.months=self._drawDateTimeWidget("MONTH_SCHED","MONTHLY",1,13)
-		self.months.adjustSize()
+		#self.months.adjustSize()
 		lay.addWidget(self.months,2,0,1,1)
 		self.days=self._drawDateTimeWidget("DAY_SCHED","DAILY",1,32)
-		self.days.adjustSize()
+		#self.days.adjustSize()
 		lay.addWidget(self.days,2,1,1,1)
-		lay.setRowStretch(0,1)
+		#lay.setRowStretch(0,1)
 		scr.setWidget(wdg)
 		self.lay.addWidget(scr,0,0,1,1)
-		scr.setMinimumWidth(self.hours.width()*1.4)
-		scr.adjustSize()
+#		scr.setMinimumWidth(self.hours.width()*1.4)
+		#scr.adjustSize()
 		self.setLayout(self.lay)
 		self.btnAccept.clicked.connect(self.writeConfig)
 		return(self)
@@ -155,7 +159,7 @@ class detail(QStackedWindowItem):
 		wdg.setObjectName("cell")
 		wdg.setStyleSheet("#cell{border: 1px solid #AAAAAA;}")
 		lay=QGridLayout()
-		lay.addWidget(QLabel(i18n.get(desc)),0,0,1,2,Qt.AlignTop|Qt.AlignCenter)
+		lay.addWidget(QLabel(i18n.get(desc)),0,0,1,1,Qt.AlignTop|Qt.AlignCenter)
 		maxCols=int(maxRange/5)
 		maxCols=int(maxCols) + bool(maxCols%1)
 		col=0
@@ -167,7 +171,7 @@ class detail(QStackedWindowItem):
 			btn=QPushButton(text)
 			btn.setCheckable(True)
 			btn.setMaximumWidth(64)
-			lay.addWidget(btn,row,col,Qt.AlignTop|Qt.AlignCenter)
+			lay.addWidget(btn,row,col,Qt.AlignTop|Qt.AlignLeft)
 			col+=1
 			if col>maxCols:
 				col=0
@@ -183,7 +187,7 @@ class detail(QStackedWindowItem):
 				col=0
 			else:
 				col+=1
-			lay.addWidget(cmbDay,row,col,1,maxCols-col+1)
+			lay.addWidget(cmbDay,row,col-1,1,maxCols-(col-2),Qt.AlignBottom|Qt.AlignRight)
 			#lay.addWidget(chk,row,5,1,1,Qt.AlignRight|Qt.AlignBottom)
 		#else:
 		#	lay.addWidget(chk,row,0,1,6,Qt.AlignRight)
@@ -200,17 +204,17 @@ class detail(QStackedWindowItem):
 		cmb=QComboBox()
 		for i in range(0,60,5):
 			cmb.addItem(str(i).zfill(2))
-		lay.addWidget(cmb,1,0,Qt.AlignTop)
+		lay.addWidget(cmb,1,0,Qt.AlignTop|Qt.AlignLeft)
 		wdg.setLayout(lay)
 		return(wdg)
 
 	def _loadCommands(self):
 		self.refresh=True
 		cmds=[]
-		config=self.appconfig.getConfig("user")
-		cmds.extend(config.get("user",{}).get("alias",{}).keys())
+		config=self.appconfig.getConfig()
+		cmds.extend(config.get("alias",{}).keys())
 		cmds.sort()
-		hst=config.get("user",{}).get("cmd",[])
+		hst=config.get("cmd",[])
 		hst.sort()
 		cmds.extend(hst)
 		return(cmds)
@@ -318,8 +322,7 @@ class detail(QStackedWindowItem):
 
 	def _addCmdToHistory(self,cmd):
 		self.refresh=True
-		config=self.appconfig.getConfig("user")
-		userconf=config.get("user")
+		userconf=self.appconfig.getConfig()
 		usercmd=userconf.get("cmd",[])
 		if cmd not in usercmd and len(cmd)>0:
 			usercmd.append(cmd)
@@ -434,9 +437,9 @@ class detail(QStackedWindowItem):
 	#def _readScreen
 
 	def writeConfig(self):
-		config=self.appconfig.getConfig("user")
+		config=self.appconfig.getConfig()
 		cron=[]
-		processInfo=self._readScreen(config.get("user",{}).get("alias",{}))
+		processInfo=self._readScreen(config.get("alias",{}))
 		cmdName=processInfo["cmd"].split(" ")[0]
 		if os.path.isfile(cmdName)==False and cmdName[0].isalnum():
 			fullcmd=shutil.which(os.path.basename(cmdName))
@@ -453,7 +456,7 @@ class detail(QStackedWindowItem):
 			self.task=self.currentTaskData.copy()
 		if len(processInfo["cmd"])<1:
 			return
-		if not processInfo["cmd"] in config.get("user",{}).get("alias",{}).keys():
+		if not processInfo["cmd"] in config.get("alias",{}).keys():
 			self._addCmdToHistory(processInfo["cmd"])
 		cron.append(processInfo)
 		cronF=""

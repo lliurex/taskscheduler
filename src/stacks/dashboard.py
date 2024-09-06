@@ -6,7 +6,7 @@ from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLa
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QTableTouchWidget, QStackedWindowItem
-from appconfig import appConfig
+from appconfig import manager
 import taskscheduler.taskscheduler as taskscheduler
 
 import gettext
@@ -172,9 +172,9 @@ class dashboard(QStackedWindowItem):
 	def __init_stack__(self):
 		self.dbg=True
 		self._debug("dashboard Load")
-		self.appconfig=appConfig.appConfig()
-		self.appconfig.setConfig(confDirs={'system':'/usr/share/taskscheduler','user':'{}/.config/taskscheduler'.format(os.environ['HOME'])},confFile="alias.conf")
-		self.appconfig.setLevel("user")
+		self.appconfig=manager.manager(relativepath="taskscheduler",name="taskscheduler.json")
+		#self.appconfig.setConfig(confDirs={'system':'/usr/share/taskscheduler','user':'{}/.config/taskscheduler'.format(os.environ['HOME'])},confFile="alias.conf")
+		#self.appconfig.setLevel("user")
 		self.scheduler=taskscheduler.TaskScheduler()
 		self.setProps(shortDesc=i18n.get("MENU"),
 			longDesc=i18n.get("DESC"),
@@ -219,7 +219,7 @@ class dashboard(QStackedWindowItem):
 				epoch+=1
 			cron[epoch]=data
 
-		config=self.appconfig.getConfig("user").get("user",{})
+		config=self.appconfig.getConfig()
 		alias=config.get("alias")
 		self.table.setRowCount(0)
 		self.table.setRowCount(1)

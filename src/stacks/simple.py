@@ -3,7 +3,7 @@ import os,shutil
 from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QLineEdit,QComboBox,QCheckBox,QCalendarWidget,QDialog
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QDate
-from appconfig import appConfig 
+from appconfig import manager
 from QtExtraWidgets import QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler
 
@@ -59,9 +59,9 @@ class simple(QStackedWindowItem):
 			tooltip=i18n.get("TOOLTIP"),
 			index=2,
 			visible=True)
-		self.appconfig=appConfig.appConfig()
-		self.appconfig.setConfig(confDirs={'system':'/usr/share/taskscheduler','user':'{}/.config/taskscheduler'.format(os.environ['HOME'])},confFile="alias.conf")
-		self.appconfig.setLevel("user")
+		self.appconfig=manager.manager(relativepath="taskscheduler",name="taskscheduler.json")
+		#self.appconfig.setConfig(confDirs={'system':'/usr/share/taskscheduler','user':'{}/.config/taskscheduler'.format(os.environ['HOME'])},confFile="alias.conf")
+		#self.appconfig.setLevel("user")
 		self.description=i18n.get("DESCRIPTION")
 		self.menu_description=i18n.get("DESCRIPTION_MENU")
 		self.icon=('appointment-new')
@@ -144,10 +144,10 @@ class simple(QStackedWindowItem):
 	def _loadCommands(self):
 		self.refresh=True
 		cmds=[]
-		config=self.appconfig.getConfig("user")
-		cmds.extend(config.get("user",{}).get("alias",{}).keys())
+		config=self.appconfig.getConfig()
+		cmds.extend(config.get("alias",{}).keys())
 		cmds.sort()
-		hst=config.get("user",{}).get("cmd",[])
+		hst=config.get("cmd",[])
 		hst.sort()
 		cmds.extend(hst)
 		return(cmds)
@@ -221,12 +221,11 @@ class simple(QStackedWindowItem):
 
 	def _addCmdToHistory(self,cmd):
 		self._debug(self.level)
-		config=self.appconfig.getConfig("user")
-		userconf=config.get("user")
-		usercmd=userconf.get("cmd",[])
+		config=self.appconfig.getConfig()
+		usercmd=config.get("cmd",[])
 		if cmd not in usercmd:
 			usercmd.append(cmd)
-			self.appconfig.saveChanges("cmd",usercmd,level="user")
+			self.appconfig.writeConfig({"cmd":usercmd})
 	#def _addCmdToHistory
 
 	def _delTask(self):
@@ -320,8 +319,8 @@ class simple(QStackedWindowItem):
 	#def _readScreen
 
 	def writeConfig(self):
-		config=self.appconfig.getConfig("user")
-		processInfo=self._readScreen(config.get("user",{}).get("alias",{}))
+		config=self.appconfig.getConfig()
+		processInfo=self._readScreen(config.get("alias",{}))
 		cron=[]
 		res=None
 		if len(processInfo)>0:
@@ -332,7 +331,7 @@ class simple(QStackedWindowItem):
 				else:
 					self.showMsg("{} {}".format(cmdName,i18n.get("NOTCMD")))
 				return ({})
-			if not processInfo["cmd"] in config.get("user",{}).get("alias",{}).keys():
+			if not processInfo["cmd"] in config.get("alias",{}).keys():
 				self._addCmdToHistory(processInfo["cmd"])
 			cron.append(processInfo)
 			if self.cmbType.currentIndex()<=1:
