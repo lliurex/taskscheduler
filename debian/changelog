@@ -1,9 +1,3 @@
-taskscheduler (3.0.2-0lliurex25) jammy; urgency=medium
-
-  * Noble release
-
- -- Juanma1980 <juanma1980@gmail.com>  Thu, 19 Sep 2024 09:24:32 +0200
-
 taskscheduler (3.0.2) jammy; urgency=medium
 
   * removed python and n4d modules (now are independent)
