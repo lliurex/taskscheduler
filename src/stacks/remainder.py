@@ -5,7 +5,6 @@ import subprocess
 from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QHBoxLayout,QTableWidget,QHeaderView,QVBoxLayout,QLineEdit
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal
-import appconfig.appConfigStack 
 from QtExtraWidgets import QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler
 

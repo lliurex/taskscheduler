@@ -6,7 +6,7 @@ from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLa
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QDate
 from QtExtraWidgets import QTableTouchWidget, QStackedWindowItem
-from appconfig import appConfig
+from appconfig import manager
 import taskscheduler.taskscheduler as taskscheduler
 
 import gettext
@@ -25,9 +25,9 @@ class custom(QStackedWindowItem):
 	def __init_stack__(self):
 		self.dbg=True
 		self._debug("custom Load")
-		self.appconfig=appConfig.appConfig()
-		self.appconfig.setConfig(confDirs={'system':'/usr/share/taskscheduler','user':'{}/.config/taskscheduler'.format(os.environ['HOME'])},confFile="alias.conf")
-		self.appconfig.setLevel("user")
+		self.appconfig=manager.manager(relativepath="taskscheduler",name="taskscheduler.json")
+		#self.appconfig.setConfig(confDirs={'system':'/usr/share/taskscheduler','user':'{}/.config/taskscheduler'.format(os.environ['HOME'])},confFile="alias.conf")
+		#self.appconfig.setLevel("user")
 		self.scheduler=taskscheduler.TaskScheduler()
 		self.setProps(shortDesc=i18n.get("MENU"),
 			longDesc=i18n.get("DESC"),
@@ -85,8 +85,8 @@ class custom(QStackedWindowItem):
 	#def _resetScreen
 
 	def _getAliases(self):
-		config=self.appconfig.getConfig("user")
-		commands=config.get("user",{}).get("alias",{})
+		config=self.appconfig.getConfig()
+		commands=config.get("alias",{})
 		return(commands)
 	#def _getAliases
 
@@ -114,8 +114,8 @@ class custom(QStackedWindowItem):
 
 	def _getHistory(self):
 		self.refresh=True
-		config=self.appconfig.getConfig("user")
-		hst=config.get("user",{}).get("cmd",[])
+		config=self.appconfig.getConfig()
+		hst=config.get("cmd",[])
 		hst.sort()
 		return(hst)
 	#def _getHistory
@@ -130,7 +130,7 @@ class custom(QStackedWindowItem):
 			cmd=self.table.item(row,1).text()
 			if len(cmd)<1:
 				continue
-			useralias.update({alias:cmd})
-		self.appconfig.saveChanges("alias",useralias,"user")
+			useralias.update({"alias":{alias:cmd}})
+		self.appconfig.writeConfig(useralias)
 		self.updateScreen()
 	#def writeConfig
