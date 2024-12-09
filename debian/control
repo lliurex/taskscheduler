@@ -8,7 +8,7 @@ Standards-Version: 3.9.5
 
 Package: taskscheduler
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, python3-taskscheduler (>= 3.3.0), python3-appconfig (>=0.51.1-0llx23)
+Depends: ${misc:Depends}, ${python3:Depends}, python3-taskscheduler (>= 3.3-0lliurex23), python3-appconfig (>=0.51.1-0llx23)
 Description: Main taskschedular program
 
 Package: taskscheduler-data
