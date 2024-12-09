@@ -8,6 +8,7 @@ from PySide2.QtCore import Qt,QSize,Signal
 from  appconfig import manager
 from QtExtraWidgets import QTableTouchWidget, QCheckableComboBox, QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler
+import cmdSelector
 
 import gettext
 _ = gettext.gettext
@@ -94,14 +95,9 @@ class detail(QStackedWindowItem):
 		#wdg.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Expanding))
 		lay=QGridLayout()
 		wdg.setLayout(lay)
-		lay2=QGridLayout()
-		wdg2=QWidget()
-		wdg2.setLayout(lay2)
-		lay2.addWidget(QLabel(i18n.get("CMD")),0,1,1,1,Qt.AlignLeft)
-		self.cmbCmd=QComboBox()
-		self.cmbCmd.setEditable(True)
-		lay2.addWidget(self.cmbCmd,0,0,1,1)
-		lay.addWidget(wdg2,0,0,1,2)
+		#lay2.addWidget(QLabel(i18n.get("CMD")),0,1,1,1,Qt.AlignLeft)
+		self.cmbCmd=cmdSelector.QCmdSelector()
+		lay.addWidget(self.cmbCmd,0,0,1,2)
 		self.hours=self._drawDateTimeWidget("HOUR_SCHED","HOURLY",0,24)
 		self.hours.adjustSize()
 		lay.addWidget(self.hours,1,0,1,1)
@@ -147,6 +143,7 @@ class detail(QStackedWindowItem):
 				if len(cmd)>0:
 					self.cmbCmd.addItem(cmd)
 			self.cmbCmd.setCurrentIndex(-1)
+			self.cmbCmd.editMode()
 		data=self.task.get("raw","")
 		ldata=data.split(" ")
 		if len(ldata)>1:
@@ -318,6 +315,7 @@ class detail(QStackedWindowItem):
 		self.btnDelete.setVisible(True)
 		self.cmbCmd.setEnabled(False)
 		self.cmbType.setEnabled(False)
+		self.cmbCmd.readMode()
 	#def setParms
 
 	def _addCmdToHistory(self,cmd):
@@ -425,7 +423,7 @@ class detail(QStackedWindowItem):
 				values=["*"]
 			processInfo[key]=self._generateCronRegex(values)
 
-		processInfo["cmd"]=self.cmbCmd.currentText()
+		processInfo["cmd"]=self.cmbCmd.currentText().split(" ")[0]
 		if processInfo["cmd"] in alias.keys():
 			processInfo["cmd"]=alias[processInfo["cmd"]]
 		cmdName=processInfo["cmd"].split(" ")[0]
