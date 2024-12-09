@@ -59,20 +59,35 @@ class custom(QStackedWindowItem):
 		self.table.horizontalHeader().hide()
 		self.lay.addWidget(self.table,1,0,1,3)
 		self.table.horizontalHeader().setSectionResizeMode(1,QHeaderView.Stretch)
+		self.table.itemSelectionChanged.connect(self._selectionChanged)
 		self.setLayout(self.lay)
-		self.btnAccept.clicked.connect(self.writeConfig)
 	#def _load_screen
+
+	def _selectionChanged(self,*args):
+		line=self.table.currentRow()
+		alias=self.table.item(self.table.currentRow(),0)
+		if alias==None:
+			alias=QTableWidgetItem("")
+		cmd=self.table.item(self.table.currentRow(),1)
+		if cmd==None:
+			cmd=QTableWidgetItem("")
+		self.inpAlias.setText(alias.text())
+		self.cmbCmd.setCurrentText(cmd.text())
+
+		print(line)
 
 	def updateScreen(self):
 		aliases=self._getAliases()
 		commands=self._getHistory()
 		self._resetScreen()
-		for alias,cmd in aliases.items():
-			self.table.setRowCount(self.table.rowCount()+1)
-			self.table.setItem(self.table.rowCount()-1,0,QTableWidgetItem(alias))
-			self.table.setItem(self.table.rowCount()-1,1,QTableWidgetItem(cmd))
 		for cmd in commands:
 			self.cmbCmd.addItem(cmd)
+			self.table.setRowCount(self.table.rowCount()+1)
+			self.table.setItem(self.table.rowCount()-1,1,QTableWidgetItem(cmd))
+			for alias,aliascmd in aliases.items():
+				if cmd==aliascmd:
+					self.table.setItem(self.table.rowCount()-1,0,QTableWidgetItem(alias))
+					continue
 	#def _update_screen
 
 	def _resetScreen(self):
@@ -122,15 +137,21 @@ class custom(QStackedWindowItem):
 
 	def writeConfig(self):
 		self._addAlias()
-		useralias={}
+		useralias={"alias":{}}
 		for row in range(0,self.table.rowCount()):
-			alias=self.table.item(row,0).text()
+			print(row)
+			alias=self.table.item(row,0)
+			if alias==None:
+				continue
+			alias=alias.text()
+			print(alias)
 			if alias in useralias or len(alias)<1:
 				continue
 			cmd=self.table.item(row,1).text()
+			print(cmd)
 			if len(cmd)<1:
 				continue
-			useralias.update({"alias":{alias:cmd}})
+			useralias["alias"].update({alias:cmd})
 		self.appconfig.writeConfig(useralias)
 		self.updateScreen()
 	#def writeConfig
