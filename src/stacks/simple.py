@@ -1,37 +1,39 @@
 #!/usr/bin/python3
 import os,shutil
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QLineEdit,QComboBox,QCheckBox,QCalendarWidget,QDialog
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QLineEdit,QComboBox,QCheckBox,QCalendarWidget,QDialog,QWidget,QFileDialog,QInputDialog
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QDate
 from appconfig import manager
 from QtExtraWidgets import QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler
+import cmdSelector
 
 import gettext
 _ = gettext.gettext
 
-i18n={"MENU":_("Schedule task"),
-	"DESC":_("Add schedule for task"),
-	"TOOLTIP":_("Add scheduled tasks"),
-	"CMD":_("Task"),
-	"USERCRON":_("User's cron"),
-	"SYSCRON":_("System cron"),
-	"ATJOB":_("At job"),
+i18n={"ATJOB":_("At job"),
 	"ATNOTMOD":_("This at job can't be modified"),
-	"MALFORMED":_("Jobs can run only on fixed dates"),
-	"REPEAT":_("Repeat"),
-	"NOREPEAT":_("No repeat"),
-	"DELETE":_("Delete"),
 	"CANCEL":_("Cancel"),
+	"CMD":_("Task"),
 	"CONFIRM":_("Sure?"),
-	"YEARLY":_("Yearly"),
-	"MONTHLY":_("Monthly"),
-	"DAILY":_("Daily"),
-	"HOURLY":_("Hourly"),
-	"MONTH_SCHED":_("Month"),
 	"DAY_SCHED":_("Day"),
+	"DAILY":_("Daily"),
+	"DELETE":_("Delete"),
+	"DESC":_("Add schedule for task"),
 	"HOUR_SCHED":_("Hour"),
-	"MINUTE_SCHED":_("Minute")
+	"HOURLY":_("Hourly"),
+	"MALFORMED":_("Jobs can run only on fixed dates"),
+	"MENU":_("Schedule task"),
+	"MINUTE_SCHED":_("Minute"),
+	"MONTH_SCHED":_("Month"),
+	"MONTHLY":_("Monthly"),
+	"NOREPEAT":_("No repeat"),
+	"NOTCMD":_("Error: Command not found"),
+	"REPEAT":_("Repeat"),
+	"SYSCRON":_("System cron"),
+	"TOOLTIP":_("Add scheduled tasks"),
+	"USERCRON":_("User's cron"),
+	"YEARLY":_("Yearly"),
 	}
 
 MONTHS={1:_("Jan"),
@@ -47,6 +49,7 @@ MONTHS={1:_("Jan"),
 	11:_("Nov"),
 	12:_("Dec")
 	}
+
 
 class simple(QStackedWindowItem):
 	def __init_stack__(self):
@@ -75,10 +78,12 @@ class simple(QStackedWindowItem):
 	
 	def __initScreen__(self):
 		self.lay=QGridLayout()
-		self.lay.addWidget(QLabel(i18n.get("CMD")),0,0,1,1,Qt.AlignRight|Qt.AlignBottom)
-		self.cmbCmd=QComboBox()
-		self.cmbCmd.setEditable(True)
-		self.lay.addWidget(self.cmbCmd,0,1,1,3,Qt.AlignBottom)
+		self.cmbCmd=cmdSelector.QCmdSelector()
+		#self.lay.addWidget(QLabel(i18n.get("CMD")),0,0,1,1,Qt.AlignRight|Qt.AlignBottom)
+		#self.cmbCmd=QComboBox()
+		#self.cmbCmd.setEditable(True)
+		#self.lay.addWidget(self.cmbCmd,0,1,1,3,Qt.AlignBottom)
+		self.lay.addWidget(self.cmbCmd,0,0,1,4,Qt.AlignBottom)
 		self.lay.addWidget(QLabel(i18n.get("HOUR_SCHED")),1,0,1,1,Qt.AlignBottom)
 		self.hours=QComboBox()
 		self.lay.addWidget(self.hours,2,0,1,1)#,Qt.AlignTop)
@@ -213,10 +218,12 @@ class simple(QStackedWindowItem):
 		self.cmbType.setVisible(True)
 		self.btnDelete.setVisible(False)
 		self.cmbRepeat.setEnabled(True)
+		self.cmbCmd.editMode()
 	#def _resetScreen
 
 	def setParms(self,*args):
 		self.currentTaskData=args[0]
+		self.cmbCmd.readMode()
 	#def setParms
 
 	def _addCmdToHistory(self,cmd):
@@ -288,8 +295,9 @@ class simple(QStackedWindowItem):
 	def _readScreen(self,alias={}):
 		processInfo={}
 		processInfo["cmd"]=self.cmbCmd.currentText()
-		if processInfo["cmd"] in alias.keys():
-			processInfo["cmd"]=alias[processInfo["cmd"]]
+		cmd=processInfo["cmd"].split()
+		if cmd[0] in alias.keys():
+			processInfo["cmd"]="{} {}".format(alias[cmd[0]]," ".join(cmd[1:]))
 		cmdName=processInfo["cmd"].split(" ")[0]
 		if os.path.isfile(cmdName)==False and cmdName[0].isalnum():
 			fullcmd=shutil.which(os.path.basename(cmdName))
@@ -327,9 +335,9 @@ class simple(QStackedWindowItem):
 			cmdName=processInfo["cmd"].split(" ")[0]
 			if os.path.isfile(cmdName)==False and  cmdName[0].isalnum():
 				if len(self.task.get("atid",""))>0:
-					self.showMsg("{}".format(i18n.get("ATNOTMOD")))
+					self.showMsg("{}".format(i18n.get("ATNOTMOD")),timeout=5)
 				else:
-					self.showMsg("{} {}".format(cmdName,i18n.get("NOTCMD")))
+					self.showMsg("{} {}".format(cmdName,i18n.get("NOTCMD")),timeout=5)
 				return ({})
 			if not processInfo["cmd"] in config.get("alias",{}).keys():
 				self._addCmdToHistory(processInfo["cmd"])
