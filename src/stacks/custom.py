@@ -54,6 +54,8 @@ class custom(QStackedWindowItem):
 		self.btnAdd.clicked.connect(self._addAlias)
 		self.lay.addWidget(self.btnAdd,0,2,1,1,Qt.Alignment(1))
 		self.table=QTableWidget(1,2)
+		self.table.setSelectionBehavior(QTableWidget.SelectRows)
+		self.table.itemSelectionChanged.connect(self._loadRowData)
 #		self.table.setShowGrid(False)
 		self.table.verticalHeader().hide()
 		self.table.horizontalHeader().hide()
@@ -74,7 +76,9 @@ class custom(QStackedWindowItem):
 		self.inpAlias.setText(alias.text())
 		self.cmbCmd.setCurrentText(cmd.text())
 
-		print(line)
+	def _loadRowData(self,*args):
+		self.inpAlias.setText(self.table.item(self.table.currentRow(),0).text())
+		self.cmbCmd.setCurrentText(self.table.item(self.table.currentRow(),1).text())
 
 	def updateScreen(self):
 		aliases=self._getAliases()
