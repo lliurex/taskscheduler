@@ -82,16 +82,21 @@ class custom(QStackedWindowItem):
 
 	def updateScreen(self):
 		aliases=self._getAliases()
+		aliasesFake=aliases.copy()
 		commands=self._getHistory()
 		self._resetScreen()
 		for cmd in commands:
 			self.cmbCmd.addItem(cmd)
 			self.table.setRowCount(self.table.rowCount()+1)
 			self.table.setItem(self.table.rowCount()-1,1,QTableWidgetItem(cmd))
-			for alias,aliascmd in aliases.items():
-				if cmd==aliascmd:
-					self.table.setItem(self.table.rowCount()-1,0,QTableWidgetItem(alias))
-					continue
+			aliasesFake.update({cmd:self.table.rowCount()})
+		for alias,aliascmd in aliases.items():
+			row=aliasesFake.get(aliascmd,self.table.rowCount())
+			if row>=self.table.rowCount()-1 and len(aliascmd)>0:
+				print(aliascmd)
+				self.table.setRowCount(self.table.rowCount()+1)
+			self.table.setItem(row,0,QTableWidgetItem(alias))
+			self.table.setItem(row,1,QTableWidgetItem(aliascmd))
 	#def _update_screen
 
 	def _resetScreen(self):
