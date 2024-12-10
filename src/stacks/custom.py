@@ -54,6 +54,8 @@ class custom(QStackedWindowItem):
 		self.btnAdd.clicked.connect(self._addAlias)
 		self.lay.addWidget(self.btnAdd,0,2,1,1,Qt.Alignment(1))
 		self.table=QTableWidget(1,2)
+		self.table.setSelectionBehavior(QTableWidget.SelectRows)
+		self.table.itemSelectionChanged.connect(self._loadRowData)
 #		self.table.setShowGrid(False)
 		self.table.verticalHeader().hide()
 		self.table.horizontalHeader().hide()
@@ -74,20 +76,27 @@ class custom(QStackedWindowItem):
 		self.inpAlias.setText(alias.text())
 		self.cmbCmd.setCurrentText(cmd.text())
 
-		print(line)
+	def _loadRowData(self,*args):
+		self.inpAlias.setText(self.table.item(self.table.currentRow(),0).text())
+		self.cmbCmd.setCurrentText(self.table.item(self.table.currentRow(),1).text())
 
 	def updateScreen(self):
 		aliases=self._getAliases()
+		aliasesFake=aliases.copy()
 		commands=self._getHistory()
 		self._resetScreen()
 		for cmd in commands:
 			self.cmbCmd.addItem(cmd)
 			self.table.setRowCount(self.table.rowCount()+1)
 			self.table.setItem(self.table.rowCount()-1,1,QTableWidgetItem(cmd))
-			for alias,aliascmd in aliases.items():
-				if cmd==aliascmd:
-					self.table.setItem(self.table.rowCount()-1,0,QTableWidgetItem(alias))
-					continue
+			aliasesFake.update({cmd:self.table.rowCount()})
+		for alias,aliascmd in aliases.items():
+			row=aliasesFake.get(aliascmd,self.table.rowCount())
+			if row>=self.table.rowCount()-1 and len(aliascmd)>0:
+				print(aliascmd)
+				self.table.setRowCount(self.table.rowCount()+1)
+			self.table.setItem(row,0,QTableWidgetItem(alias))
+			self.table.setItem(row,1,QTableWidgetItem(aliascmd))
 	#def _update_screen
 
 	def _resetScreen(self):
