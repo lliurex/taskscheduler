@@ -203,6 +203,8 @@ class simple(QStackedWindowItem):
 		self.hours.setCurrentText(h)
 		qdate=QDate(self.calendar.yearShown(),int(mon),int(dom))
 		self.calendar.setSelectedDate(qdate)
+		self.cmbCmd.setEnabled(False)
+		self.cmbCmd.readMode()
 	#def _loadDataFromTask
 
 	def _clearScreen(self):
@@ -218,12 +220,12 @@ class simple(QStackedWindowItem):
 		self.cmbType.setVisible(True)
 		self.btnDelete.setVisible(False)
 		self.cmbRepeat.setEnabled(True)
+		self.cmbCmd.setEnabled(True)
 		self.cmbCmd.editMode()
-	#def _resetScreen
+	#def _clearScreen
 
 	def setParms(self,*args):
 		self.currentTaskData=args[0]
-		self.cmbCmd.readMode()
 	#def setParms
 
 	def _addCmdToHistory(self,cmd):
@@ -348,6 +350,8 @@ class simple(QStackedWindowItem):
 					cronF=os.path.join("/","etc","cron.d","taskscheduler")
 				res=self.scheduler.cronFromJson(cron,self.task.get("raw",""),cronF)
 			else:
+				if "atid" in self.task:
+					self.scheduler.removeFromAt(self.task["atid"])
 				if not (self.scheduler.addAtJob(cron[0].get("m"),cron[0].get("h"),cron[0].get("dom"),cron[0].get("mon"),cron[0].get("cmd"))):
 					self.showMsg("{}".format(cmdName,i18n.get("MALFORMED","ERROR")))
 					return()
