@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-import sys
 import os
 import subprocess
+import time,psutil
 from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QTableWidget,QHeaderView,QAbstractScrollArea
 from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal
+from PySide2.QtCore import Qt,QSize,Signal,QThread
 from QtExtraWidgets import QTableTouchWidget, QStackedWindowItem
 from appconfig import manager
 import taskscheduler.taskscheduler as taskscheduler
@@ -12,13 +12,16 @@ import taskscheduler.taskscheduler as taskscheduler
 import gettext
 _ = gettext.gettext
 
-i18n={"MENU":_("Dashboard"),
+i18n={"ATID":_("at job"),
+	"BLOCKED":_("Blocked by"),
 	"DESC":_("Take a look to next scheduled tasks"),
-	"TOOLTIP":_("Show scheduled tasks ordered by next execution time"),
-	"REST":_("Next in"),
-	"USERCRON":_("User cron"),
+	"MANAGED":_("Managed by"),
+	"MENU":_("Dashboard"),
 	"NEWTASK":_("Schedule a new task"),
-	"ATID":_("at job")
+	"OPEN":_("Open in"),
+	"REST":_("Next in"),
+	"TOOLTIP":_("Show scheduled tasks ordered by next execution time"),
+	"USERCRON":_("User cron"),
 	}
 
 MONTHS={1:_("January"),
@@ -34,6 +37,28 @@ MONTHS={1:_("January"),
 	11:_("November"),
 	12:_("December")
 	}
+
+class QWatchdog(QThread):
+	def __init__(self,parent=None,*args,**kwargs):
+		QThread.__init__(self,parent)
+		self.timer=1
+		self.timeout=120
+	#def __init__
+
+	def run(self):
+		cmd=subprocess.run(["bell-scheduler"])
+		bellRunning=True
+		while bellRunning==True and self.timeout>0:
+			self.timeout-=1
+			bellRunning=False
+			for proc in psutil.process_iter():
+				if "bell-scheduler" in proc.name().lower():
+					bellRunning=True
+					break
+			time.sleep(self.timer)
+	#def run
+#class QWatchdog
+		
 
 class taskButton(QPushButton):
 	def __init__(self,task,alias=None,parent=None):
@@ -97,7 +122,14 @@ class taskButton(QPushButton):
 		blocked=["bellscheduler","lliurex"]
 		for block in blocked:
 			if block in self.lblFile.text().lower():
-				self.setEnabled(False)
+				if block=="lliurex":
+					self.setEnabled(False)
+				self.lblFile.setText("{} {}".format(i18n.get("BLOCKED"),block.capitalize()))
+				self.lblFile.setToolTip("{} {}".format(i18n.get("OPEN"),block.capitalize()))
+				self.label.setText("<strong>{} {}</strong>".format(i18n.get("MANAGED"),block.capitalize()))
+				self.label.setToolTip("{} {}".format(i18n.get("OPEN"),block.capitalize()))
+				icn=QtGui.QIcon.fromTheme( "bell-scheduler")
+				self.setIcon(icn)
 				break
 		if task.get("raw","").startswith("@"):
 			self.setEnabled(False)
@@ -191,7 +223,13 @@ class dashboard(QStackedWindowItem):
 		self.enabled=True
 		self.level='system'
 		self.hideControlButtons()
+		self.watchdog=QWatchdog()
+		self.watchdog.finished.connect(self._watchdogEnd)
 	#def __init__
+
+	def _watchdogEnd(self,*args):
+		self.updateScreen()
+	#def _watchdogEnd
 	
 	def __initScreen__(self):
 		self.lay=QGridLayout()
@@ -266,6 +304,9 @@ class dashboard(QStackedWindowItem):
 			if len(task.get("atid",""))>0:
 			#self.stack.gotoStack(idx=3,parms=wdg.getTask())
 				self.parent.setCurrentStack(2,parms=task)
+			elif("bellscheduler" in task.get("file","").lower()):
+				wdg.setEnabled(False)
+				self.watchdog.start()
 			else:
 				self.parent.setCurrentStack(3,parms=task)
 	#def _gotoTask
