@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-09 13:17+0100\n"
+"POT-Creation-Date: 2024-12-11 06:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,23 +58,23 @@ msgid "no found"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:15
-msgid "Dashboard"
+msgid "at job"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:16
-msgid "Take a look to next scheduled tasks"
+msgid "Blocked by"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:17
-msgid "Show scheduled tasks ordered by next execution time"
+msgid "Take a look to next scheduled tasks"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:18
-msgid "Next in"
+msgid "Managed by"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:19
-msgid "User cron"
+msgid "Dashboard"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:20
@@ -82,55 +82,67 @@ msgid "Schedule a new task"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:21
-msgid "at job"
+msgid "Open in"
+msgstr ""
+
+#: ../src/stacks/dashboard.py:22
+msgid "Next in"
+msgstr ""
+
+#: ../src/stacks/dashboard.py:23
+msgid "Show scheduled tasks ordered by next execution time"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:24
-msgid "January"
-msgstr ""
-
-#: ../src/stacks/dashboard.py:25
-msgid "February"
-msgstr ""
-
-#: ../src/stacks/dashboard.py:26
-msgid "March"
+msgid "User cron"
 msgstr ""
 
 #: ../src/stacks/dashboard.py:27
+msgid "January"
+msgstr ""
+
+#: ../src/stacks/dashboard.py:28
+msgid "February"
+msgstr ""
+
+#: ../src/stacks/dashboard.py:29
+msgid "March"
+msgstr ""
+
+#: ../src/stacks/dashboard.py:30
 msgid "April"
 msgstr ""
 
-#: ../src/stacks/dashboard.py:28 ../src/stacks/detail.py:45
+#: ../src/stacks/dashboard.py:31 ../src/stacks/detail.py:45
 #: ../src/stacks/simple.py:43
 msgid "May"
 msgstr ""
 
-#: ../src/stacks/dashboard.py:29
+#: ../src/stacks/dashboard.py:32
 msgid "June"
 msgstr ""
 
-#: ../src/stacks/dashboard.py:30
+#: ../src/stacks/dashboard.py:33
 msgid "July"
 msgstr ""
 
-#: ../src/stacks/dashboard.py:31
+#: ../src/stacks/dashboard.py:34
 msgid "August"
 msgstr ""
 
-#: ../src/stacks/dashboard.py:32
+#: ../src/stacks/dashboard.py:35
 msgid "September"
 msgstr ""
 
-#: ../src/stacks/dashboard.py:33
+#: ../src/stacks/dashboard.py:36
 msgid "October"
 msgstr ""
 
-#: ../src/stacks/dashboard.py:34
+#: ../src/stacks/dashboard.py:37
 msgid "November"
 msgstr ""
 
-#: ../src/stacks/dashboard.py:35
+#: ../src/stacks/dashboard.py:38
 msgid "December"
 msgstr ""
 
