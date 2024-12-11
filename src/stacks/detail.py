@@ -324,7 +324,7 @@ class detail(QStackedWindowItem):
 		usercmd=userconf.get("cmd",[])
 		if cmd not in usercmd and len(cmd)>0:
 			usercmd.append(cmd)
-			self.appconfig.saveChanges("cmd",usercmd,level="user")
+			self.appconfig.writeConfig({"cmd":usercmd})
 	#def _addCmdToHistory
 
 	def _generateCronRegex(self,values):
