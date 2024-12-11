@@ -2,6 +2,7 @@
 import os
 import subprocess
 import time,psutil
+import datetime
 from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QTableWidget,QHeaderView,QAbstractScrollArea
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
@@ -41,22 +42,40 @@ MONTHS={1:_("January"),
 class QWatchdog(QThread):
 	def __init__(self,parent=None,*args,**kwargs):
 		QThread.__init__(self,parent)
-		self.timer=1
 		self.timeout=120
 	#def __init__
 
+	def setMode(self,mode):
+		self.mode=mode
+	#def setMode
+
 	def run(self):
-		cmd=subprocess.run(["bell-scheduler"])
+		if self.mode=="monitor":
+			self._monitorProcess()
+		elif self.mode=="timer":
+			self._launchTimer()
+	#def run
+
+	def _monitorProcess(self):
+		sleepSeconds=1
+		process="bell-scheduler"
+		cmd=subprocess.run([process])
 		bellRunning=True
 		while bellRunning==True and self.timeout>0:
 			self.timeout-=1
 			bellRunning=False
 			for proc in psutil.process_iter():
-				if "bell-scheduler" in proc.name().lower():
+				if process in proc.name().lower():
 					bellRunning=True
 					break
-			time.sleep(self.timer)
-	#def run
+			time.sleep(sleepSeconds)
+	#def _monitorProcess
+
+	def _launchTimer(self):
+		seconds=datetime.datetime.now().second
+		sleepSeconds=60-seconds+2
+		time.sleep(sleepSeconds)
+	#def _launchTimer
 #class QWatchdog
 		
 
@@ -225,7 +244,15 @@ class dashboard(QStackedWindowItem):
 		self.hideControlButtons()
 		self.watchdog=QWatchdog()
 		self.watchdog.finished.connect(self._watchdogEnd)
+		self.refresher=QWatchdog()
+		self.refresher.setMode("timer")
+		self.refresher.finished.connect(self._refreshTrigger)
+		self.refresher.start()
 	#def __init__
+
+	def _refreshTrigger(self,*args):
+		self.updateScreen()
+		self.refresher.start()
 
 	def _watchdogEnd(self,*args):
 		self.updateScreen()
@@ -306,6 +333,7 @@ class dashboard(QStackedWindowItem):
 				self.parent.setCurrentStack(2,parms=task)
 			elif("bellscheduler" in task.get("file","").lower()):
 				wdg.setEnabled(False)
+				self.watchdog.setMode("monitor")
 				self.watchdog.start()
 			else:
 				self.parent.setCurrentStack(3,parms=task)
