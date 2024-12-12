@@ -9,6 +9,7 @@ from PySide2.QtCore import Qt,QSize,Signal,QThread
 from QtExtraWidgets import QTableTouchWidget, QStackedWindowItem
 from appconfig import manager
 import taskscheduler.taskscheduler as taskscheduler
+import defaultAliases
 
 import gettext
 _ = gettext.gettext
@@ -89,10 +90,10 @@ class taskButton(QPushButton):
 		if len(cmd)>50:
 			cmd="{}...".format(cmd[0:50])
 		if alias:
-			for key,item in alias.items():
+			for aliasname,aliascmd in alias.items():
 				#print("{} == {}".format(item,task.get("cmd")))
-				if task.get('cmd').strip()==item.strip():
-					cmd=key
+				if task.get('cmd').strip()==aliascmd.strip():
+					cmd=aliasname
 					break
 		text="\u200b".join(cmd)
 		self.label=QLabel()
@@ -284,7 +285,7 @@ class dashboard(QStackedWindowItem):
 				epoch+=1
 			cron[epoch]=data
 
-		config=self.appconfig.getConfig()
+		config=self._getConfig()
 		alias=config.get("alias")
 		self.table.setRowCount(0)
 		self.table.setRowCount(1)
@@ -339,3 +340,9 @@ class dashboard(QStackedWindowItem):
 				self.parent.setCurrentStack(3,parms=task)
 	#def _gotoTask
 
+	def _getConfig(self):
+		config=self.appconfig.getConfig()
+		if isinstance(config.get("alias",""),dict):
+			config["alias"].update(defaultAliases.getDefaults())
+		return(config)
+	#def _getConfig

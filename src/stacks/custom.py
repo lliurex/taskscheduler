@@ -85,18 +85,23 @@ class custom(QStackedWindowItem):
 		aliasesFake=aliases.copy()
 		commands=self._getHistory()
 		self._resetScreen()
-		for cmd in commands:
-			self.cmbCmd.addItem(cmd)
+		revAliases={}
+		for alias,aliascmd in aliases.items():
+			revAliases.update({aliascmd:alias})
+		print(commands)
+		setCommands=list(set(commands)-set(revAliases.keys()))
+		print(setCommands)
+		setCommands.sort()
+		setAliases=list(revAliases.keys())
+		setAliases.sort()
+		setAliases.extend(setCommands)
+		set(setAliases)
+		for cmd in setAliases:
+			self.cmbCmd.addItem(revAliases.get(cmd,cmd))
 			self.table.setRowCount(self.table.rowCount()+1)
 			self.table.setItem(self.table.rowCount()-1,1,QTableWidgetItem(cmd))
-			aliasesFake.update({cmd:self.table.rowCount()})
-		for alias,aliascmd in aliases.items():
-			row=aliasesFake.get(aliascmd,self.table.rowCount())
-			if row>=self.table.rowCount()-1 and len(aliascmd)>0:
-				print(aliascmd)
-				self.table.setRowCount(self.table.rowCount()+1)
-			self.table.setItem(row,0,QTableWidgetItem(alias))
-			self.table.setItem(row,1,QTableWidgetItem(aliascmd))
+			itmAlias=QTableWidgetItem(revAliases.get(cmd,""))
+			self.table.setItem(self.table.rowCount()-1,0,itmAlias)
 	#def _update_screen
 
 	def _resetScreen(self):
@@ -141,6 +146,8 @@ class custom(QStackedWindowItem):
 		config=self.appconfig.getConfig()
 		hst=config.get("cmd",[])
 		hst.sort()
+		hst=[ i.strip() for i in hst ]
+		list(set(hst))
 		return(hst)
 	#def _getHistory
 
@@ -148,16 +155,13 @@ class custom(QStackedWindowItem):
 		self._addAlias()
 		useralias={"alias":{}}
 		for row in range(0,self.table.rowCount()):
-			print(row)
 			alias=self.table.item(row,0)
 			if alias==None:
 				continue
 			alias=alias.text()
-			print(alias)
 			if alias in useralias or len(alias)<1:
 				continue
 			cmd=self.table.item(row,1).text()
-			print(cmd)
 			if len(cmd)<1:
 				continue
 			useralias["alias"].update({alias:cmd})
