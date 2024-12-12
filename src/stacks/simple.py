@@ -2,11 +2,11 @@
 import os,shutil
 from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QLineEdit,QComboBox,QCheckBox,QCalendarWidget,QDialog,QWidget,QFileDialog,QInputDialog
 from PySide2 import QtGui
-from PySide2.QtCore import Qt,QDate
+from PySide2.QtCore import Qt,QDate,QSize
 from appconfig import manager
 from QtExtraWidgets import QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler
-import cmdSelector
+import cmdSelector,defaultAliases
 
 import gettext
 _ = gettext.gettext
@@ -18,6 +18,7 @@ i18n={"ATJOB":_("At job"),
 	"CONFIRM":_("Sure?"),
 	"DAY_SCHED":_("Day"),
 	"DAILY":_("Daily"),
+	"DELETE_MSG":_("Will delete"),
 	"DELETE":_("Delete"),
 	"DESC":_("Add schedule for task"),
 	"HOUR_SCHED":_("Hour"),
@@ -155,6 +156,9 @@ class simple(QStackedWindowItem):
 		hst=config.get("cmd",[])
 		hst.sort()
 		cmds.extend(hst)
+		cmds.reverse()
+		cmds.extend(defaultAliases.getDefaults().keys())
+		cmds.reverse()
 		return(cmds)
 	#def _loadCommands
 
@@ -230,6 +234,7 @@ class simple(QStackedWindowItem):
 
 	def _addCmdToHistory(self,cmd):
 		self._debug(self.level)
+		cmd=cmd.strip()
 		config=self.appconfig.getConfig()
 		usercmd=config.get("cmd",[])
 		if cmd not in usercmd:
@@ -241,15 +246,19 @@ class simple(QStackedWindowItem):
 		dlg=QDialog()
 		lay=QGridLayout()
 		dlg.setLayout(lay)
-		lblQ=QLabel("{0} <strong>{1}</strong><br>{2}".format(i18n.get("DELETE"),self.task.get("cmd"),i18n.get("CONFIRM")))
-		lay.addWidget(lblQ,0,0,1,2)
+		lblIcn=QLabel()
+		icn=QtGui.QIcon.fromTheme("dialog-warning")
+		lblIcn.setPixmap(icn.pixmap(QSize(64,64)))
+		lay.addWidget(lblIcn,0,0,1,1)
+		lblQ=QLabel("{0} <p><strong>{1}</strong></p><p>{2}</p>".format(i18n.get("DELETE_MSG"),self.task.get("cmd"),i18n.get("CONFIRM")))
+		lay.addWidget(lblQ,0,1,1,2)
 		btn_ok=QPushButton(i18n.get("DELETE"))
 		btn_ok.clicked.connect(dlg.accept)
 		btn_cancel=QPushButton(i18n.get("CANCEL"))
 		btn_cancel.clicked.connect(dlg.reject)
 
 		lay.addWidget(btn_ok,1,0,1,1,Qt.AlignRight)
-		lay.addWidget(btn_cancel,1,1,1,1,Qt.AlignLeft)
+		lay.addWidget(btn_cancel,1,2,1,1,Qt.AlignLeft)
 		if dlg.exec_():
 			raw=self.task.get("raw","")
 			if len(raw)>0:
@@ -297,9 +306,15 @@ class simple(QStackedWindowItem):
 	def _readScreen(self,alias={}):
 		processInfo={}
 		processInfo["cmd"]=self.cmbCmd.currentText()
-		cmd=processInfo["cmd"].split()
-		if cmd[0] in alias.keys():
-			processInfo["cmd"]="{} {}".format(alias[cmd[0]]," ".join(cmd[1:]))
+		#Search whole cmd in aliases
+		if processInfo["cmd"] in alias.keys():
+			cmd=alias.get(processInfo["cmd"],"").split()
+			if len(cmd)>0:
+				processInfo["cmd"]="{} {}".format(cmd[0]," ".join(cmd[1:]))
+		else:
+			cmd=processInfo["cmd"].split()
+			if cmd[0] in alias.keys():
+				processInfo["cmd"]="{} {}".format(alias[cmd[0]]," ".join(cmd[1:]))
 		cmdName=processInfo["cmd"].split(" ")[0]
 		if os.path.isfile(cmdName)==False and cmdName[0].isalnum():
 			fullcmd=shutil.which(os.path.basename(cmdName))
@@ -329,7 +344,7 @@ class simple(QStackedWindowItem):
 	#def _readScreen
 
 	def writeConfig(self):
-		config=self.appconfig.getConfig()
+		config=self._getConfig()
 		processInfo=self._readScreen(config.get("alias",{}))
 		cron=[]
 		res=None
@@ -358,4 +373,11 @@ class simple(QStackedWindowItem):
 		self.updateScreen()
 		self.parent.setCurrentStack(1)
 	#def writeConfig
+
+	def _getConfig(self):
+		config=self.appconfig.getConfig()
+		if isinstance(config.get("alias",""),dict):
+			config["alias"].update(defaultAliases.getDefaults())
+		return(config)
+	#def _getConfig
 

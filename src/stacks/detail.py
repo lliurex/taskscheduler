@@ -8,34 +8,35 @@ from PySide2.QtCore import Qt,QSize,Signal
 from  appconfig import manager
 from QtExtraWidgets import QTableTouchWidget, QCheckableComboBox, QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler
-import cmdSelector
+import cmdSelector,defaultAliases
 
 import gettext
 _ = gettext.gettext
 
-i18n={"MENU":_("Advance schedule"),
-	"DESC":_("Advanced scheduling for expert users"),
-	"TOOLTIP":_("Add scheduled tasks"),
-	"CMD":_("Task"),
-	"USERCRON":_("User's cron"),
-	"SYSCRON":_("System cron"),
-	"ATJOB":_("At job"),
+i18n={"ATJOB":_("At job"),
 	"ATNOTMOD":_("This at job can't be modified"),
-	"MONTHLY":_("Monthly"),
-	"DAILY":_("Daily"),
-	"HOURLY":_("Hourly"),
-	"MONTH_SCHED":_("Months"),
+	"CANCEL":_("Cancel"),
+	"CMD":_("Task"),
+	"CONFIRM":_("Sure?"),
 	"DAY_SCHED":_("Days"),
-	"HOUR_SCHED":_("Hours"),
-	"MINUTE_SCHED":_("Minute"),
+	"DAILY":_("Daily"),
+	"DELETE_MSG":_("Will delete"),
+	"DELETE":_("Delete"),
+	"DESC":_("Advanced scheduling for expert users"),
 	"DOW_SCHED":_("Select weekdays"),
 	"DOW_SELECT":_("Weekdays"),
-	"DELETE":_("Delete"),
-	"CANCEL":_("Cancel"),
-	"CONFIRM":_("Sure?"),
-	"NOTCMD":_("not found"),
+	"HOUR_SCHED":_("Hours"),
+	"HOURLY":_("Hourly"),
+	"LBLCMD":_("Write or select a command"),
 	"MALFORMED":_("Jobs can run only on fixed dates"),
-	"LBLCMD":_("Write or select a command")
+	"MENU":_("Advance schedule"),
+	"MINUTE_SCHED":_("Minute"),
+	"MONTH_SCHED":_("Months"),
+	"MONTHLY":_("Monthly"),
+	"NOTCMD":_("not found"),
+	"SYSCRON":_("System cron"),
+	"TOOLTIP":_("Add scheduled tasks"),
+	"USERCRON":_("User's cron"),
 	}
 
 MONTHS={1:_("Jan"),
@@ -214,6 +215,9 @@ class detail(QStackedWindowItem):
 		hst=config.get("cmd",[])
 		hst.sort()
 		cmds.extend(hst)
+		cmds.reverse()
+		cmds.extend(defaultAliases.getDefaults().keys())
+		cmds.reverse()
 		return(cmds)
 	#def _loadCommands
 
@@ -320,6 +324,7 @@ class detail(QStackedWindowItem):
 
 	def _addCmdToHistory(self,cmd):
 		self.refresh=True
+		cmd=cmd.strip()
 		userconf=self.appconfig.getConfig()
 		usercmd=userconf.get("cmd",[])
 		if cmd not in usercmd and len(cmd)>0:
@@ -358,15 +363,19 @@ class detail(QStackedWindowItem):
 		dlg=QDialog()
 		lay=QGridLayout()
 		dlg.setLayout(lay)
-		lblQ=QLabel("{0} <strong>{1}</strong><br>{2}".format(i18n.get("DELETE"),self.currentTaskData.get("cmd"),i18n.get("CONFIRM")))
-		lay.addWidget(lblQ,0,0,1,2)
+		lblIcn=QLabel()
+		icn=QtGui.QIcon.fromTheme("dialog-warning")
+		lblIcn.setPixmap(icn.pixmap(QSize(64,64)))
+		lay.addWidget(lblIcn,0,0,1,1)
+		lblQ=QLabel("{0} <p><strong>{1}</strong></p><p>{2}</p>".format(i18n.get("DELETE_MSG"),self.currentTaskData.get("cmd"),i18n.get("CONFIRM")))
+		lay.addWidget(lblQ,0,1,1,2)
 		btn_ok=QPushButton(i18n.get("DELETE"))
 		btn_ok.clicked.connect(dlg.accept)
 		btn_cancel=QPushButton(i18n.get("CANCEL"))
 		btn_cancel.clicked.connect(dlg.reject)
 
 		lay.addWidget(btn_ok,1,0,1,1,Qt.AlignRight)
-		lay.addWidget(btn_cancel,1,1,1,1,Qt.AlignLeft)
+		lay.addWidget(btn_cancel,1,2,1,1,Qt.AlignLeft)
 		if dlg.exec_():
 			raw=self.currentTaskData.get("raw","")
 			if len(raw)>0:
@@ -423,9 +432,18 @@ class detail(QStackedWindowItem):
 				values=["*"]
 			processInfo[key]=self._generateCronRegex(values)
 
-		processInfo["cmd"]=self.cmbCmd.currentText().split(" ")[0]
+
+
+		processInfo["cmd"]=self.cmbCmd.currentText()
+		#Search whole cmd in aliases
 		if processInfo["cmd"] in alias.keys():
-			processInfo["cmd"]=alias[processInfo["cmd"]]
+			cmd=alias.get(processInfo["cmd"],"").split()
+			if len(cmd)>0:
+				processInfo["cmd"]="{} {}".format(cmd[0]," ".join(cmd[1:]))
+		else:
+			cmd=processInfo["cmd"].split()
+			if cmd[0] in alias.keys():
+				processInfo["cmd"]="{} {}".format(alias[cmd[0]]," ".join(cmd[1:]))
 		cmdName=processInfo["cmd"].split(" ")[0]
 		if os.path.isfile(cmdName)==False and cmdName[0].isalnum():
 			fullcmd=shutil.which(os.path.basename(cmdName))
@@ -435,7 +453,7 @@ class detail(QStackedWindowItem):
 	#def _readScreen
 
 	def writeConfig(self):
-		config=self.appconfig.getConfig()
+		config=self._getConfig()
 		cron=[]
 		processInfo=self._readScreen(config.get("alias",{}))
 		cmdName=processInfo["cmd"].split(" ")[0]
@@ -483,3 +501,10 @@ class detail(QStackedWindowItem):
 			self.updateScreen()
 			self.parent.setCurrentStack(0)
 	#def writeConfig
+
+	def _getConfig(self):
+		config=self.appconfig.getConfig()
+		if isinstance(config.get("alias",""),dict):
+			config["alias"].update(defaultAliases.getDefaults())
+		return(config)
+	#def _getConfig
