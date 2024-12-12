@@ -59,6 +59,7 @@ class custom(QStackedWindowItem):
 #		self.table.setShowGrid(False)
 		self.table.verticalHeader().hide()
 		self.table.horizontalHeader().hide()
+		self.table.itemChanged.connect(self._selectionChanged)
 		self.lay.addWidget(self.table,1,0,1,3)
 		self.table.horizontalHeader().setSectionResizeMode(1,QHeaderView.Stretch)
 		self.table.itemSelectionChanged.connect(self._selectionChanged)
@@ -88,9 +89,7 @@ class custom(QStackedWindowItem):
 		revAliases={}
 		for alias,aliascmd in aliases.items():
 			revAliases.update({aliascmd:alias})
-		print(commands)
 		setCommands=list(set(commands)-set(revAliases.keys()))
-		print(setCommands)
 		setCommands.sort()
 		setAliases=list(revAliases.keys())
 		setAliases.sort()
@@ -135,9 +134,15 @@ class custom(QStackedWindowItem):
 			return
 		f=self.table.findItems(alias,Qt.MatchExactly)
 		if len(f)==0:
-			self.table.setRowCount(self.table.rowCount()+1)
-			self.table.setItem(self.table.rowCount()-1,0,QTableWidgetItem(alias))
-			self.table.setItem(self.table.rowCount()-1,1,QTableWidgetItem(cmd))
+			f=self.table.findItems(cmd,Qt.MatchExactly)
+			if len(f)==0:
+				self.table.setRowCount(self.table.rowCount()+1)
+				self.table.setItem(self.table.rowCount()-1,0,QTableWidgetItem(alias))
+				self.table.setItem(self.table.rowCount()-1,1,QTableWidgetItem(cmd))
+			else:
+				self.table.item(f[0].row(),0).setText(alias)
+		else:
+			self.table.item(f[0].row(),1).setText(cmd)
 		#if alias not in useralias.keys():
 	#def _addAlias
 
