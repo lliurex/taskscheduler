@@ -1,3 +1,9 @@
+taskscheduler (3.0.2-1lliurex25) noble; urgency=medium
+
+  * Minor fixes
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 10 Apr 2025 10:42:01 +0200
+
 taskscheduler (3.0.2-0lliurex25) noble; urgency=medium
 
   * Noble release
