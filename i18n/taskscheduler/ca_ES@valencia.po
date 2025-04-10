@@ -1,0 +1,331 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-30 08:12+0200\n"
+"PO-Revision-Date: 2023-12-27 10:37+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ca\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#: ../src/stacks/custom.py:14
+msgid "Add commands"
+msgstr "Afegir comandaments"
+
+#: ../src/stacks/custom.py:15
+msgid "Add custom commands"
+msgstr "Comandaments personalitzats"
+
+#: ../src/stacks/custom.py:16
+msgid "Add custom commmands with aliases for later use"
+msgstr "Afegir un alias a comandaments personalitzats"
+
+#: ../src/stacks/custom.py:17
+msgid "Command alias"
+msgstr "Alias"
+
+#: ../src/stacks/custom.py:18
+msgid "Add"
+msgstr "Afegir"
+
+#: ../src/stacks/custom.py:19
+msgid "Full command"
+msgstr "Comandament"
+
+#: ../src/stacks/custom.py:20
+msgid "no found"
+msgstr "no trobat"
+
+#: ../src/stacks/dashboard.py:15
+msgid "Dashboard"
+msgstr "Panell"
+
+#: ../src/stacks/dashboard.py:16
+msgid "Take a look to next scheduled tasks"
+msgstr "Una ullada a les pròximes tasques"
+
+#: ../src/stacks/dashboard.py:17
+msgid "Show scheduled tasks ordered by next execution time"
+msgstr "Mostra les tasques ordenades per pròxima hora d'execució"
+
+#: ../src/stacks/dashboard.py:18
+msgid "Next in"
+msgstr "Pròxima"
+
+#: ../src/stacks/dashboard.py:19
+msgid "User cron"
+msgstr "Cron de l'usuari"
+
+#: ../src/stacks/dashboard.py:20
+msgid "Schedule a new task"
+msgstr "Programar tasca"
+
+#: ../src/stacks/dashboard.py:21
+msgid "at job"
+msgstr "Treball puntual"
+
+#: ../src/stacks/dashboard.py:24
+msgid "January"
+msgstr "Gener"
+
+#: ../src/stacks/dashboard.py:25
+msgid "February"
+msgstr "Febrer"
+
+#: ../src/stacks/dashboard.py:26
+msgid "March"
+msgstr "Març"
+
+#: ../src/stacks/dashboard.py:27
+msgid "April"
+msgstr "Abril"
+
+#: ../src/stacks/dashboard.py:28 ../src/stacks/detail.py:44
+#: ../src/stacks/simple.py:39
+msgid "May"
+msgstr "Maig"
+
+#: ../src/stacks/dashboard.py:29
+msgid "June"
+msgstr "Juni"
+
+#: ../src/stacks/dashboard.py:30
+msgid "July"
+msgstr "Juliol"
+
+#: ../src/stacks/dashboard.py:31
+msgid "August"
+msgstr "Agost"
+
+#: ../src/stacks/dashboard.py:32
+msgid "September"
+msgstr "Septembre"
+
+#: ../src/stacks/dashboard.py:33
+msgid "October"
+msgstr "Octobre"
+
+#: ../src/stacks/dashboard.py:34
+msgid "November"
+msgstr "Novembre"
+
+#: ../src/stacks/dashboard.py:35
+msgid "December"
+msgstr "Decembre"
+
+#: ../src/stacks/detail.py:15
+msgid "Advance schedule"
+msgstr "Programació avançada"
+
+#: ../src/stacks/detail.py:16
+msgid "Advanced scheduling for expert users"
+msgstr "Programació avançada per a experts"
+
+#: ../src/stacks/detail.py:17 ../src/stacks/simple.py:16
+msgid "Add scheduled tasks"
+msgstr "Afegir tasques"
+
+#: ../src/stacks/detail.py:18 ../src/stacks/simple.py:17
+msgid "Task"
+msgstr "Tasca"
+
+#: ../src/stacks/detail.py:19 ../src/stacks/simple.py:18
+msgid "User's cron"
+msgstr "Cron de l'usuari"
+
+#: ../src/stacks/detail.py:20 ../src/stacks/simple.py:19
+msgid "System cron"
+msgstr "Cron del sistema"
+
+#: ../src/stacks/detail.py:21 ../src/stacks/simple.py:20
+msgid "At job"
+msgstr "Treball puntual"
+
+#: ../src/stacks/detail.py:22 ../src/stacks/simple.py:21
+msgid "This at job can't be modified"
+msgstr "No es pot modificar el treball"
+
+#: ../src/stacks/detail.py:23 ../src/stacks/simple.py:26
+msgid "Monthly"
+msgstr "Mensual"
+
+#: ../src/stacks/detail.py:24 ../src/stacks/simple.py:27
+msgid "Daily"
+msgstr "Diaria"
+
+#: ../src/stacks/detail.py:25 ../src/stacks/simple.py:28
+msgid "Hourly"
+msgstr "Horaria"
+
+#: ../src/stacks/detail.py:26
+msgid "Months"
+msgstr "Mesos"
+
+#: ../src/stacks/detail.py:27
+msgid "Days"
+msgstr "Dies"
+
+#: ../src/stacks/detail.py:28
+msgid "Hours"
+msgstr "Hores"
+
+#: ../src/stacks/detail.py:29 ../src/stacks/simple.py:32
+msgid "Minute"
+msgstr "Minut"
+
+#: ../src/stacks/detail.py:30
+msgid "Select weekdays"
+msgstr "Dia setmana"
+
+#: ../src/stacks/detail.py:31
+msgid "Weekdays"
+msgstr "Dies de la setmana"
+
+#: ../src/stacks/detail.py:32
+msgid "Delete"
+msgstr "Eliminar"
+
+#: ../src/stacks/detail.py:33
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: ../src/stacks/detail.py:34
+msgid "Sure?"
+msgstr "Segur?"
+
+#: ../src/stacks/detail.py:35
+msgid "not found"
+msgstr "no trobat"
+
+#: ../src/stacks/detail.py:36 ../src/stacks/simple.py:22
+msgid "Jobs can run only on fixed dates"
+msgstr "Els treballs no mes es poden executar a una data concreta"
+
+#: ../src/stacks/detail.py:37
+msgid "Write or select a command"
+msgstr "Escriure o seleccionar comandament"
+
+#: ../src/stacks/detail.py:40 ../src/stacks/simple.py:35
+msgid "Jan"
+msgstr "Gen"
+
+#: ../src/stacks/detail.py:41 ../src/stacks/simple.py:36
+msgid "Feb"
+msgstr "Feb"
+
+#: ../src/stacks/detail.py:42 ../src/stacks/simple.py:37
+msgid "Mar"
+msgstr "Mar"
+
+#: ../src/stacks/detail.py:43 ../src/stacks/simple.py:38
+msgid "Apr"
+msgstr "Abr"
+
+#: ../src/stacks/detail.py:45 ../src/stacks/simple.py:40
+msgid "Jun"
+msgstr "Jun"
+
+#: ../src/stacks/detail.py:46 ../src/stacks/simple.py:41
+msgid "Jul"
+msgstr "Jul"
+
+#: ../src/stacks/detail.py:47 ../src/stacks/simple.py:42
+msgid "Aug"
+msgstr "Ago"
+
+#: ../src/stacks/detail.py:48 ../src/stacks/simple.py:43
+msgid "Sep"
+msgstr "Sep"
+
+#: ../src/stacks/detail.py:49 ../src/stacks/simple.py:44
+msgid "Oct"
+msgstr "Oct"
+
+#: ../src/stacks/detail.py:50 ../src/stacks/simple.py:45
+msgid "Nov"
+msgstr "Nov"
+
+#: ../src/stacks/detail.py:51 ../src/stacks/simple.py:46
+msgid "Dec"
+msgstr "Dec"
+
+#: ../src/stacks/detail.py:54
+msgid "Monday"
+msgstr "Dilluns"
+
+#: ../src/stacks/detail.py:55
+msgid "Tuesday"
+msgstr "Dimarts"
+
+#: ../src/stacks/detail.py:56
+msgid "Wednesday"
+msgstr "Dimecres"
+
+#: ../src/stacks/detail.py:57
+msgid "Thursday"
+msgstr "Dijous"
+
+#: ../src/stacks/detail.py:58
+msgid "Friday"
+msgstr "Divendres"
+
+#: ../src/stacks/detail.py:59
+msgid "Saturday"
+msgstr "Dissabte"
+
+#: ../src/stacks/detail.py:60
+msgid "Sunday"
+msgstr "Diumenge"
+
+#: ../src/stacks/remainder.py:15
+msgid "Add remainder"
+msgstr "Afegir recordatori"
+
+#: ../src/stacks/remainder.py:16
+msgid "One-shot notifications/alarms"
+msgstr "Notificacions úniques/alarmes"
+
+#: ../src/stacks/simple.py:14
+msgid "Schedule task"
+msgstr "Programar tasca"
+
+#: ../src/stacks/simple.py:15
+msgid "Add schedule for task"
+msgstr "Afegir tasca programada"
+
+#: ../src/stacks/simple.py:23
+msgid "Repeat"
+msgstr "Repetir"
+
+#: ../src/stacks/simple.py:24
+msgid "No repeat"
+msgstr "No repetir"
+
+#: ../src/stacks/simple.py:25
+msgid "Yearly"
+msgstr "Anual"
+
+#: ../src/stacks/simple.py:29
+msgid "Month"
+msgstr "Mes"
+
+#: ../src/stacks/simple.py:30
+msgid "Day"
+msgstr "Dia"
+
+#: ../src/stacks/simple.py:31
+msgid "Hour"
+msgstr "Hora"
+
+#~ msgid "From here you can update the repositories info or launch lliurex-upgrade"
+#~ msgstr "Desde d'ací es poden actualit"
