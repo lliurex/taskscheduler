@@ -2,9 +2,9 @@
 import sys,os
 import shutil
 import subprocess
-from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QHBoxLayout,QTableWidget,QHeaderView,QVBoxLayout,QLineEdit,QTableWidgetItem,QComboBox
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QDate
+from PySide6.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QHBoxLayout,QTableWidget,QHeaderView,QVBoxLayout,QLineEdit,QTableWidgetItem,QComboBox
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal,QDate
 from QtExtraWidgets import QTableTouchWidget, QStackedWindowItem
 from appconfig import manager
 import taskscheduler.taskscheduler as taskscheduler
@@ -54,6 +54,8 @@ class custom(QStackedWindowItem):
 		self.btnAdd.clicked.connect(self._addAlias)
 		self.lay.addWidget(self.btnAdd,0,2,1,1,Qt.Alignment(1))
 		self.table=QTableWidget(1,2)
+		self.table.setSelectionBehavior(QTableWidget.SelectRows)
+		self.table.itemSelectionChanged.connect(self._loadRowData)
 #		self.table.setShowGrid(False)
 		self.table.verticalHeader().hide()
 		self.table.horizontalHeader().hide()
@@ -62,6 +64,11 @@ class custom(QStackedWindowItem):
 		self.setLayout(self.lay)
 		self.btnAccept.clicked.connect(self.writeConfig)
 	#def _load_screen
+
+	def _loadRowData(self,*args):
+		self.inpAlias.setText(self.table.item(self.table.currentRow(),0).text())
+		self.cmbCmd.setCurrentText(self.table.item(self.table.currentRow(),1).text())
+		print(args)
 
 	def updateScreen(self):
 		aliases=self._getAliases()
@@ -122,7 +129,7 @@ class custom(QStackedWindowItem):
 
 	def writeConfig(self):
 		self._addAlias()
-		useralias={}
+		useralias={"alias":{}}
 		for row in range(0,self.table.rowCount()):
 			alias=self.table.item(row,0).text()
 			if alias in useralias or len(alias)<1:
@@ -130,7 +137,7 @@ class custom(QStackedWindowItem):
 			cmd=self.table.item(row,1).text()
 			if len(cmd)<1:
 				continue
-			useralias.update({"alias":{alias:cmd}})
+			useralias["alias"].update({alias:cmd})
 		self.appconfig.writeConfig(useralias)
 		self.updateScreen()
 	#def writeConfig
