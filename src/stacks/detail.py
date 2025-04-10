@@ -2,9 +2,9 @@
 import sys
 import os,shutil
 import subprocess
-from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QHBoxLayout,QTableWidget,QHeaderView,QVBoxLayout,QLineEdit,QComboBox,QCheckBox,QScrollArea,QDialog,QSizePolicy
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal
+from PySide6.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QHBoxLayout,QTableWidget,QHeaderView,QVBoxLayout,QLineEdit,QComboBox,QCheckBox,QScrollArea,QDialog,QSizePolicy
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal
 from  appconfig import manager
 from QtExtraWidgets import QTableTouchWidget, QCheckableComboBox, QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler

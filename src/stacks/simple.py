@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os,shutil
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QLineEdit,QComboBox,QCheckBox,QCalendarWidget,QDialog
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QDate
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QLineEdit,QComboBox,QCheckBox,QCalendarWidget,QDialog
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QDate
 from appconfig import manager
 from QtExtraWidgets import QStackedWindowItem
 import taskscheduler.taskscheduler as taskscheduler

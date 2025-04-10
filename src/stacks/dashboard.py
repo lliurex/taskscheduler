@@ -2,9 +2,9 @@
 import sys
 import os
 import subprocess
-from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QTableWidget,QHeaderView,QAbstractScrollArea
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal
+from PySide6.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QTableWidget,QHeaderView,QAbstractScrollArea
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QTableTouchWidget, QStackedWindowItem
 from appconfig import manager
 import taskscheduler.taskscheduler as taskscheduler

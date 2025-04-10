@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import os
-from PySide2.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 from QtExtraWidgets import QStackedWindow
 import gettext
 gettext.textdomain('taskscheduler')
@@ -27,4 +27,4 @@ mw.resize(mw.sizeHint().width()*2.1,mw.sizeHint().width())
 #mw.Show()
 #mw.setMinimumWidth(mw.sizeHint().width())
 
-app.exec_()
+app.exec()
