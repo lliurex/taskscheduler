@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLa
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal
 from  appconfig import manager
-from QtExtraWidgets import QTableTouchWidget, QCheckableComboBox, QStackedWindowItem
+from QtExtraWidgets import QTableTouchWidget, QCheckableComboBox, QStackedWindowItem,QFlowTouchWidget
 import taskscheduler.taskscheduler as taskscheduler
 
 import gettext
@@ -51,6 +51,15 @@ MONTHS={1:_("Jan"),
 	12:_("Dec")
 	}
 
+DOW={1:"Monday",
+	2:"Tuesday",
+	3:"Wednesday",
+	4:"Thursday",
+	5:"Friday",
+	6:"Saturday",
+	7:"Sunday"
+	}
+
 DAYS={"Monday":_("Monday"),
 	"Tuesday":_("Tuesday"),
 	"Wednesday":_("Wednesday"),
@@ -85,74 +94,47 @@ class detail(QStackedWindowItem):
 	#def __init__
 	
 	def __initScreen__(self):
-		self.lay=QGridLayout()
-		scr=QScrollArea()
-		scr.setHorizontalScrollBarPolicy( Qt.ScrollBarAlwaysOff )
-		scr.setWidgetResizable(True)
-		#scr.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Expanding))
-		wdg=QWidget()
-		#wdg.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Expanding))
 		lay=QGridLayout()
-		wdg.setLayout(lay)
-		lay2=QGridLayout()
-		wdg2=QWidget()
-		wdg2.setLayout(lay2)
-		lay2.addWidget(QLabel(i18n.get("CMD")),0,1,1,1,Qt.AlignLeft)
-		self.cmbCmd=QComboBox()
-		self.cmbCmd.setEditable(True)
-		lay2.addWidget(self.cmbCmd,0,0,1,1)
-		lay.addWidget(wdg2,0,0,1,2)
+		self.setLayout(lay)
+		taskBar=self._drawTaskBar()
+		lay.addWidget(taskBar,0,0,1,1)
 		self.hours=self._drawDateTimeWidget("HOUR_SCHED","HOURLY",0,24)
 		self.hours.adjustSize()
-		lay.addWidget(self.hours,1,0,1,1)
+		lay.addWidget(self.hours,1,0,2,1)
 		self.minutes=self._drawMinutes()
 		#self.minutes.adjustSize()
-		lay.addWidget(self.minutes,1,1,1,1)
+		lay.addWidget(self.minutes,1,1,1,1,Qt.AlignLeft)
+		self.dow=self._drawDays()
+		lay.addWidget(self.dow,2,1,1,1)
 		self.btnDelete=QPushButton(i18n.get("DELETE"))
 		self.btnDelete.clicked.connect(self._delTask)
-		lay.addWidget(self.btnDelete,1,1,1,1,Qt.AlignTop|Qt.AlignRight)
+		lay.addWidget(self.btnDelete,0,2,1,1,Qt.AlignRight)
 		self.cmbType=QComboBox()
 		self.cmbType.addItem(i18n.get("USERCRON"))
 		self.cmbType.addItem(i18n.get("SYSCRON"))
 		self.cmbType.addItem(i18n.get("ATJOB"))
-		lay.addWidget(self.cmbType,1,1,1,1,Qt.AlignTop|Qt.AlignRight)
+		lay.addWidget(self.cmbType,0,1,1,1,Qt.AlignRight)
 		self.months=self._drawDateTimeWidget("MONTH_SCHED","MONTHLY",1,13)
 		#self.months.adjustSize()
-		lay.addWidget(self.months,2,0,1,1)
+		lay.addWidget(self.months,3,0,1,1)
 		self.days=self._drawDateTimeWidget("DAY_SCHED","DAILY",1,32)
 		#self.days.adjustSize()
-		lay.addWidget(self.days,2,1,1,1)
+		lay.addWidget(self.days,3,1,1,1)
 		#lay.setRowStretch(0,1)
-		scr.setWidget(wdg)
-		self.lay.addWidget(scr,0,0,1,1)
-#		scr.setMinimumWidth(self.hours.width()*1.4)
 		#scr.adjustSize()
-		self.setLayout(self.lay)
 		self.btnAccept.clicked.connect(self.writeConfig)
-		return(self)
-	#def _load_screen
+	#def __initScreen__
 
-	def initScreen(self):
-		self.task={}
-
-	def updateScreen(self):
-		self._clearScreen()
-		if (self.task.get("cmd","")!=""):
-			self.cmbCmd.addItem(self.task.get("cmd"))
-			self.cmbCmd.setCurrentText(self.task.get("cmd"))
-		else:
-			cmds=self._loadCommands()
-			self.cmbCmd.setPlaceholderText(i18n.get("LBLCMD"))
-			for cmd in cmds:
-				if len(cmd)>0:
-					self.cmbCmd.addItem(cmd)
-			self.cmbCmd.setCurrentIndex(-1)
-		data=self.task.get("raw","")
-		ldata=data.split(" ")
-		if len(ldata)>1:
-			self._loadDataFromTask(data)
-		self.task={}
-	#def _udpate_screen
+	def _drawTaskBar(self):
+		wdg=QWidget()
+		lay=QHBoxLayout()
+		wdg.setLayout(lay)
+		lay.addWidget(QLabel(i18n.get("CMD")))
+		self.cmbCmd=QComboBox()
+		self.cmbCmd.setEditable(True)
+		lay.addWidget(self.cmbCmd)
+		return(wdg)
+	#self _drawTaskBar
 
 	def _drawDateTimeWidget(self,desc,desc2,minRange,maxRange):
 		wdg=QWidget()
@@ -176,37 +158,60 @@ class detail(QStackedWindowItem):
 			if col>maxCols:
 				col=0
 				row+=1
-		chk=QCheckBox(i18n.get(desc2))
-		if desc2=="DAILY":
-			cmbDay=QCheckableComboBox()
-			cmbDay.setText(i18n.get("DOW_SCHED"))
-			for key,item in DAYS.items():
-				cmbDay.addItem(item)
-			if col>=maxCols-2:
-				row+=1
-				col=0
-			else:
-				col+=1
-			lay.addWidget(cmbDay,row,col-1,1,maxCols-(col-2),Qt.AlignBottom|Qt.AlignRight)
-			#lay.addWidget(chk,row,5,1,1,Qt.AlignRight|Qt.AlignBottom)
-		#else:
-		#	lay.addWidget(chk,row,0,1,6,Qt.AlignRight)
 		lay.setSpacing(0)
 		lay.setContentsMargins(3,3,3,3)
 		wdg.setLayout(lay)
 		return(wdg)
 	#def _drawDateTimeWidget
 
+	def _drawDays(self):
+		wdg=QWidget()
+		lay=QVBoxLayout()
+		wdg.setLayout(lay)
+		flw=QFlowTouchWidget()
+		#chk=QCheckBox(i18n.get(desc2))
+		desc2=i18n.get("DAILY")
+		lay.addWidget(QLabel(desc2))
+		for key,item in DAYS.items():
+			day=QPushButton(item)
+			day.setCheckable(True)
+			flw.addWidget(day)
+		lay.addWidget(flw)
+		return(wdg)
+	#def _drawDays
+
 	def _drawMinutes(self):
 		wdg=QWidget()
 		lay=QGridLayout()
-		lay.addWidget(QLabel(i18n.get("MINUTE_SCHED")),0,0)
+		lbl=QLabel(i18n.get("MINUTE_SCHED"))
+		lay.addWidget(lbl,0,0,Qt.AlignTop|Qt.AlignRight)
 		cmb=QComboBox()
 		for i in range(0,60,5):
 			cmb.addItem(str(i).zfill(2))
-		lay.addWidget(cmb,1,0,Qt.AlignTop|Qt.AlignLeft)
+		lay.addWidget(cmb,0,1,Qt.AlignTop|Qt.AlignLeft)
+		lbl.setMinimumHeight(cmb.sizeHint().height())
 		wdg.setLayout(lay)
 		return(wdg)
+	#def _drawMinutes
+
+	def updateScreen(self):
+		self._clearScreen()
+		if (self.task.get("cmd","")!=""):
+			self.cmbCmd.addItem(self.task.get("cmd"))
+			self.cmbCmd.setCurrentText(self.task.get("cmd"))
+		else:
+			cmds=self._loadCommands()
+			self.cmbCmd.setPlaceholderText(i18n.get("LBLCMD"))
+			for cmd in cmds:
+				if len(cmd)>0:
+					self.cmbCmd.addItem(cmd)
+			self.cmbCmd.setCurrentIndex(-1)
+		data=self.task.get("raw","")
+		ldata=data.split(" ")
+		if len(ldata)>1:
+			self._loadDataFromTask(data)
+		self.task={}
+	#def _udpate_screen
 
 	def _loadCommands(self):
 		self.refresh=True
@@ -232,7 +237,7 @@ class detail(QStackedWindowItem):
 			mon="1-13"
 		if dow=="*":
 			dow="1-7"
-		processData={self.minutes:{"m":m},self.hours:{"h":h},self.days:{"dom":dom,"dow":dow},self.months:{"mon":mon}}
+		processData={self.minutes:{"m":m},self.hours:{"h":h},self.days:{"dom":dom},self.dow:{"dow":dow},self.months:{"mon":mon}}
 		for wdg,dataset in processData.items():
 			self._setWidgetData(wdg,dataset)
 		for i in self.minutes.findChildren(QComboBox):
@@ -244,31 +249,34 @@ class detail(QStackedWindowItem):
 	def _setWidgetData(self,wdg,dataset):
 		for key,data in dataset.items():
 			active=self.scheduler._processCronField(str(data),0,0)
-			#for item in str(data).split(","):
-			#	if ("-") in item:
-			#		ranged=item.split("-")
-			#		for d in range(int(ranged[0]),int(ranged[-1])+1):
-			#			active.append(str(d))
-			#	else:
-			#		if item.isdigit():
-			#			active.append(str(int(item)))
-			#		else:
-			#			active.append(item)
+			cont=0
+			days=list(DAYS.values())
+			activeDays=[]
 			for i in wdg.findChildren(QPushButton):
 				if key=="dow":
-					break
-				text=i.text()
-				if not text.isdigit():
-					for month,desc in MONTHS.items():
-						if desc==text:
-							text=str(month)
-							break
-				if text in active:
-					i.setDown(True)
-					i.setChecked(True)
-				else:
-					i.setDown(False)
-					i.setChecked(False)
+					text=i.text()
+					if not text.isdigit():
+						for day,desc in DOW.items():
+							if _(desc)==text:
+								if str(day) in active:
+									i.setDown(True)
+									i.setChecked(True)
+								else:
+									i.setDown(False)
+									i.setChecked(False)
+				elif key=="mon":
+					text=i.text()
+					if not text.isdigit():
+						for month,desc in MONTHS.items():
+							if desc==text:
+								text=str(month)
+								break
+					if text in active:
+						i.setDown(True)
+						i.setChecked(True)
+					else:
+						i.setDown(False)
+						i.setChecked(False)
 			for i in wdg.findChildren(QComboBox):
 				if not isinstance(i,QCheckableComboBox) and key=="dom":
 					if active[0].isdigit():
@@ -326,7 +334,7 @@ class detail(QStackedWindowItem):
 		usercmd=userconf.get("cmd",[])
 		if cmd not in usercmd and len(cmd)>0:
 			usercmd.append(cmd)
-			self.appconfig.saveChanges("cmd",usercmd,level="user")
+			#self.appconfig.saveChanges("cmd",usercmd,level="user")
 	#def _addCmdToHistory
 
 	def _generateCronRegex(self,values):
@@ -390,12 +398,22 @@ class detail(QStackedWindowItem):
 		values=[]
 		allEnabled=True
 		for i in wdg.findChildren(QPushButton):
+			print(i.text())
 			if i.isChecked()==True:
 				data=i.text()
+				print(data)
 				if not data.isdigit():
-					for dmon,mon in MONTHS.items():
-						if mon==data:
-							data=dmon
+					if key=="dow":
+						text=i.text()
+						print(text)
+						if not text.isdigit():
+							for day,desc in DOW.items():
+								if _(desc)==text:
+									data=day
+					else:
+						for dmon,mon in MONTHS.items():
+							if mon==data:
+								data=dmon
 				values.append(str(data))
 			else:
 				allEnabled=False
@@ -416,7 +434,7 @@ class detail(QStackedWindowItem):
 	#def _readWidgetData
 
 	def _readScreen(self,alias={}):
-		processWdg={"m":self.minutes,"h":self.hours,"dom":self.days,"mon":self.months,"dow":self.days}
+		processWdg={"m":self.minutes,"h":self.hours,"dom":self.days,"dow":self.dow,"mon":self.months}
 		processInfo={"m":[],"h":[],"dom":[],"mon":[],"dow":[]}
 		for key,wdg in processWdg.items():
 			allEnabled=True
