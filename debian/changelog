@@ -1,3 +1,10 @@
+taskscheduler (3.3.9-0lliurex25) noble; urgency=medium
+
+  * Use toggle for dow
+  * Rearrange code
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 12 May 2025 13:33:26 +0200
+
 taskscheduler (3.0.2-1lliurex25) noble; urgency=medium
 
   * Minor fixes
