@@ -1,4 +1,4 @@
-taskscheduler (3.3.9-0lliurex25) noble; urgency=medium
+taskscheduler (3.3.9-1lliurex25) noble; urgency=medium
 
   * Use toggle for dow
   * Rearrange code
