@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-10 10:30+0200\n"
+"POT-Creation-Date: 2025-05-27 06:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -258,31 +258,31 @@ msgstr ""
 msgid "Dec"
 msgstr ""
 
-#: ../src/stacks/detail.py:54
+#: ../src/stacks/detail.py:64
 msgid "Monday"
 msgstr ""
 
-#: ../src/stacks/detail.py:55
+#: ../src/stacks/detail.py:65
 msgid "Tuesday"
 msgstr ""
 
-#: ../src/stacks/detail.py:56
+#: ../src/stacks/detail.py:66
 msgid "Wednesday"
 msgstr ""
 
-#: ../src/stacks/detail.py:57
+#: ../src/stacks/detail.py:67
 msgid "Thursday"
 msgstr ""
 
-#: ../src/stacks/detail.py:58
+#: ../src/stacks/detail.py:68
 msgid "Friday"
 msgstr ""
 
-#: ../src/stacks/detail.py:59
+#: ../src/stacks/detail.py:69
 msgid "Saturday"
 msgstr ""
 
-#: ../src/stacks/detail.py:60
+#: ../src/stacks/detail.py:70
 msgid "Sunday"
 msgstr ""
 
@@ -324,4 +324,9 @@ msgstr ""
 
 #: ../src/stacks/simple.py:33
 msgid "Hour"
+msgstr ""
+#: qtextrawidgets
+msgid "Apply"
+msgstr ""
+msgid "Undo"
 msgstr ""
